@@ -2,7 +2,7 @@
 
 Compile and run Nethereum snippets or create your own using the Blazor / Monaco / Roslyn code editor and compiler.
 
-You can run it here: https://playground.nethereum.com/
+You can run it here: http://playground.nethereum.com/
 
 ![Screenshot](screenshots/screenshot.png)
 
