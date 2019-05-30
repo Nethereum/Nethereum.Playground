@@ -1,0 +1,54 @@
+﻿@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components
+@using Nethereum.TryOnBrowser.Monaco
+
+@inject IJSRuntime JSRuntime
+<div class="row">
+    <div class="col">
+        <div id="@EditorModel.Id" style="width:@GetWidthInPx();height:@GetHeightInPx();border:1px solid grey"></div>
+    </div>
+</div>
+@functions {
+
+    [Parameter]
+    EditorModel EditorModel { get; set; }
+
+    [Parameter]
+    int Width { get; set; } = 800;
+
+    [Parameter]
+    int Height { get; set; } = 600;
+
+    bool _alreadyRendered = false;
+
+    protected override async Task OnAfterRenderAsync()
+    {
+        if (!_alreadyRendered)
+        {
+            var result = await Interop.EditorInitializeAsync(JSRuntime, EditorModel);
+            _alreadyRendered = true;
+        }
+    }
+
+    private string GetHeightInPx()
+    {
+        return Height.ToString() + "px";
+    }
+
+    private string GetWidthInPx()
+    {
+        return Width.ToString() + "px";
+    }
+
+    public async Task EditorUpdateAsync()
+    {
+        EditorModel = await Interop.EditorGetAsync(JSRuntime, EditorModel);
+        Console.WriteLine($"Script is now: {EditorModel.Script}");
+    }
+
+    public async Task EditorSetValueAsync(string newScript)
+    {
+        EditorModel.Script = newScript;
+        EditorModel = await Interop.EditorSetAsync(JSRuntime, EditorModel);
+    }
+}
