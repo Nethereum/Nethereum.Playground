@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 
 using System.Net.Http;
-
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -46,9 +46,9 @@ namespace Nethereum.TryOnBrowser.Pages
             return base.OnInitAsync();
         }
 
-        public async Task Run()
+        public void Run()
         {
-            await Compiler.WhenReady(RunInternal());
+             Compiler.WhenReady(RunInternal);
         }
 
         public async Task CodeSampleChanged(UIChangeEventArgs evt)
@@ -90,10 +90,18 @@ namespace Nethereum.TryOnBrowser.Pages
 
                     var assembly = AppDomain.CurrentDomain.Load(rawBytes);
 
-                    var hasArgs = assembly.EntryPoint.GetParameters().Length > 0;
+                    var entry = assembly.EntryPoint;
+                    if (entry.Name == "<Main>") // sync wrapper over async Task Main
+                    {
+                        entry = entry.DeclaringType.GetMethod("Main", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static); // reflect for the async Task Main
+                    }
+                    var hasArgs = entry.GetParameters().Length > 0;
+                    var result = entry.Invoke(null, hasArgs ? new object[] { new string[0] } : null);
+                    if (result is Task t)
+                    {
+                        await t;
+                    }
 
-                    var result = assembly.EntryPoint.Invoke(null, hasArgs ? new string[][] { null } : null);
-                
                 }
 
             }
@@ -115,6 +123,8 @@ namespace Nethereum.TryOnBrowser.Pages
             sw.Stop();
 
             Console.WriteLine("Done in " + sw.ElapsedMilliseconds + "ms");
+
+            StateHasChanged();
 
         }
 

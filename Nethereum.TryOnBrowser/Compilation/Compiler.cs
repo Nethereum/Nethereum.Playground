@@ -83,18 +83,15 @@ namespace Nethereum.TryOnBrowser
 
         }
 
-        public static async Task WhenReady(Task action)
-
+        public static void WhenReady(Func<Task> action)
         {
-
             if (InitializationTask.Status != TaskStatus.RanToCompletion)
             {
-
-                await InitializationTask.ContinueWith(x => action);
+                InitializationTask.ContinueWith(x => action());
             }
             else
             {
-                await action;
+                action();
             }
         }
 

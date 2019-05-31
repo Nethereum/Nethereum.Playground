@@ -25,9 +25,6 @@
                 <MonacoEditor EditorModel="@editorModel" Width="1200" Height="600" />
             </div>
             <button class="btn btn-primary m-2 right" onclick="@Run">Run Code</button>
-            <div class="alert alert-warning" role="alert">
-                <strong>Warning:</strong>  Async calls are not supported yet by the compilation / execution workflow, so for the time being you cannot compile and execute calls to Ethereum nodes.
-            </div>
             <div class="row form-group">
                 <label for="id=" txtOutput">Output</label>
                 <textarea class="form-control" id="txtOutput" bind="@Output" rows="10"></textarea>

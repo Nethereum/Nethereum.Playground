@@ -6,6 +6,54 @@
         {
             return new CodeSample[]
             {
+
+
+                new CodeSample()
+                {
+                    Name="Query ERC20 Smart contract balance",
+                    Code= @"
+using System;
+using System.Numerics;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Contracts;
+
+
+public class Program
+{
+    // The balance function message definition    
+    [Function(""balanceOf"", ""uint256"")]
+    public class BalanceOfFunction : FunctionMessage
+    {
+        [Parameter(""address"", ""_owner"", 1)]
+        public string Owner { get; set; }
+    }
+
+    //async Task Main to enable async methods
+
+    static async Task Main(string[] args)
+    {
+        //Connecting to Ethereum mainnet using Infura
+        var web3 = new Web3(""https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c"");
+        
+        //Setting the owner https://etherscan.io/tokenholdings?a=0x8ee7d9235e01e6b42345120b5d270bdb763624c7
+        var balanceOfMessage = new BalanceOfFunction() { Owner = ""0x8ee7d9235e01e6b42345120b5d270bdb763624c7"" };
+        
+        //Creating a new query handler
+        var queryHandler = web3.Eth.GetContractQueryHandler<BalanceOfFunction>();
+        
+        //Querying the Maker smart contract https://etherscan.io/address/0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2
+        var balance = await queryHandler.QueryAsync<BigInteger>(""0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"", balanceOfMessage).ConfigureAwait(false);
+        Console.WriteLine(balance.ToString());
+    }
+
+}
+
+"
+                },
+
                 new CodeSample()
                 {
                     Name = "Message signing",
@@ -66,6 +114,7 @@ public class Program
 }
                 "
                 }
+
 
             };
         }
