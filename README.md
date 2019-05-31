@@ -8,7 +8,7 @@ You can run it here: http://playground.nethereum.com/
 
 # Credits
 
-* Blazor Runny for creating the first Wasm / Blazor / Roslyn compiler (that I know of and which this is based on) https://github.com/Suchiman/Runny 
+* @Suchiman for creating Blazor Runny the first Wasm / Blazor / Roslyn compiler (that I know of and which this is based on) and to provide support for async https://github.com/Suchiman/Runny (Amazing!)
 * Blazor Monaco for creating the Monaco embedded component, which this is also based on. https://github.com/davidnmbond/BlazorComponents.Monaco
-* Blazor, Monaco and Roslyn teams
+* Blazor, Mono, Monaco and Roslyn teams 
 
