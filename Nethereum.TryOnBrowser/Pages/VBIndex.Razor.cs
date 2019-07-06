@@ -130,7 +130,7 @@ namespace Nethereum.TryOnBrowser.Pages
 
             Console.WriteLine("Done in " + sw.ElapsedMilliseconds + "ms");
 
-            this.StateHasChanged();
+            StateHasChanged();
 
         }
 
