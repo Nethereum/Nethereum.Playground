@@ -18,8 +18,8 @@ namespace Nethereum.TryOnBrowser.Pages
 
         [Inject]
         public IJSRuntime JSRuntime { get; set; }
-  
-        protected string Output = "";
+
+        protected string Output {get; set;}
 
 
         [Inject] private HttpClient Client { get; set; }
