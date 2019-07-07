@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading;
+using Microsoft.VisualBasic.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Nethereum.TryOnBrowser
@@ -120,81 +122,57 @@ namespace Nethereum.TryOnBrowser
 
 
 
-        public static (bool success, Assembly asm, Byte[] rawAssembly) LoadSource(string source)
-
+        public static (bool success, Assembly asm, Byte[] rawAssembly) LoadSource(string source, string language)
+                
         {
 
-            var compilation = CSharpCompilation.Create("DynamicCode")
-
+            dynamic compilation = new object();
+            if(language=="csharp")
+            {
+                //Console.WriteLine("CSharp");
+                compilation = CSharpCompilation.Create("DynamicCode")
                 .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
-
                 .AddReferences(References)
-
-
                 .AddSyntaxTrees(CSharpSyntaxTree.ParseText(source));
+            } else if(language=="vb") {
+                //Console.WriteLine("VB");
+                compilation = VisualBasicCompilation.Create("DynamicCode")
+                .WithOptions(new VisualBasicCompilationOptions(OutputKind.WindowsApplication, embedVbCoreRuntime: true))
+                .AddReferences(References)
+                .AddSyntaxTrees(VisualBasicSyntaxTree.ParseText(source));
+            }
 
-
-
-            ImmutableArray<Diagnostic> diagnostics = compilation.GetDiagnostics();
-
-
-
+            ImmutableArray<Diagnostic> diagnostics  = compilation.GetDiagnostics();
             bool error = false;
 
             foreach (Diagnostic diag in diagnostics)
-
             {
-
                 switch (diag.Severity)
-
                 {
-
                     case DiagnosticSeverity.Info:
-
                         Console.WriteLine(diag.ToString());
-
                         break;
-
                     case DiagnosticSeverity.Warning:
-
                         Console.WriteLine(diag.ToString());
-
                         break;
-
                     case DiagnosticSeverity.Error:
-
                         error = true;
-
                         Console.WriteLine(diag.ToString());
-
                         break;
-
                 }
-
             }
 
             if (error)
-
             {
-
                 return (false, null, null);
-
             }
-
-
 
             using (var outputAssembly = new MemoryStream())
-
             {
-
                 compilation.Emit(outputAssembly);
 
-
-
                 return (true, Assembly.Load(outputAssembly.ToArray()), outputAssembly.ToArray());
-
             }
-
         }
 
 

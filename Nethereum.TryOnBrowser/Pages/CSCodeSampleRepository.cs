@@ -17,7 +17,6 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Nethereum.Web3;
 using Nethereum.ABI.FunctionEncoding.Attributes;
-using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.Contracts;
 
 
