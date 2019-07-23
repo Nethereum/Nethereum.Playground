@@ -12,7 +12,9 @@ namespace Nethereum.TryOnBrowser
 
         public void Configure(IComponentsApplicationBuilder app)
         {
+            //adding web3 and accounts to ensure they get included
             var web3 = new Nethereum.Web3.Web3();
+            var account = new Nethereum.Web3.Accounts.Managed.ManagedAccount("", "");
             app.AddComponent<App>("app");
         }
     }
