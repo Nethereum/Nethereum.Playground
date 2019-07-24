@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Nethereum.Web3;
 
 namespace Nethereum.TryOnBrowser
 {
@@ -15,6 +14,7 @@ namespace Nethereum.TryOnBrowser
             //adding web3 and accounts to ensure they get included
             var web3 = new Nethereum.Web3.Web3();
             var account = new Nethereum.Web3.Accounts.Managed.ManagedAccount("", "");
+            var wallet = new Nethereum.HdWallet.Wallet("","");
             app.AddComponent<App>("app");
         }
     }
