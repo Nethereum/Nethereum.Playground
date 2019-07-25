@@ -366,7 +366,7 @@ for (int i = 0; i < 10; i++)
 
 var account1 = new Wallet(Words, Password1).GetAccount(0);
 Console.WriteLine(""account1 address is: ""+account1.Address);
-var web3 = new Web3(account1);
+var web3 = new Web3(account1,""http://13.69.185.76:8545"");
 var balance = await web3.Eth.GetBalance.SendRequestAsync(account1.Address);
 Console.WriteLine(""account1 balance is: ""+balance.Value);
 // Transfering ether using an HD Wallet
