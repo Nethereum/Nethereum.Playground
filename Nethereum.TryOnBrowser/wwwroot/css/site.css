@@ -59,7 +59,7 @@ app {
 
     .nav-item a {
         color: #d7d7d7;
-        border-radius: 0px;
+        border-radius: 4px;
         height: 3rem;
         display: flex;
         align-items: center;
