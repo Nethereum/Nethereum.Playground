@@ -168,7 +168,8 @@ public class Program
 // This sample shows how to convert units of Ether.
 
 // We first need to generate an instance of web3:
-var web3 = new Web3(""https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c"");
+var web3 = new Web3(""
+var web3 = new Web3(""http://13.69.185.76:8545"");
 
 // Let's now check the balance of the Ethereum Foundation (just because we can).
 var balance = await web3.Eth.GetBalance.SendRequestAsync(""0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae"");
@@ -364,10 +365,10 @@ for (int i = 0; i < 10; i++)
 // we can for instance check the balance of one of them:
 
 var account1 = new Wallet(Words, Password1).GetAccount(0);
-
+Console.WriteLine(""account1 address is: ""+account1.Address);
 var web3 = new Web3(account1);
 var balance = await web3.Eth.GetBalance.SendRequestAsync(account1.Address);
-
+Console.WriteLine(""account1 balance is: ""+balance.Value);
 // Transfering ether using an HD Wallet
 
 // The process of transferring Ether using a HD Wallet is the same as 
@@ -375,7 +376,6 @@ var balance = await web3.Eth.GetBalance.SendRequestAsync(account1.Address);
 
 var toAddress = ""0x13f022d72158410433cbd66f5dd8bf6d2d129924"";
 var transaction = await web3.Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(toAddress, 2.11m, 2);
-
 // Generating mnemonics
 
 // Our friends at NBitcoin offer a very convenient way to generate a backup seed sentence:
@@ -404,7 +404,7 @@ var backupSeed = mnemo.ToString();
 
 var wallet3 = new Wallet(backupSeed, Password2);
 var recoveredAccount = wallet3.GetAccount(0);
-
+Console.WriteLine(""recoveredAccount address is: ""+recoveredAccount.Address);
     }
 
 }
