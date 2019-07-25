@@ -1,4 +1,4 @@
-﻿namespace Nethereum.TryOnBrowser.Pages
+namespace Nethereum.TryOnBrowser.Pages
 {
     public class CodeSampleRepository
     {
@@ -342,68 +342,69 @@ public class Program
 
     static async Task Main(string[] args)
     {
+// this samples shows how to create a hd wallet and recover an address
+// from it.
 
-// This samples shows how to create a Hd Wallet and recover an address
-// From it.
-
-// Initiating a HD Wallet requires a list of words and a password as arguments, 
+// initiating a hd wallet requires a list of words and a password as arguments, 
 // in this first case, we will use an arbitrary sequence of words.
 
-string Words = ""ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal"";
-string Password1 = ""password"";
-var wallet1 = new Wallet(Words, Password1);
+string words = ""ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal"";
+string password1 = ""password"";
+var wallet1 = new Nethereum.HdWallet.Wallet(words, password1);
 for (int i = 0; i < 10; i++)
 {
-    var account = wallet1.GetAccount(i); 
-    Console.WriteLine(""Account index : ""+ i +"" - Address : ""+ account.Address +"" - Private key : ""+ account.PrivateKey);
+    var account = wallet1.getaccount(i); 
+    Console.WriteLine(""account index : ""+ i +"" - address : ""+ account.address +"" - private key : ""+ account.privatekey);
 }
 
-// An Hd Wallet is deterministic, it will derive the same unlimited number of addresses 
+// an hd wallet is deterministic, it will derive the same unlimited number of addresses 
 // given the same seed (password+wordlist).
-// All the created accounts can be loaded in a Web3 instance and used as any other account, 
+// all the created accounts can be loaded in a web3 instance and used as any other account, 
 // we can for instance check the balance of one of them:
 
-var account1 = new Wallet(Words, Password1).GetAccount(0);
+var account1 = new wallet(words, password1).getaccount(0);
 
-var web3 = new Web3(account1);
-var balance = await web3.Eth.GetBalance.SendRequestAsync(account1.Address);
+var web3 = new web3(account1);
+var balance = await web3.eth.getbalance.sendrequestasync(account1.address);
 
-// Transfering ether using an HD Wallet
+// transfering ether using an hd wallet
 
-// The process of transferring Ether using a HD Wallet is the same as 
+// the process of transferring ether using a hd wallet is the same as 
 // using a standalone account
 
-var toAddress = ""0x13f022d72158410433cbd66f5dd8bf6d2d129924"";
-var transaction = await web3.Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(toAddress, 2.11m, 2);
+var toaddress = ""0x13f022d72158410433cbd66f5dd8bf6d2d129924"";
+var transaction = await web3.eth.getethertransferservice().transferetherandwaitforreceiptasync(toaddress, 2.11m, 2);
 
-// Generating mnemonics
+// generating mnemonics
 
-Our friends at NBitcoin offer a very convenient way to generate a backup seed sentence:
+// our friends at nbitcoin offer a very convenient way to generate a backup seed sentence:
 
-Mnemonic mnemo = new Mnemonic(Wordlist.English, WordCount.Twelve);
+mnemonic mnemo = new mnemonic(wordlist.english, wordcount.twelve);
+Console.WriteLine(""mnemo is: "" + mnemo);
+string password2 = ""password2"";
+var wallet2 = new wallet(mnemo.tostring(), password2);
+var account2 = wallet2.getaccount(0);
+Console.WriteLine(""account2 address is: "" + account2.Address);
 
-string Password2 = ""password2"";
-var wallet2 = new Wallet(mnemo.ToString(), Password2);
-var account2 = wallet2.GetAccount(0);
+// retrieving the account using the mnemonic backup seed words
 
-// Retrieving the account using the mnemonic backup seed words
-
-// A backup seed sentence is a human friendly way to recover all the generated addresses, 
-// since Hd Wallets generate addresses deterministically, we can now regenerate them at 
+// a backup seed sentence is a human friendly way to recover all the generated addresses, 
+// since hd wallets generate addresses deterministically, we can now regenerate them at 
 // anytime using our seed sentence and retrieve them using an index number.
 
-// In the below example, we will use our backup seed words to retrieve an account. 
-// The first step will be to declare our word list:
+// in the below example, we will use our backup seed words to retrieve an account. 
+// the first step will be to declare our word list:
 
-var backupSeed = mnemo.ToString();
+var backupseed = mnemo.tostring();
 
-// Now using the backup seed, the password and the address index (\`0\`) 
-// we can create the HD wallet and retrieve our account. The account contains 
-// the private key to sign our transactions. We can generate and re-generate addresses 
+// now using the backup seed, the password and the address index (\`0\`) 
+// we can create the hd wallet and retrieve our account. the account contains 
+// the private key to sign our transactions. we can generate and re-generate addresses 
 // based on an index number from the same seed.
 
-var wallet3 = new Wallet(backupSeed, Password2);
-var recoveredAccount = wallet3.GetAccount(0);
+var wallet3 = new wallet(backupseed, password2);
+var recoveredaccount = wallet3.getaccount(0);
+Console.WriteLine(""recoveredaccount address is: "" + recoveredaccount.Address);
 
     }
 
