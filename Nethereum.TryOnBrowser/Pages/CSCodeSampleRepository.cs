@@ -168,8 +168,7 @@ public class Program
 // This sample shows how to convert units of Ether.
 
 // We first need to generate an instance of web3:
-var web3 = new Web3(""
-var web3 = new Web3(""http://13.69.185.76:8545"");
+var web3 = new Web3(""http://testchain.nethereum.com:8545"");
 
 // Let's now check the balance of the Ethereum Foundation (just because we can).
 var balance = await web3.Eth.GetBalance.SendRequestAsync(""0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae"");
@@ -296,7 +295,7 @@ account =  new Account(privatekey, 444444444500);
 //chainId. Internally the TransactionManager will use this chainId to sign all 
 // transactions.
 
-var web3 = new Web3(account);
+var web3 = new Web3(account,""http://testchain.nethereum.com:8545"");
 
 // Let's use it in a simple example, for example the transfer of Ether. 
 
@@ -366,7 +365,7 @@ for (int i = 0; i < 10; i++)
 
 var account1 = new Wallet(Words, Password1).GetAccount(0);
 Console.WriteLine(""account1 address is: ""+account1.Address);
-var web3 = new Web3(account1,""http://13.69.185.76:8545"");
+var web3 = new Web3(account1,""http://testchain.nethereum.com:8545"");
 var balance = await web3.Eth.GetBalance.SendRequestAsync(account1.Address);
 Console.WriteLine(""account1 balance is: ""+balance.Value);
 // Transfering ether using an HD Wallet
