@@ -115,7 +115,27 @@ public class Program
             "
         },					
 			
-				
+        new CodeSample()
+        {
+            Name = "Getting current block number",
+            Code = @"
+using System;
+using Nethereum.Web3; 
+using System.Threading.Tasks;
+
+public class Program
+{
+
+    static async Task Main(string[] args)
+    {
+    var web3 = new Web3(""http://testchain.nethereum.com:8545"");
+    var blockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+    Console.WriteLine(blockNumber.Value);
+    }
+}
+            "
+        },					
+							
 new CodeSample()
                 {
                     Name = "Ether: Transfer Ether to an account",
