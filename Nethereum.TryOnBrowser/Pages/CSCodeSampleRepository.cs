@@ -683,12 +683,10 @@ public class BlockProcessing_StartHere
 
      new CodeSample()
     {
-    Name = "Creating a new Account using Geth Personal Api",
+    Name = "Account: Creating a new Account using Geth Personal Api",
         Code = @"
 using System;
 using Nethereum.Web3; 
-using Nethereum.Web3.Accounts; 
-using Nethereum.Util; 
 using System.Threading.Tasks;
 
 public class Program
@@ -714,8 +712,6 @@ public class Program
         Code = @"
 using System;
 using Nethereum.Web3; 
-using Nethereum.Web3.Accounts; 
-using Nethereum.Util; 
 using System.Threading.Tasks;
 
 public class Program
