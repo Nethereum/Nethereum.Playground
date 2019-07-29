@@ -26,10 +26,12 @@ namespace Nethereum.TryOnBrowser.Pages
 
         public CodeSample[] CodeSamples { get; protected set; }
         public int SelectedCodeSample { get; protected set; }
+        private CodeSampleRepository _codeSampleRepository;
 
-        protected override Task OnInitAsync()
+        protected override async Task OnInitAsync()
         {
-            CodeSamples = new CodeSampleRepository().GetCodeSamples();
+            _codeSampleRepository = new CodeSampleRepository(Client);
+            CodeSamples = await _codeSampleRepository.GetCodeSamples();
             SelectedCodeSample = 0;
 
             editorModel = new EditorModel
@@ -40,7 +42,7 @@ namespace Nethereum.TryOnBrowser.Pages
 
             Compiler.InitializeMetadataReferences(Client);
 
-            return base.OnInitAsync();
+            await base.OnInitAsync();
         }
 
         public void Run()
