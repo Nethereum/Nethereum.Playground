@@ -9,7 +9,7 @@
 
 				new CodeSample()
                 {
-                    Name = "Query account balance using INFURA",
+                    Name = "Ether: Query account balance using INFURA",
                     Code = @"
 using System;
 using System.Text;
@@ -43,9 +43,53 @@ public class Program
                 "
                 },
 				
+				
+new CodeSample()
+                {
+                    Name = "Ether: Transfer Ether to an account",
+                    Code = @"				
+				
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+
+public class Program
+{
+
+    static async Task Main(string[] args)
+    {
+			//First let's create an account with our private key for the account address 
+			var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+			var account = new Account(privateKey);
+			Console.WriteLine(""Our account: "" + account.Address);
+			//Now let's create an instance of Web3 using our account pointing to our nethereum testchain
+			var web3 = new Web3(account, ""http://testchain.nethereum.com:8545"");
+
+			// Check the balance of the account we are going to send the Ether
+			var balance = await web3.Eth.GetBalance.SendRequestAsync(""0x13f022d72158410433cbd66f5dd8bf6d2d129924"");
+			Console.WriteLine(""Receiver account balance before sending Ether: "" + balance.Value + "" Wei"");
+			Console.WriteLine(""Receiver account balance before sending Ether: "" + Web3.Convert.FromWei(balance.Value) + "" Ether"");
+
+			// Lets transfer 1.11 Ether
+			var transaction = await web3.Eth.GetEtherTransferService()
+                .TransferEtherAndWaitForReceiptAsync(""0x13f022d72158410433cbd66f5dd8bf6d2d129924"", 1.11m);
+
+			balance = await web3.Eth.GetBalance.SendRequestAsync(""0x13f022d72158410433cbd66f5dd8bf6d2d129924"");
+			Console.WriteLine(""Receiver account balance after sending Ether: "" + balance.Value);
+			Console.WriteLine(""Receiver account balance after sending Ether: "" + Web3.Convert.FromWei(balance.Value) + "" Ether"");
+
+    }
+
+}	
+"
+                },			
+				
                 new CodeSample()
                 {
-                    Name="Query ERC20 Smart contract balance",
+                    Name="Smart Contracts: Query ERC20 Smart contract balance",
                     Code= @"
 using System;
 using System.Numerics;
@@ -88,52 +132,10 @@ public class Program
 "
                 },
 				
-new CodeSample()
-                {
-                    Name = "Ether Transfer",
-                    Code = @"				
-				
-using System;
-using System.Text;
-using Nethereum.Hex.HexConvertors.Extensions;
-using System.Threading.Tasks;
-using Nethereum.Web3;
-using Nethereum.Web3.Accounts;
-
-public class Program
-{
-
-    static async Task Main(string[] args)
-    {
-			//First let's create an account with our private key for the account address 
-			var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
-			var account = new Account(privateKey);
-			Console.WriteLine(""Our account: "" + account.Address);
-			//Now let's create an instance of Web3 using our account pointing to our nethereum testchain
-			var web3 = new Web3(account, ""http://testchain.nethereum.com:8545"");
-
-			// Check the balance of the account we are going to send the Ether
-			var balance = await web3.Eth.GetBalance.SendRequestAsync(""0x13f022d72158410433cbd66f5dd8bf6d2d129924"");
-			Console.WriteLine(""Receiver account balance before sending Ether: "" + balance.Value + "" Wei"");
-			Console.WriteLine(""Receiver account balance before sending Ether: "" + Web3.Convert.FromWei(balance.Value) + "" Ether"");
-
-			// Lets transfer 1.11 Ether
-			var transaction = await web3.Eth.GetEtherTransferService()
-                .TransferEtherAndWaitForReceiptAsync(""0x13f022d72158410433cbd66f5dd8bf6d2d129924"", 1.11m);
-
-			balance = await web3.Eth.GetBalance.SendRequestAsync(""0x13f022d72158410433cbd66f5dd8bf6d2d129924"");
-			Console.WriteLine(""Receiver account balance after sending Ether: "" + balance.Value);
-			Console.WriteLine(""Receiver account balance after sending Ether: "" + Web3.Convert.FromWei(balance.Value) + "" Ether"");
-
-    }
-
-}	
-"
-                },			
 
                 new CodeSample()
                 {
-                    Name = "Message signing",
+                    Name = "Signing: Sign a message and recover the signing address",
                     Code = @"
 using System;
 using System.Text;
@@ -167,7 +169,7 @@ public class Program
 
 				new CodeSample()
                 {
-                    Name = "Ether/Wei Unit conversion",
+                    Name = "Ether: Unit conversion between Ether and Wei",
                     Code = @"
 using System;
 using System.Text;
@@ -208,7 +210,7 @@ public class Program
 				
 				                new CodeSample()
                 {
-                    Name = "Working with HD Wallets",
+                    Name = "Accounts: HD Wallets",
                     Code = @"
 using System;
 using System.Numerics;
@@ -295,7 +297,7 @@ public class Program
 
                 new CodeSample()
                 {
-                    Name = "Working with Chain-ids",
+                    Name = "Accounts: Chain-IDs, accounts and web3",
                     Code = @"
 using System;
 using System.Numerics;
@@ -423,7 +425,259 @@ public class Program
 
 }
                 "
-                }
+                },
+				
+							
+                new CodeSample()
+                {
+                    Name = "Block Crawl Processing: Process block and cancel",
+                    Code = @"
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class BlockProcessing_Cancellation
+{
+
+    /// <summary>
+    /// Demonstrates how to cancel processing
+    /// </summary>
+    public static async Task Main(string[] args)
+    {
+        var blocks = new List<BlockWithTransactions>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationTokenSource = new CancellationTokenSource();
+
+        //create our processor
+        var processor = web3.Processing.Blocks.CreateBlockProcessor(steps =>
+        {
+            // inject handler
+            // cancel after the first block is processsed
+            steps.BlockStep.AddSynchronousProcessorHandler(b => 
+            { 
+                blocks.Add(b); 
+                cancellationTokenSource.Cancel(); 
+            });
+        });
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            cancellationToken: cancellationTokenSource.Token, 2830144);
+
+        Console.WriteLine($""Expected 1 block, actual block count: {blocks.Count}"");
+    }
+
+}
+                "
+                },
+				
+ new CodeSample()
+                {
+                    Name = "Block Crawl Processing: Process blocks for a specific contract",
+                    Code = @"
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class BlockProcessing_ForASpecificContract
+{
+    /// <summary>
+    /// Involving a specific contract
+    /// </summary>
+    /// <returns></returns>
+    public static async Task Main()
+    {
+        var transactions = new List<TransactionReceiptVO>();
+        var filterLogs = new List<FilterLogVO>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        const string ContractAddress = ""0x5534c67e69321278f5258f5bebd5a2078093ec19"";
+
+        //create our processor
+        var processor = web3.Processing.Blocks.CreateBlockProcessor(steps => {
+            //for performance we add criteria before we have the receipt to prevent unecessary data retrieval
+            //we only want to retrieve receipts if the tx was sent to the contract
+            steps.TransactionStep.SetMatchCriteria(t => t.Transaction.IsTo(ContractAddress));
+            steps.TransactionReceiptStep.AddSynchronousProcessorHandler(tx => transactions.Add(tx));
+            steps.FilterLogStep.AddSynchronousProcessorHandler(l => filterLogs.Add(l));
+        });
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+        //crawl the blocks
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(2830145),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(2830144));
+
+        Console.WriteLine($""Transactions. Expected: 2, Actual: {transactions.Count}"");
+        Console.WriteLine($""Logs. Expected: 8, Actual: {filterLogs.Count}"");
+    }
+
+}
+                "
+                },
+
+ new CodeSample()
+                {
+                    Name = "Block Crawl Processing: Process blocks for a specific function",
+                    Code = @"
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.Contracts;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class BlockProcessing_ForASpecificFunction
+{
+
+    [Function(""buyApprenticeChest"")]
+    public class BuyApprenticeFunction : FunctionMessage
+    {
+        [Parameter(""uint256"", ""_region"", 1)]
+        public BigInteger Region { get; set; }
+    }
+
+    public static async Task Main(string[] args)
+    {
+        var transactions = new List<TransactionReceiptVO>();
+        var filterLogs = new List<FilterLogVO>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        //create our processor
+        var processor = web3.Processing.Blocks.CreateBlockProcessor(steps => {
+                
+            //match the to address and function signature
+            steps.TransactionStep.SetMatchCriteria(t => 
+                t.Transaction.IsTo(""0xc03cdd393c89d169bd4877d58f0554f320f21037"") && 
+                t.Transaction.IsTransactionForFunctionMessage<BuyApprenticeFunction>());
+
+            steps.TransactionReceiptStep.AddSynchronousProcessorHandler(tx => transactions.Add(tx));
+            steps.FilterLogStep.AddSynchronousProcessorHandler(l => filterLogs.Add(l));
+        });
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+        //crawl the blocks
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146684),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($""Transactions. Expected: 1, Actual: {transactions.Count}"");
+        Console.WriteLine($""Logs. Expected: 1, Actual: {filterLogs.Count}"");
+    }
+}"
+                },	
+
+ new CodeSample()
+                {
+                    Name = "Block Crawl Processing: Full sample",
+                    Code = @"
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class BlockProcessing_StartHere
+{
+    /// <summary>
+    /// Crawl the chain for a block range and injest the data
+    /// </summary>
+    public static async Task Main(string[] args)
+    {
+        var blocks = new List<BlockWithTransactions>();
+        var transactions = new List<TransactionReceiptVO>();
+        var contractCreations = new List<ContractCreationVO>();
+        var filterLogs = new List<FilterLogVO>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        //create our processor
+        var processor = web3.Processing.Blocks.CreateBlockProcessor(steps =>
+        {
+            // inject handler for each step
+            steps.BlockStep.AddSynchronousProcessorHandler(b => blocks.Add(b));
+            steps.TransactionReceiptStep.AddSynchronousProcessorHandler(tx => transactions.Add(tx));
+            steps.ContractCreationStep.AddSynchronousProcessorHandler(cc => contractCreations.Add(cc));
+            steps.FilterLogStep.AddSynchronousProcessorHandler(l => filterLogs.Add(l));
+        });
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(2830145),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(2830144));
+
+        Console.WriteLine($""Blocks.  Expected: 2, Found: {blocks.Count}"");
+        Console.WriteLine($""Transactions.  Expected: 25, Found: {transactions.Count}"");
+        Console.WriteLine($""Contract Creations.  Expected: 5, Found: {contractCreations.Count}"");
+
+        Log(transactions, contractCreations, filterLogs);
+    }
+
+    private static void Log(
+        List<TransactionReceiptVO> transactions, 
+        List<ContractCreationVO> contractCreations, 
+        List<FilterLogVO> filterLogs)
+    {
+        Console.WriteLine(""Sent From"");
+        foreach (var fromAddressGrouping in transactions.GroupBy(t => t.Transaction.From).OrderByDescending(g => g.Count()))
+        {
+            var logs = filterLogs.Where(l => fromAddressGrouping.Any((a) => l.Transaction.TransactionHash == a.TransactionHash));
+
+            Console.WriteLine($""From: {fromAddressGrouping.Key}, Tx Count: {fromAddressGrouping.Count()}, Logs: {logs.Count()}"");
+        }
+
+        Console.WriteLine(""Sent To"");
+        foreach (var toAddress in transactions
+            .Where(t => !t.Transaction.IsToAnEmptyAddress())
+            .GroupBy(t => t.Transaction.To)
+            .OrderByDescending(g => g.Count()))
+        {
+            var logs = filterLogs.Where(l => toAddress.Any((a) => l.Transaction.TransactionHash == a.TransactionHash));
+
+            Console.WriteLine($""To: {toAddress.Key}, Tx Count: {toAddress.Count()}, Logs: {logs.Count()}"");
+        }
+
+        Console.WriteLine(""Contracts Created"");
+        foreach (var contractCreated in contractCreations)
+        {
+            var tx = transactions.Count(t => t.Transaction.IsTo(contractCreated.ContractAddress));
+            var logs = filterLogs.Count(l => transactions.Any(t => l.Transaction.TransactionHash == t.TransactionHash));
+
+            Console.WriteLine($""From: {contractCreated.ContractAddress}, Tx Count: {tx}, Logs: {logs}"");
+        }
+    }
+}"
+                }					
 
             };
         }
