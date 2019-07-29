@@ -43,6 +43,52 @@ public class Program
                 "
                 },
 				
+
+     new CodeSample()
+    {
+    Name = "Accounts: Creating a new Account using Geth Personal Api",
+        Code = @"
+using System;
+using Nethereum.Web3; 
+using System.Threading.Tasks;
+
+public class Program
+{
+
+    static async Task Main(string[] args)
+    {
+
+
+// First, create a new instance of Web3:
+
+        var web3 = new Web3(""http://testchain.nethereum.com:8545"");
+        var account = await web3.Personal.NewAccount.SendRequestAsync(""password"");
+        Console.WriteLine(""The address of the newly created account is: ""+ account);
+    }
+}
+            "
+            },					
+
+    new CodeSample()
+    {
+    Name = "Getting current block number",
+        Code = @"
+using System;
+using Nethereum.Web3; 
+using System.Threading.Tasks;
+
+public class Program
+{
+
+    static async Task Main(string[] args)
+    {
+    var web3 = new Web3(""http://testchain.nethereum.com:8545"");
+    var blockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+    Console.WriteLine(blockNumber.Value);
+    }
+}
+            "
+            },					
 				
 new CodeSample()
                 {
@@ -679,53 +725,7 @@ public class BlockProcessing_StartHere
     }
 }
                 "
-                },					
-
-     new CodeSample()
-    {
-    Name = "Account: Creating a new Account using Geth Personal Api",
-        Code = @"
-using System;
-using Nethereum.Web3; 
-using System.Threading.Tasks;
-
-public class Program
-{
-
-    static async Task Main(string[] args)
-    {
-
-
-// First, create a new instance of Web3:
-
-        var web3 = new Web3(""http://testchain.nethereum.com:8545"");
-        var account = await web3.Personal.NewAccount.SendRequestAsync(""password"");
-        Console.WriteLine(""The address of the newly created account is: ""+ account);
-    }
-}
-            "
-            },					
-
-    new CodeSample()
-    {
-    Name = "Getting current block number",
-        Code = @"
-using System;
-using Nethereum.Web3; 
-using System.Threading.Tasks;
-
-public class Program
-{
-
-    static async Task Main(string[] args)
-    {
-    var web3 = new Web3(""http://testchain.nethereum.com:8545"");
-    var blockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
-    Console.WriteLine(blockNumber.Value);
-    }
-}
-            "
-            }					
+                }					
             };
         }
 
