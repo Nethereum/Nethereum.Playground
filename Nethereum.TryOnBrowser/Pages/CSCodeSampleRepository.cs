@@ -586,7 +586,8 @@ public class BlockProcessing_ForASpecificFunction
         Console.WriteLine($""Transactions. Expected: 1, Actual: {transactions.Count}"");
         Console.WriteLine($""Logs. Expected: 1, Actual: {filterLogs.Count}"");
     }
-}"
+}
+                "
                 },	
 
  new CodeSample()
@@ -676,9 +677,59 @@ public class BlockProcessing_StartHere
             Console.WriteLine($""From: {contractCreated.ContractAddress}, Tx Count: {tx}, Logs: {logs}"");
         }
     }
-}"
-                }					
+}
+                "
+                },					
 
+     new CodeSample()
+    {
+    Name = "Creating a new Account using Geth Personal Api",
+        Code = @"
+using System;
+using Nethereum.Web3; 
+using Nethereum.Web3.Accounts; 
+using Nethereum.Util; 
+using System.Threading.Tasks;
+
+public class Program
+{
+
+    static async Task Main(string[] args)
+    {
+
+
+// First, create a new instance of Web3:
+
+        var web3 = new Web3(""http://testchain.nethereum.com:8545"");
+        var account = await web3.Personal.NewAccount.SendRequestAsync(""password"");
+        Console.WriteLine(""The address of the newly created account is: ""+ account);
+    }
+}
+            "
+            },					
+
+    new CodeSample()
+    {
+    Name = "Getting current block number",
+        Code = @"
+using System;
+using Nethereum.Web3; 
+using Nethereum.Web3.Accounts; 
+using Nethereum.Util; 
+using System.Threading.Tasks;
+
+public class Program
+{
+
+    static async Task Main(string[] args)
+    {
+    var web3 = new Web3(""http://testchain.nethereum.com:8545"");
+    var blockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+    Console.WriteLine(blockNumber.Value);
+    }
+}
+            "
+            }					
             };
         }
 
