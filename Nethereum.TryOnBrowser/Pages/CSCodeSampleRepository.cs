@@ -232,7 +232,7 @@ public class Program
 		// This sample shows how to convert units of Ether.
 
 		// We first need to generate an instance of web3:
-		var web3 = new Web3(""http://testchain.nethereum.com:8545"");
+		var web3 = new Web3(""https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c"");
 
 		// Let's now check the balance of the Ethereum Foundation (just because we can).
 		var balance = await web3.Eth.GetBalance.SendRequestAsync(""0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae"");
@@ -254,6 +254,52 @@ public class Program
 }
                 "
                 },
+				
+				new CodeSample()
+                {
+                    Name = "ABI Encoding: Encoding using ABI Values, Parameters and Default values",
+                    Code = @"
+
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Util;
+using Nethereum.ABI;
+
+public class AbiEncode_AbiValue_Parameters_Default
+{
+	public class TestParamsInput
+	{
+			[Parameter(""string"", 1)]
+			public string First { get; set; }
+			[Parameter(""int256"", 2)]
+			public int Second { get; set; }
+			[Parameter(""string"", 3)]
+			public string Third { get; set; }
+	}
+
+    static void Main(string[] args)
+    {
+            
+		var abiEncode = new ABIEncode();
+		var result = abiEncode.GetABIEncoded(new ABIValue(""string"", ""hello""), new ABIValue(""int"", 69),
+						new ABIValue(""string"", ""world"")).ToHex();
+
+		Console.WriteLine(""Encoded hello, 69 and world using ABIValue: "" + result);
+
+
+		result = abiEncode.GetABIEncoded(""1"", ""2"", ""3"").ToHex();
+
+		Console.WriteLine(""Encoded 1, 2, 3 strings using  default convertor: "" + result);
+
+		result = abiEncode.GetABIParamsEncoded(new TestParamsInput(){First = ""hello"", Second = 69, Third = ""world""}).ToHex();
+		
+		Console.WriteLine(""Encoded hello, 69 and world using Parameter attributes: "" + result);
+    }
+}
+" },
 				
 				new CodeSample()
                 {
