@@ -772,7 +772,575 @@ public class BlockProcessing_WithTransactionCriteria
     }
 
 }"
-                }				
+                },
+
+ new CodeSample()
+                {
+                    Name = "Log Processing: Any contract any log",
+                    Code = @"
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class LogProcessing_AnyContractAnyLog
+{
+    public static async Task Main()
+    {
+        var logs = new List<FilterLog>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        //create our processor to retrieve transfers
+        var processor = web3.Processing.Logs.CreateProcessor(log => logs.Add(log));
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($""Expected 65 logs. Logs found: {logs.Count}."");
+    }
+
+}"
+
+},
+
+
+ new CodeSample()
+                {
+                    Name = "Log Processing: Any contract any log with criteria",
+                    Code = @"
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.Contracts;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class LogProcessing_AnyContractAnyLogWithCriteria
+{
+    public static async Task Main()
+    {
+        var logs = new List<FilterLog>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        var processor = web3.Processing.Logs.CreateProcessor(
+            action: log => logs.Add(log), 
+            criteria: log => log.Removed == false);
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($""Expected 65 logs. Logs found: {logs.Count}."");
+    }
+
+}"
+
+},
+
+ new CodeSample()
+                {
+                    Name = "Log Processing: Any contract many event async",
+                    Code = @"
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Contracts;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;		
+
+public class LogProcessing_AnyContractManyEventAsync
+{
+    [Event(""Transfer"")]
+    public class TransferEvent: IEventDTO
+    {
+        [Parameter(""address"", ""_from"", 1, true)]
+        public string From { get; set; }
+
+        [Parameter(""address"", ""_to"", 2, true)]
+        public string To { get; set; }
+
+        [Parameter(""uint256"", ""_value"", 3, false)]
+        public BigInteger Value { get; set; }
+    }
+
+    [Event(""Transfer"")]
+    public class Erc721TransferEvent
+    {
+        [Parameter(""address"", ""_from"", 1, true)]
+        public string From { get; set; }
+
+        [Parameter(""address"", ""_to"", 2, true)]
+        public string To { get; set; }
+
+        [Parameter(""uint256"", ""_value"", 3, true)]
+        public BigInteger Value { get; set; }
+    }
+        
+    public static async Task Main(string[] args)
+    {
+        var erc20transferEventLogs = new List<EventLog<TransferEvent>>();
+        var erc721TransferEventLogs = new List<EventLog<Erc721TransferEvent>>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        var erc20TransferHandler = new EventLogProcessorHandler<TransferEvent>(
+            eventLog => erc20transferEventLogs.Add(eventLog));
+
+        var erc721TransferHandler = new EventLogProcessorHandler<Erc721TransferEvent>(
+            eventLog => erc721TransferEventLogs.Add(eventLog)); 
+
+        var processingHandlers = new ProcessorHandler<FilterLog>[] {
+            erc20TransferHandler, erc721TransferHandler};
+
+        //create our processor to retrieve transfers
+        //restrict the processor to Transfers for a specific contract address
+        var processor = web3.Processing.Logs.CreateProcessor(processingHandlers);
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($""Expected 13 ERC20 transfers. Logs found: {erc20transferEventLogs.Count}."");
+        Console.WriteLine($""Expected 3 ERC721 transfers. Logs found: {erc721TransferEventLogs.Count}."");
+    }
+}"
+
+				},
+
+new CodeSample()
+                {
+                    Name = "Log Processing: One contract many event async",
+                    Code = @"
+
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Contracts;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;				
+					
+public class LogProcessing_OneContractManyEventsAsync
+{
+    [Event(""Transfer"")]
+    public class TransferEvent: IEventDTO
+    {
+        [Parameter(""address"", ""_from"", 1, true)]
+        public string From { get; set; }
+
+        [Parameter(""address"", ""_to"", 2, true)]
+        public string To { get; set; }
+
+        [Parameter(""uint256"", ""_value"", 3, false)]
+        public BigInteger Value { get; set; }
+    }
+
+    [Event(""Approval"")]
+    public class ApprovalEventDTO : IEventDTO
+    {
+        [Parameter(""address"", ""_owner"", 1, true)]
+        public virtual string Owner { get; set; }
+        [Parameter(""address"", ""_spender"", 2, true)]
+        public virtual string Spender { get; set; }
+        [Parameter(""uint256"", ""_value"", 3, false)]
+        public virtual BigInteger Value { get; set; }
+    }
+
+    public static async Task Main(string[] args)
+    {
+        var erc20transferEventLogs = new List<EventLog<TransferEvent>>();
+        var approvalEventLogs = new List<EventLog<ApprovalEventDTO>>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        var erc20TransferHandler = new EventLogProcessorHandler<TransferEvent>(
+            eventLog => erc20transferEventLogs.Add(eventLog));
+
+        var erc721TransferHandler = new EventLogProcessorHandler<ApprovalEventDTO>(
+            eventLog => approvalEventLogs.Add(eventLog)); 
+
+        var processingHandlers = new ProcessorHandler<FilterLog>[] {
+            erc20TransferHandler, erc721TransferHandler};
+
+        var contractFilter = new NewFilterInput { 
+            Address = new []{ ""0x9EDCb9A9c4d34b5d6A082c86cb4f117A1394F831"" } };
+
+        //create our processor to retrieve transfers
+        //restrict the processor to Transfers for a specific contract address
+        var processor = web3.Processing.Logs.CreateProcessor(
+            logProcessors: processingHandlers, filter: contractFilter);
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3621716),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3621715));
+
+        Console.WriteLine($""Expected 2 ERC20 transfers. Logs found: {erc20transferEventLogs.Count}."");
+        Console.WriteLine($""Expected 1 Approval. Logs found: {approvalEventLogs.Count}."");
+    }
+}" },
+
+new CodeSample()
+                {
+                    Name = "Log Processing: Any contract one event",
+                    Code = @"
+
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class LogProcessing_AnyContractOneEvent
+{
+    [Event(""Transfer"")]
+    public class TransferEvent: IEventDTO
+    {
+        [Parameter(""address"", ""_from"", 1, true)]
+        public string From { get; set; }
+
+        [Parameter(""address"", ""_to"", 2, true)]
+        public string To { get; set; }
+
+        [Parameter(""uint256"", ""_value"", 3, false)]
+        public BigInteger Value { get; set; }
+    }
+
+    public async static Task Main(string[] args)
+    {
+        var transferEventLogs = new List<EventLog<TransferEvent>>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        //create our processor to retrieve transfers
+        //restrict the processor to Transfers
+        var processor = web3.Processing.Logs.CreateProcessor<TransferEvent>(
+            tfr => transferEventLogs.Add(tfr));
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($""Expected 13 transfers. Logs found: {transferEventLogs.Count}."");
+    }
+
+
+}" },
+
+new CodeSample()
+                {
+                    Name = "Log Processing: Many contracts one event",
+                    Code = @"
+
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class LogProcessing_ManyContractsOneEvent
+{
+    [Event(""Transfer"")]
+    public class TransferEvent: IEventDTO
+    {
+        [Parameter(""address"", ""_from"", 1, true)]
+        public string From { get; set; }
+
+        [Parameter(""address"", ""_to"", 2, true)]
+        public string To { get; set; }
+
+        [Parameter(""uint256"", ""_value"", 3, false)]
+        public BigInteger Value { get; set; }
+    }
+
+    public static async Task Main(string[] args)
+    {
+        var transferEventLogs = new List<EventLog<TransferEvent>>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        var contractAddresses = new [] { ""0x109424946d5aa4425b2dc1934031d634cdad3f90"", ""0x16c45b25c4817bdedfce770f795790795c9505a6"" };
+
+        //create our processor to retrieve transfers
+        //restrict the processor to Transfers for a specific contract address
+        var processor = web3.Processing.Logs.CreateProcessorForContracts<TransferEvent>(contractAddresses, tfr => transferEventLogs.Add(tfr));
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($""Expected 5 transfers. Logs found: {transferEventLogs.Count}."");
+    }
+
+  
+}
+" },
+
+new CodeSample()
+                {
+                    Name = "Log Processing: One contract any log",
+                    Code = @"
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class LogProcessing_OneContractAnyLog
+{        
+    public static async Task Main()
+    {
+        var logs = new List<FilterLog>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        //create our processor to retrieve transfers
+        var processor = web3.Processing.Logs.CreateProcessorForContract(
+            ""0x109424946d5aa4425b2dc1934031d634cdad3f90"", log => logs.Add(log));
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($""Expected 4 logs. Logs found: {logs.Count}."");
+    }
+}
+" },
+
+new CodeSample()
+                {
+                    Name = "Log Processing: One contract one event",
+                    Code = @"
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class LogProcessing_OneContractOneEvent
+{
+    [Event(""Transfer"")]
+    public class TransferEvent: IEventDTO
+    {
+        [Parameter(""address"", ""_from"", 1, true)]
+        public string From { get; set; }
+
+        [Parameter(""address"", ""_to"", 2, true)]
+        public string To { get; set; }
+
+        [Parameter(""uint256"", ""_value"", 3, false)]
+        public BigInteger Value { get; set; }
+    }
+
+    public static async Task Main(string[] args)
+    {
+        var transferEventLogs = new List<EventLog<TransferEvent>>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        //create our processor to retrieve transfers
+        //restrict the processor to Transfers for a specific contract address
+        var processor = web3.Processing.Logs.CreateProcessorForContract<TransferEvent>(
+            ""0x109424946d5aa4425b2dc1934031d634cdad3f90"", 
+            tfr => transferEventLogs.Add(tfr));
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($""Expected 1 Log. Logs found: {transferEventLogs.Count}."");
+    }
+
+}
+" },
+
+new CodeSample()
+                {
+                    Name = "Log Processing: One contract one event async",
+                    Code = @"
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class LogProcessing_OneContractOneEventAsync
+{
+    [Event(""Transfer"")]
+    public class TransferEvent: IEventDTO
+    {
+        [Parameter(""address"", ""_from"", 1, true)]
+        public string From { get; set; }
+
+        [Parameter(""address"", ""_to"", 2, true)]
+        public string To { get; set; }
+
+        [Parameter(""uint256"", ""_value"", 3, false)]
+        public BigInteger Value { get; set; }
+    }
+        
+    public static async Task Main(string[] args)
+    {
+        var transferEventLogs = new List<EventLog<TransferEvent>>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        Task StoreLogAsync(EventLog<TransferEvent> eventLog)
+        {
+            transferEventLogs.Add(eventLog);
+            return Task.CompletedTask;
+        }
+
+        //create our processor to retrieve transfers
+        //restrict the processor to Transfers for a specific contract address
+        var processor = web3.Processing.Logs.CreateProcessorForContract<TransferEvent>(
+            ""0x109424946d5aa4425b2dc1934031d634cdad3f90"", StoreLogAsync);
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($""Expected 1 Log. Logs found: {transferEventLogs.Count}."");
+    }
+
+}
+" },
+
+new CodeSample()
+                {
+                    Name = "Log Processing: One contract one event with criteria",
+                    Code = @"
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class LogProcessing_OneContractOneEventWithCriteria
+{
+    [Event(""Transfer"")]
+    public class TransferEvent: IEventDTO
+    {
+        [Parameter(""address"", ""_from"", 1, true)]
+        public string From { get; set; }
+
+        [Parameter(""address"", ""_to"", 2, true)]
+        public string To { get; set; }
+
+        [Parameter(""uint256"", ""_value"", 3, false)]
+        public BigInteger Value { get; set; }
+    }
+        
+    public static async Task Main(string[] args)
+    {
+        var transferEventLogs = new List<EventLog<TransferEvent>>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        //create our processor to retrieve transfers
+        //restrict the processor to Transfers for a specific contract address
+        var processor = web3.Processing.Logs.CreateProcessorForContract<TransferEvent>(
+            ""0x109424946d5aa4425b2dc1934031d634cdad3f90"", 
+            action: tfr => transferEventLogs.Add(tfr),
+            criteria: tfr => tfr.Event.Value > 0);
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($""Expected 1 Log. Logs found: {transferEventLogs.Count}."");
+    }
+
+}
+" }
+
+
+
+
+				
 
             };
         }
