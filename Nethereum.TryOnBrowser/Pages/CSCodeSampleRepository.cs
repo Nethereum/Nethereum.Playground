@@ -1435,6 +1435,209 @@ Console.WriteLine(""Deployed Contract address is: ""+contractAddress);
 
 }
 "
+    },				
+
+
+ new CodeSample()
+                {
+                    Name = "Smart Contracts",
+                    Code = @"
+using Nethereum.Web3;
+using System;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts.CQS;
+using Nethereum.Util;
+using Nethereum.Web3.Accounts;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Contracts;
+using Nethereum.Contracts.Extensions;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class GetStartedSmartContracts
+{
+
+
+// # Quick introduction to smart contracts integration with Nethereum
+
+// This document is a Workbook, find more about workbooks' installation requirements  [here](https://docs.microsoft.com/en-us/xamarin/tools/workbooks/install).
+
+// Documentation about Nethereum can be found at: <https://docs.nethereum.com>
+
+// The purpose of this sample is the following:
+
+// * Understanding how to create contract deployment, function and event definitions to interact with a smart contracts
+
+// * Creating an account object using a private key, this will allow to sign transactions ""offline"".
+
+// * Deploying a smart contract (the sample provided is the standard ERC20 token contract)
+
+// * Making a call to a smart contract (in this scenario get the balance of an account)
+
+// * Sending a transaction to the smart contract (in this scenario transferring balance)
+
+// * Estimating the gas cost of a contract transaction
+
+// * Gas Price, Nonces and Sending Ether to smart contracts
+
+// * Signing online / offline transaction function messages and deployment messages
+
+// * Extension methods for Deployment and Function messages
+
+// * Retrieving the state of a smart contract from a previous block
+
+// ### Pre-Conditions
+
+// In this tutorial we are going to interact with the ERC20 standard token contract. The smart contract provides a standard way to create a new token, transfer it to another account and query the balance of any account. This standard interface allows the interoperability of smart contracts providing the same signature and applications that integrate with it.
+
+// ![Constructor, transfer, balance and event of ERC20](https://github.com/Nethereum/Nethereum.Workbooks/raw/master/docs/screenshots/simpleERC20.png)
+
+// ## Pre-requisites:
+
+// Download the test chain matching your environment from https://github.com/Nethereum/Testchains
+
+// Start a Geth chain ( **geth-clique-linux\_** **_geth-clique-windows_** **_geth-clique-mac_**) using startgeth.bat (Windows) or startgeth.sh (Mac/Linux). The chain is setup with the Proof of Authority consensus and will start the mining process immediately.
+
+// Then, declare your namespaces and contract definition to interact with the smart contract. In this scenario we are only interested in the Deployment, Transfer function and BalanceOf Function of the ERC20 smart contract.
+
+
+// To deploy a contract we will create a class inheriting from the ContractDeploymentMessage, here we can include our compiled byte code and other constructor parameters.
+
+// As we can see below the StandardToken deployment message includes the compiled bytecode of the ERC20 smart contract and the constructor parameter with the “totalSupply” of tokens.
+
+// Each parameter is described with an attribute Parameter, including its name ""totalSupply"", type ""uint256"" and order.
+
+
+public class StandardTokenDeployment : ContractDeploymentMessage
+{
+
+            public static string BYTECODE = ""0x60606040526040516020806106f5833981016040528080519060200190919050505b80600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005081905550806000600050819055505b506106868061006f6000396000f360606040523615610074576000357c010000000000000000000000000000000000000000000000000000000090048063095ea7b31461008157806318160ddd146100b657806323b872dd146100d957806370a0823114610117578063a9059cbb14610143578063dd62ed3e1461017857610074565b61007f5b610002565b565b005b6100a060048080359060200190919080359060200190919050506101ad565b6040518082815260200191505060405180910390f35b6100c36004805050610674565b6040518082815260200191505060405180910390f35b6101016004808035906020019091908035906020019091908035906020019091905050610281565b6040518082815260200191505060405180910390f35b61012d600480803590602001909190505061048d565b6040518082815260200191505060405180910390f35b61016260048080359060200190919080359060200190919050506104cb565b6040518082815260200191505060405180910390f35b610197600480803590602001909190803590602001909190505061060b565b6040518082815260200191505060405180910390f35b600081600260005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008573ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905061027b565b92915050565b600081600160005060008673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561031b575081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505410155b80156103275750600082115b1561047c5781600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a381600160005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505403925050819055506001905061048656610485565b60009050610486565b5b9392505050565b6000600160005060008373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505490506104c6565b919050565b600081600160005060003373ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561050c5750600082115b156105fb5781600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905061060556610604565b60009050610605565b5b92915050565b6000600260005060008473ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005054905061066e565b92915050565b60006000600050549050610683565b9056"";
+
+    public StandardTokenDeployment() : base(BYTECODE){}
+
+    [Parameter(""uint256"", ""totalSupply"")]
+    public BigInteger TotalSupply { get; set; }
+}
+
+
+// We can call the functions of smart contract to query the state of a smart contract or do any computation, which will not affect the state of the blockchain.
+
+// To do so,  we will need to create a class which inherits from ""FunctionMessage"". First we will decorate the class with a ""Function"" attribute, including the name and return type.
+
+// Each parameter of the function will be a property of the class, each of them decorated with the ""Parameter"" attribute, including the smart contract’s parameter name, type and parameter order.
+
+// For the ERC20 smart contract, the ""balanceOf"" function definition, provides the query interface to get the token balance of a given address. As we can see this function includes only one parameter ""\_owner"", of the type ""address"".
+
+
+[Function(""balanceOf"", ""uint256"")]
+public class BalanceOfFunction : FunctionMessage
+{
+    [Parameter(""address"", ""_owner"", 1)]
+    public string Owner { get; set; }
+}
+
+
+// Another type of smart contract function will be a transaction that will change the state of the smart contract (or smart contracts).
+
+// For example The ""transfer"" function definition for the ERC20 smart contract, includes the parameters “\_to”, which is an address parameter as a string, and the “\_value” or TokenAmount we want to transfer.
+
+// In a similar way to the ""balanceOf"" function, all the parameters include the solidity type, the contract’s parameter name and parameter order.
+
+// Note: When working with functions, it is very important to have the parameters types and function name correct as all of these make the signature of the function.
+
+
+[Function(""transfer"", ""bool"")]
+public class TransferFunction : FunctionMessage
+{
+    [Parameter(""address"", ""_to"", 1)]
+    public string To { get; set; }
+
+    [Parameter(""uint256"", ""_value"", 2)]
+    public BigInteger TokenAmount { get; set; }
+}
+
+
+// Finally, smart contracts also have events. Events defined in smart contracts write in the blockchain log, providing a way to retrieve further information when a smart contract interaction occurs.
+
+// To create an Event definition, we need to create a class that inherits from IEventDTO, decorated with the Event attribute.
+
+// The Transfer Event is similar to a Function: it  also includes parameters with name, order and type. But also a boolean value indicating if the parameter is indexed or not.
+
+// Indexed parameters will allow us later on to query the blockchain for those values.
+
+
+[Event(""Transfer"")]
+public class TransferEventDTO : IEventDTO
+{
+    [Parameter(""address"", ""_from"", 1, true)]
+    public string From { get; set; }
+
+    [Parameter(""address"", ""_to"", 2, true)]
+    public string To { get; set; }
+
+    [Parameter(""uint256"", ""_value"", 3, false)]
+    public BigInteger Value { get; set; }
+}
+
+    public static async Task Main()
+{    
+// ### Instantiating Web3 and the Account
+
+// A simple way to run this sample is to use one of the pre-configured private chains which can be found at [https://github.com/Nethereum/TestChains ](https://github.com/Nethereum/TestChains)(Geth, Parity, Ganache) using the Account “0x12890d2cce102216644c59daE5baed380d84830c” with private key “0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7“, or alternatively use your own testchain with your own account / private key.
+
+// To create an instance of web3 we first provide the url of our testchain and the private key of our account. When providing an Account instantiated with a  private key, all our transactions will be signed by Nethereum.
+
+
+var url = ""http://testchain.nethereum.com:8545"";
+var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+var account = new Account(privateKey);
+var web3 = new Web3(account, url);
+
+
+// ### Deploying the Contract
+
+// The next step is to deploy our Standard Token ERC20 smart contract, in this scenario the total supply (number of tokens) is going to be 100,000.
+
+// First we create an instance of the StandardTokenDeployment with the TotalSupply amount.
+
+
+var deploymentMessage = new StandardTokenDeployment
+{
+    TotalSupply = 100000
+};
+
+
+// Then we create a deployment handler using our contract deployment definition and simply deploy the contract using the deployment message. We are auto estimating the gas, getting the latest gas price and nonce so nothing else is set anything on the deployment message.
+
+// Finally, we wait for the deployment transaction to be mined, and retrieve the contract address of the new contract from the receipt.
+
+
+var deploymentHandler = web3.Eth.GetContractDeploymentHandler<StandardTokenDeployment>();
+var transactionReceipt = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
+var contractAddress = transactionReceipt.ContractAddress;
+
+
+// ### Interacting with the Contract
+
+// Once we have deployed the contract, we can start interacting with the contract.
+
+// #### Querying
+
+// To retrieve the balance of an address we can create an instance of the BalanceFunction message and set the parameter as our account ""Address"", since we are the ""owner"" of the Token, the full balance has been assigned to us.
+
+// To retrieve the balance, we will create a QueryHandler and finally using our contract address and message retrieve the balance amount.
+
+ var balanceOfFunctionMessage = new BalanceOfFunction()
+ {
+    Owner = account.Address,
+};
+var balanceHandler = web3.Eth.GetContractQueryHandler<BalanceOfFunction>();
+var balance = await balanceHandler.QueryAsync<BigInteger>(contractAddress, balanceOfFunctionMessage);
+Console.WriteLine(balance);
+                }
+                }
+"
                 }				
 
             };
