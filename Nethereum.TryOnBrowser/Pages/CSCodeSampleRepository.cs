@@ -132,8 +132,172 @@ public class Program
 
 }	
 "
+
                 },			
+		new CodeSample()
+                {
+                    Name = "ABI Encoding: Encoding using ABI Values, Parameters and Default values",
+                    Code = @"
+
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Util;
+using Nethereum.ABI;
+
+public class AbiEncode_AbiValue_Parameters_Default
+{
+	public class TestParamsInput
+	{
+			[Parameter(""string"", 1)]
+			public string First { get; set; }
+			[Parameter(""int256"", 2)]
+			public int Second { get; set; }
+			[Parameter(""string"", 3)]
+			public string Third { get; set; }
+	}
+
+    static void Main(string[] args)
+    {
+            
+		var abiEncode = new ABIEncode();
+		var result = abiEncode.GetABIEncoded(new ABIValue(""string"", ""hello""), new ABIValue(""int"", 69),
+						new ABIValue(""string"", ""world"")).ToHex();
+
+		Console.WriteLine(""Encoded hello, 69 and world using ABIValue: "" + result);
+
+
+		result = abiEncode.GetABIEncoded(""1"", ""2"", ""3"").ToHex();
+
+		Console.WriteLine(""Encoded 1, 2, 3 strings using  default convertor: "" + result);
+
+		result = abiEncode.GetABIParamsEncoded(new TestParamsInput(){First = ""hello"", Second = 69, Third = ""world""}).ToHex();
+		
+		Console.WriteLine(""Encoded hello, 69 and world using Parameter attributes: "" + result);
+    }
+}
+" },
 				
+				new CodeSample()
+                {
+                    Name = "ABI Encoding Packed: Encoding using ABI Values",
+                    Code = @"
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Util;
+using Nethereum.ABI;
+
+public class AbiEncodePacked_UsingABIValue
+{
+    static void Main(string[] args)
+    {
+					 var abiEncode = new ABIEncode();
+            
+            var result = abiEncode.GetSha3ABIEncodedPacked(new ABIValue(""address"", ""0x407D73d8a49eeb85D32Cf465507dd71d507100c1""))
+                    .ToHex();
+
+						Console.WriteLine(""Encoded address: "" + result);
+
+            result = abiEncode.GetSha3ABIEncodedPacked(new ABIValue(""bytes"",
+                    ""0x407D73d8a49eeb85D32Cf465507dd71d507100c1"".HexToByteArray())).ToHex();
+						
+						Console.WriteLine(""Encoded bytes: "" + result);
+            //bytes32 it is a 32 bytes array so it will be padded with 00 values
+            result = 
+                abiEncode.GetSha3ABIEncodedPacked(new ABIValue(""bytes32"",
+                    ""0x407D73d8a49eeb85D32Cf465507dd71d507100c1"".HexToByteArray())).ToHex();
+						
+						Console.WriteLine(""Encoded bytes32: "" + result);
+							
+
+            //web3.utils.soliditySha3({t: 'string', v: 'Hello!%'}, {t: 'int8', v:-23}, {t: 'address', v: '0x85F43D8a49eeB85d32Cf465507DD71d507100C1d'});
+            result =
+                abiEncode.GetSha3ABIEncodedPacked(
+                    new ABIValue(""string"", ""Hello!%""), new ABIValue(""int8"", -23),
+                    new ABIValue(""address"", ""0x85F43D8a49eeB85d32Cf465507DD71d507100C1d"")).ToHex();
+						Console.WriteLine(""Encoded Hello!%, -23 and address 0x85F43D8a49eeB85d32Cf465507DD71d507100C1d: "" + result);
+            
+    }
+}
+" },
+				
+                new CodeSample()
+                {
+                    Name = "ABI Encoding Packed: Encoding using parameters",
+                    Code = @"
+
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Util;
+using Nethereum.ABI;
+
+public class AbiEncodePacked_UsingParams
+{
+
+		public class TestParamsInput
+		{
+				[Parameter(""string"", 1)] public string First { get; set; }
+				[Parameter(""int8"", 2)] public int Second { get; set; }
+				[Parameter(""address"", 3)] public string Third { get; set; }
+		}
+
+    static void Main(string[] args)
+    {
+				var abiEncode = new ABIEncode();
+				var result = abiEncode.GetSha3ABIParamsEncodedPacked(new TestParamsInput()
+						{First = ""Hello!%"", Second = -23, Third = ""0x85F43D8a49eeB85d32Cf465507DD71d507100C1d""});
+				Console.WriteLine(""Result: "" + result.ToHex(true));
+
+    }
+}
+
+
+"
+                },
+				
+				
+                new CodeSample()
+                {
+                    Name = "ABI Encoding Packed: Encoding using default values",
+                    Code = @"
+
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Util;
+using Nethereum.ABI;
+
+public class AbiEncodePacked_UsingDefaultValues
+{
+    static void Main(string[] args)
+    {
+					var abiEncode = new ABIEncode();
+            var result = abiEncode.GetSha3ABIEncodedPacked(234564535,
+                ""0xfff23243"".HexToByteArray(), true, -10);
+						Console.WriteLine(""Encoded 234564535, 0xfff23243, true and -10:"" + result.ToHex());
+
+            var result2 = abiEncode.GetSha3ABIEncodedPacked(""Hello!%"");
+						Console.WriteLine(""Encoded Hello!%:"" + result2.ToHex());
+          
+            var result3 = abiEncode.GetSha3ABIEncodedPacked(234);
+            Console.WriteLine(""Encoded 234:"" + result2.ToHex());
+    }
+}
+
+"
+                },
+				
+							
                 new CodeSample()
                 {
                     Name="Smart Contracts: Query ERC20 Smart contract balance",
@@ -499,7 +663,42 @@ public class Accounts_ChainIdAccountsWeb3
 }
                 "
                 },
-				
+		new CodeSample()
+                {
+                    Name = "Key Store: Create Scrypt based KeyStore using custom params",
+                    Code = @"
+
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.KeyStore.Model;
+public class Program
+{
+
+    static void Main(string[] args)
+    {
+
+				var keyStoreService = new Nethereum.KeyStore.KeyStoreScryptService();
+				// lower cost than default N == 262144 as this is using wasm, the lower the easier to compute but also easier to crack 
+				var scryptParams = new ScryptParams {Dklen = 32, N = 32, R = 1, P = 8};
+				var ecKey = Nethereum.Signer.EthECKey.GenerateKey();
+				Console.WriteLine(""Private key:"" + ecKey.GetPrivateKey());
+				var password = ""testPassword"";
+				// encrypting using our custome scrypt params
+				var keyStore = keyStoreService.EncryptAndGenerateKeyStore(password, ecKey.GetPrivateKeyAsBytes(), ecKey.GetPublicAddress(), scryptParams);
+				var json = keyStoreService.SerializeKeyStoreToJson(keyStore);
+				Console.WriteLine(json);
+				//decrypting our key
+				var key = keyStoreService.DecryptKeyStoreFromJson(password, json);
+				Console.WriteLine(""Private key decrypted:"" + key.ToHex(true));
+
+    }
+
+}
+" },
+							
 					new CodeSample()
                 {
                     Name = "Block Crawl: GetCurrentBlockNumber",
