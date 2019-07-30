@@ -254,6 +254,8 @@ public class Program
 }
                 "
                 },
+
+
                       new CodeSample()
                           {
                       Name = "Accounts: Creating a new Account using Geth Personal Api",
@@ -262,7 +264,7 @@ using System;
 using Nethereum.Web3; 
 using System.Threading.Tasks;
 
-public class Program
+public class Accounts_CreatingNewAccount
 {
 
     static async Task Main(string[] args)
@@ -293,7 +295,7 @@ using NBitcoin;
 using Nethereum.Hex.HexConvertors.Extensions; 
 using Nethereum.HdWallet;
 
-public class Program
+public class Accounts_HdWallets
 {
 
     static async Task Main(string[] args)
@@ -381,7 +383,7 @@ using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Hex.HexTypes;
 using System.Threading.Tasks;
 
-public class Program
+public class Accounts_ChainIdAccountsWeb3
 {
 
     static async Task Main(string[] args)
@@ -498,7 +500,35 @@ public class Program
                 "
                 },
 				
-							
+					new CodeSample()
+                {
+                    Name = "Block Crawl: GetCurrentBlockNumber",
+                    Code = @"
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.RPC.Eth.Blocks;
+
+public class BlockExploration_GetCurrentBlockNumber
+{
+
+    static async Task Main(string[] args)
+    {
+        //Connecting to Ethereum mainnet using Infura
+        var web3 = new Web3(""http://testchain.nethereum.com:8545"");
+        var balance = await web3.Eth.GetBalance.SendRequestAsync(""0x12890d2cce102216644c59daE5baed380d84830c"");
+        Console.WriteLine(""Balance of account is: ""+balance.Value);
+        var blockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+        Console.WriteLine(""Current BlockNumber is: ""+blockNumber.Value);
+	}
+
+}
+                "
+                },
+
+						
                 new CodeSample()
                 {
                     Name = "Block Crawl Processing: Process block and cancel",
@@ -1363,7 +1393,7 @@ public class LogProcessing_OneContractOneEventWithCriteria
 
  new CodeSample()
                 {
-                    Name = "Smart Contract: deploying a contract",
+                    Name = "Smart Contracts: deploying a contract",
                     Code = @"
 using Nethereum.Web3;
 using System;
@@ -1378,7 +1408,7 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class BlockProcessing_WithTransactionCriteria
+public class SmartContracts_DeployingContract
 {
 
 // To deploy a contract we will create a class inheriting from the ContractDeploymentMessage, here we can include our compiled byte code and other constructor parameters.
@@ -1440,7 +1470,7 @@ Console.WriteLine(""Deployed Contract address is: ""+contractAddress);
 
  new CodeSample()
                 {
-                    Name = "Smart Contracts",
+                    Name = "Smart Contracts: Smart Contracts Integration",
                     Code = @"
 using Nethereum.Web3;
 using System;
