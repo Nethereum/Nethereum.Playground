@@ -1579,6 +1579,40 @@ public class TransferEventDTO : IEventDTO
     [Parameter(""uint256"", ""_value"", 3, false)]
     public BigInteger Value { get; set; }
 }
+// ### Multiple return types or complex objects
+
+// Functions of smart contracts can return one or multiple values in a single call. To decode the returned values, we use a FunctionOutputDTO.
+
+// Function outputs are classes which are decorated with a FunctionOutput attribute and implement the interface IFunctionOutputDTO.
+
+// An example of this is the following implementation that can be used to return the single value of the Balance on the ERC20 smart contract.
+
+
+ [FunctionOutput]
+ public class BalanceOfOutputDTO : IFunctionOutputDTO
+ {
+      [Parameter(""uint256"", ""balance"", 1)]
+      public BigInteger Balance { get; set; }
+ }
+
+
+// If we were going to return multiple values we could have something like:
+
+
+ [FunctionOutput]
+ public class BalanceOfOutputMultipleDTO : IFunctionOutputDTO
+ {
+      [Parameter(""uint256"", ""balance1"", 1)]
+      public BigInteger Balance1 { get; set; }
+
+      [Parameter(""uint256"", ""balance2"", 2)]
+      public BigInteger Balance2 { get; set; }
+
+      [Parameter(""uint256"", ""balance1"", 3)]
+      public BigInteger Balance3 { get; set; }
+ }
+
+
 
     public static async Task Main()
 {    
@@ -1634,11 +1668,114 @@ var contractAddress = transactionReceipt.ContractAddress;
 };
 var balanceHandler = web3.Eth.GetContractQueryHandler<BalanceOfFunction>();
 var balance = await balanceHandler.QueryAsync<BigInteger>(contractAddress, balanceOfFunctionMessage);
-Console.WriteLine(balance);
+Console.WriteLine(""Balance of address""+ balance);
+
+// When Querying The chain we will use the following method instead:
+
+
+var balanceOutput = await balanceHandler.QueryDeserializingToObjectAsync<BalanceOfOutputDTO>( balanceOfFunctionMessage, contractAddress);
+
+
+// #### Querying previous state of the smart contract
+
+// Another great feature of the Ethereum blockchain is the capability to retrieve the state of a smart contract from a previous block.
+
+// For example, we could get the balance of the owner at the time of deployment by using the block number in which the contract was deployed.
+
+
+balanceOutput = await balanceHandler.QueryDeserializingToObjectAsync<BalanceOfOutputDTO>( balanceOfFunctionMessage, contractAddress, new Nethereum.RPC.Eth.DTOs.BlockParameter(transactionReceipt.BlockNumber));
+Console.WriteLine(""Transaction has been written in Block Number: ""+transactionReceipt.BlockNumber);
+
+// #### Transfer
+
+// Making a transfer will change the state of the blockchain, so in this scenario we will need to create a TransactionHandler using the TransferFunction definition.
+
+// In the transfer message, we will include the receiver address ""To"", and the ""TokenAmount"" to transfer.
+
+// The final step is to Send the request, wait for the receipt to be “mined” and included in the blockchain.
+
+// Another option will be to not wait (poll) for the transaction to be mined and just retrieve the transaction hash.
+
+
+var receiverAddress = ""0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"";
+var transferHandler = web3.Eth.GetContractTransactionHandler<TransferFunction>();
+var transfer = new TransferFunction()
+{
+    To = receiverAddress,
+    TokenAmount = 100
+};
+transactionReceipt = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer);
+Console.WriteLine(""Transaction hash is: ""+transactionReceipt.TransactionHash);
+
+// ##### Transferring Ether to a smart contract
+
+// A function or deployment transaction can send Ether to the smart contract. The FunctionMessage and DeploymentMessage have the property ""AmountToSend"".
+
+// So if the ""transfer"" function also accepts Ether, we will set it this way.
+
+
+transfer.AmountToSend = Nethereum.Web3.Web3.Convert.ToWei(1);
+
+
+// The GasPrice is set in ""Wei"" which is the lowest unit in Ethereum, so in the scenario above we have converted 1 Ether to Wei.
+
+// ### Gas Price
+
+// Nethereum automatically sets the GasPrice if not provided by using the clients ""GasPrice"" call, which provides the average gas price from previous blocks.
+
+// If you want to have more control over the GasPrice these can be set in both FunctionMessages and DeploymentMessages.
+
+
+  transfer.GasPrice =  Nethereum.Web3.Web3.Convert.ToWei(25, UnitConversion.EthUnit.Gwei);
+
+
+// The GasPrice is set in ""Wei"" which is the lowest unit in Ethereum, so if we are used to the usual ""Gwei"" units, this will need to be converted using the Nethereum Convertion utilities.
+
+// ### Estimating Gas
+
+// Nethereum does an automatic estimation of the total gas necessary to make the function transaction by calling the ""EthEstimateGas"" internally with the ""CallInput"".
+
+// If needed, this can be done manually, using the TransactionHandler and the ""transfer"" transaction FunctionMessage.
+
+
+ var estimate = await transferHandler.EstimateGasAsync(contractAddress, transfer);
+ transfer.Gas = estimate.Value;
+
+
+// ### Nonces
+
+// Each account transaction has a Nonce associated with it, this is the order and unique number for that transaction. This allows each transaction to be differentiated from each other, but also ensure transactions are processed in the same order.
+
+// Nethereum calculates the Nonce automatically for all Transactions by retrieving the latest count of the transactions from the chain. Also internally manages at Account level an in memory counter on the nonces, to allow for situations in which we want to send multiple transactions before giving time to the Ethereum client to update its internal counter.
+
+// Nevertheless there might be scenarios where we want to supply our Nonce, for example if we want to sign the transaction completely offline.
+
+
+transfer.Nonce = 2;
+
+
+// ### Signing a Function / Deployment message online / offline
+
+// The TransactionHandler also provides a mechanism to sign the Function and Deployments messages, provided we use an Account and/or an ExternalAccount
+
+
+var signedTransaction1 = await transferHandler.SignTransactionAsync(contractAddress, transfer);
+
+Console.WriteLine(""signedTransaction1 is: ""+signedTransaction1);
+
+// Nethereum internally calls the Ethereum client to set the GasPrice, Nonce and estimate the Gas, so if we want to sign the transaction for the contract completely offline we will need to set those values before hand.
+
+
+transfer.Nonce = 2;
+transfer.Gas = 21000;
+transfer.GasPrice =  Nethereum.Web3.Web3.Convert.ToWei(25, UnitConversion.EthUnit.Gwei);
+var signedTransaction2 = await transferHandler.SignTransactionAsync(contractAddress, transfer);
+Console.WriteLine(""signedTransaction2 is: ""+signedTransaction2);
                 }
                 }
 "
                 }				
+
 
             };
         }
