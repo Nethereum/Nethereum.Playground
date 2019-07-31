@@ -2770,7 +2770,13 @@ var allTransferEventsForContract3 = await transferEventHandlerAnyContract.GetAll
 
 
 var filterTransferEventsForAllContractsReceiverAddress2 = transferEventHandlerAnyContract.CreateFilterInput(null, new[]{receiverAddress});
-await transferEventHandlerAnyContract.GetAllChanges(filterTransferEventsForAllContractsReceiverAddress2);
+var result4 = await transferEventHandlerAnyContract.GetAllChanges(filterTransferEventsForAllContractsReceiverAddress2);
+
+
+for (int i = 0; i < 2; i++)
+{
+    Console.WriteLine(""Transfer event number : ""+ i +"" - TransactionHash : ""+ result4[(i)].Log.TransactionHash);
+}
 
     }
 
