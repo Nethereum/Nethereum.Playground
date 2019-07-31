@@ -657,6 +657,99 @@ public class GetStartedSmartContracts
 
                 },				
    
+   new CodeSample()
+                {
+                    Name = "Smart contracts: Signing offline Function / Contract Deployment messages",
+                    Code = @"
+
+using Nethereum.Web3;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts.CQS;
+using Nethereum.Util;
+using Nethereum.Web3.Accounts;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Contracts;
+using Nethereum.Contracts.Extensions;
+using System;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+
+public class FunctionMessage_Signing
+{
+
+
+//********* CONTRACT DEFINITION  *******
+
+		[Function(""transfer"", ""bool"")]
+		public class TransferFunction : FunctionMessage
+		{
+				[Parameter(""address"", ""_to"", 1)]
+				public string To { get; set; }
+
+				[Parameter(""uint256"", ""_value"", 2)]
+				public BigInteger TokenAmount { get; set; }
+
+		}
+
+
+
+//**** END CONTRACT DEFINITIONS ***** ///
+
+///*** THE MAIN PROGRAM ***
+		public static async Task Main()
+		{    
+
+// ### Instantiating Web3 and the Account
+// To create an instance of web3 we first provide the url of our testchain and the private key of our account. 
+// Here we are using http://testchain.nethereum.com:8545 which is our simple single node Nethereum testchain.
+// When providing an Account instantiated with a  private key, all our transactions will be signed by Nethereum.
+
+				var url = ""http://testchain.nethereum.com:8545"";
+				var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+				var account = new Account(privateKey);
+				var web3 = new Web3(account, url);
+
+// ### Signing a Function / Deployment message online / offline
+				var contractAddress = ""0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"";
+				var receiverAddress = ""0x1245695669a9FD93d5F28D9Ec85E40f4cb697BAe"";
+				var transferHandler = web3.Eth.GetContractTransactionHandler<TransferFunction>();
+
+				var transfer = new TransferFunction()
+				{
+							To = receiverAddress,
+							TokenAmount = 100
+				};
+
+				//If we don't provide the nonce, gas, etc Nethereum needs to connect to a node retrieve the information, 
+				//so signing is not fully offline
+				var signedTransaction1 = await transferHandler.SignTransactionAsync(contractAddress, transfer);
+
+				Console.WriteLine(""Signed Transaction using node to estimate gas, gas price and get nonce: "" + signedTransaction1);
+
+				// Nethereum internally calls the Ethereum client to set the GasPrice, Nonce and estimate the Gas, 
+				// so if we want to sign the transaction for the contract completely offline we will need to set those values before hand.
+
+				transfer.Nonce = 2;
+
+				transfer.Gas = 21000;
+
+				transfer.GasPrice =  Nethereum.Web3.Web3.Convert.ToWei(25, UnitConversion.EthUnit.Gwei);
+
+				var signedTransaction2 = await transferHandler.SignTransactionAsync(contractAddress, transfer);
+
+				Console.WriteLine(""Signed transaction Fully offline (no need for node, providing manually the nonce, gas and gas price) is: "" + signedTransaction2);
+
+    }
+
+}
+
+
+
+
+" },
+
 
                 new CodeSample()
                 {
