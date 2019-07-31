@@ -56,7 +56,7 @@ namespace Nethereum.TryOnBrowser.Pages
 
 				new CodeSample()
                 {
-                    Name = "Ether: Query account balance using INFURA",
+                    Name = "Chain information: Query Ether account balance using Infura",
                     Code = @"
 using System;
 using System.Text;
@@ -90,7 +90,57 @@ public class Program
                 "
                 },
 				
-				
+				new CodeSample()
+                {
+                    Name = "Chain information: Get Block number, Block, Transaction and Receipt using Infura",
+                    Code = @"
+
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.RPC.Eth.Blocks;
+using Nethereum.Hex.HexTypes;
+
+public class EthRpcCalls_BlockNumber_Block_Transaction_Receipt
+{
+
+    static async Task Main(string[] args)
+    {
+        //Connecting to Ethereum mainnet using Infura
+      	var web3 = new Web3(""https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+				//Getting current block number  
+        var blockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+        Console.WriteLine(""Current BlockNumber is: "" + blockNumber.Value);
+
+				//Getting current block with transactions 
+				var block = await web3.Eth.Blocks.GetBlockWithTransactionsByNumber.SendRequestAsync(new HexBigInteger(8257129));
+        Console.WriteLine(""Block number: ""+ block.Number.Value);
+        Console.WriteLine(""Block hash: ""+ block.BlockHash);
+				Console.WriteLine(""Block no of transactions:"" + block.Transactions.Length);
+				Console.WriteLine(""Block transaction 0 From:"" + block.Transactions[0].From);
+				Console.WriteLine(""Block transaction 0 To:"" + block.Transactions[0].To);
+				Console.WriteLine(""Block transaction 0 Amount:"" + block.Transactions[0].Value);
+				Console.WriteLine(""Block transaction 0 Hash:"" + block.Transactions[0].TransactionHash);
+
+			  var transaction = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(""0xb4729a0d8dd30e3070d0cb203090f2b792e029f6fa4629e96d2ebc1de13cb5c4"");
+				Console.WriteLine(""Transaction From:"" + transaction.From);
+				Console.WriteLine(""Transaction To:"" + transaction.To);
+				Console.WriteLine(""Transaction Amount:"" + transaction.Value);
+				Console.WriteLine(""Transaction Hash:"" + transaction.TransactionHash);
+
+
+				 var transactionReceipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(""0xb4729a0d8dd30e3070d0cb203090f2b792e029f6fa4629e96d2ebc1de13cb5c4"");
+				Console.WriteLine(""Transaction Hash:"" + transactionReceipt.TransactionHash);
+				Console.WriteLine(""TransactionReceipt Logs:"" + transactionReceipt.Logs.Count);
+	}
+
+}
+" },
+
+								
 new CodeSample()
                 {
                     Name = "Ether: Transfer Ether to an account",
@@ -179,6 +229,434 @@ public class Program
 "
                 },
 				
+new CodeSample()
+
+                {
+
+                    Name = "Smart Contracts: Smart contract deployment",
+                    Code = @"
+
+using Nethereum.Web3;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts.CQS;
+using Nethereum.Util;
+using Nethereum.Web3.Accounts;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Contracts;
+using Nethereum.Contracts.Extensions;
+using System;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+
+public class SmartContracts_DeployingContract
+{
+
+// To deploy a contract we will create a class inheriting from the ContractDeploymentMessage, 
+// here we can include our compiled byte code and other constructor parameters.
+// As we can see below the StandardToken deployment message includes the compiled bytecode 
+// of the ERC20 smart contract and the constructor parameter with the “totalSupply” of tokens.
+// Each parameter is described with an attribute Parameter, including its name ""totalSupply"", type ""uint256"" and order.
+
+			public class StandardTokenDeployment : ContractDeploymentMessage
+			{
+
+						public static string BYTECODE = ""0x60606040526040516020806106f5833981016040528080519060200190919050505b80600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005081905550806000600050819055505b506106868061006f6000396000f360606040523615610074576000357c010000000000000000000000000000000000000000000000000000000090048063095ea7b31461008157806318160ddd146100b657806323b872dd146100d957806370a0823114610117578063a9059cbb14610143578063dd62ed3e1461017857610074565b61007f5b610002565b565b005b6100a060048080359060200190919080359060200190919050506101ad565b6040518082815260200191505060405180910390f35b6100c36004805050610674565b6040518082815260200191505060405180910390f35b6101016004808035906020019091908035906020019091908035906020019091905050610281565b6040518082815260200191505060405180910390f35b61012d600480803590602001909190505061048d565b6040518082815260200191505060405180910390f35b61016260048080359060200190919080359060200190919050506104cb565b6040518082815260200191505060405180910390f35b610197600480803590602001909190803590602001909190505061060b565b6040518082815260200191505060405180910390f35b600081600260005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008573ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905061027b565b92915050565b600081600160005060008673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561031b575081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505410155b80156103275750600082115b1561047c5781600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a381600160005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505403925050819055506001905061048656610485565b60009050610486565b5b9392505050565b6000600160005060008373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505490506104c6565b919050565b600081600160005060003373ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561050c5750600082115b156105fb5781600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905061060556610604565b60009050610605565b5b92915050565b6000600260005060008473ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005054905061066e565b92915050565b60006000600050549050610683565b9056"";
+						public StandardTokenDeployment() : base(BYTECODE){}
+
+						[Parameter(""uint256"", ""totalSupply"")]
+						public BigInteger TotalSupply { get; set; }
+			}
+
+			public static async Task Main()
+			{
+
+//  Instantiating Web3 and the Account
+
+// To create an instance of web3 we first provide the url of our testchain and the private key of our account. 
+// When providing an Account instantiated with a  private key all our transactions will be signed “offline” by Nethereum.
+
+					var url = ""http://testchain.nethereum.com:8545"";
+
+					var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+
+					var account = new Account(privateKey);
+
+					var web3 = new Web3(account, url);
+
+//  Deploying the Contract
+// The next step is to deploy our Standard Token ERC20 smart contract, in this scenario the total supply (number of tokens) is going to be 100,000.
+// First we create an instance of the StandardTokenDeployment with the TotalSupply amount.
+
+					var deploymentMessage = new StandardTokenDeployment
+					{
+							TotalSupply = 100000
+					};
+
+// Then we create a deployment handler using our contract deployment definition and simply deploy the contract using the deployment message. We are auto estimating the gas, getting the latest gas price and nonce so nothing else is set anything on the deployment message.
+// Finally, we wait for the deployment transaction to be mined, and retrieve the contract address of the new contract from the receipt.
+
+						var deploymentHandler = web3.Eth.GetContractDeploymentHandler<StandardTokenDeployment>();
+
+						var transactionReceipt = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
+
+						var contractAddress = transactionReceipt.ContractAddress;
+
+						Console.WriteLine(""Deployed Contract address is: ""+contractAddress);
+
+    }
+}
+
+
+
+"
+
+    },				
+
+
+ new CodeSample()
+
+                {
+
+                    Name = "Smart Contracts: Smart Contracts Deployment, Querying, Transactions, Nonces, Estimating Gas, Gas Price",
+
+                    Code = @"
+
+
+using Nethereum.Web3;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts.CQS;
+using Nethereum.Util;
+using Nethereum.Web3.Accounts;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Contracts;
+using Nethereum.Contracts.Extensions;
+using System;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+
+public class GetStartedSmartContracts
+{
+
+
+/* Quick introduction to smart contracts integration with Nethereum
+
+	Topics covered:
+   
+	 * Understanding how to create contract deployment, function and event definitions to interact with a smart contracts
+	 * Creating an account object using a private key, this will allow to sign transactions ""offline"".
+	 * Deploying a smart contract (the sample provided is the standard ERC20 token contract)
+	 * Making a call to a smart contract (in this scenario get the balance of an account)
+	 * Sending a transaction to the smart contract (in this scenario transferring balance)
+	 * Estimating the gas cost of a contract transaction
+	 * Gas Price, Nonces and Sending Ether to smart contracts
+		* Retrieving the state of a smart contract from a previous block
+*/
+
+
+
+//********* CONTRACT DEFINITION  *******
+
+//*** Deployment message**** //
+// To deploy a contract we will create a class inheriting from the ContractDeploymentMessage, 
+// here we can include our compiled byte code and other constructor parameters.
+// As we can see below the StandardToken deployment message includes the compiled bytecode 
+// of the ERC20 smart contract and the constructor parameter with the “totalSupply” of tokens.
+// Each parameter is described with an attribute Parameter, including its name ""totalSupply"", type ""uint256"" and order.
+
+
+		public class StandardTokenDeployment : ContractDeploymentMessage
+		{
+				public static string BYTECODE = ""0x60606040526040516020806106f5833981016040528080519060200190919050505b80600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005081905550806000600050819055505b506106868061006f6000396000f360606040523615610074576000357c010000000000000000000000000000000000000000000000000000000090048063095ea7b31461008157806318160ddd146100b657806323b872dd146100d957806370a0823114610117578063a9059cbb14610143578063dd62ed3e1461017857610074565b61007f5b610002565b565b005b6100a060048080359060200190919080359060200190919050506101ad565b6040518082815260200191505060405180910390f35b6100c36004805050610674565b6040518082815260200191505060405180910390f35b6101016004808035906020019091908035906020019091908035906020019091905050610281565b6040518082815260200191505060405180910390f35b61012d600480803590602001909190505061048d565b6040518082815260200191505060405180910390f35b61016260048080359060200190919080359060200190919050506104cb565b6040518082815260200191505060405180910390f35b610197600480803590602001909190803590602001909190505061060b565b6040518082815260200191505060405180910390f35b600081600260005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008573ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905061027b565b92915050565b600081600160005060008673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561031b575081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505410155b80156103275750600082115b1561047c5781600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a381600160005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505403925050819055506001905061048656610485565b60009050610486565b5b9392505050565b6000600160005060008373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505490506104c6565b919050565b600081600160005060003373ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561050c5750600082115b156105fb5781600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905061060556610604565b60009050610605565b5b92915050565b6000600260005060008473ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005054905061066e565b92915050565b60006000600050549050610683565b9056"";
+
+				public StandardTokenDeployment() : base(BYTECODE){}
+
+				[Parameter(""uint256"", ""totalSupply"")]
+				public BigInteger TotalSupply { get; set; }
+
+		}
+
+//*** FUNCTION MESSAGES **** ///
+
+// We can call the functions of smart contract to query the state of a smart contract or do any computation, 
+// which will not affect the state of the blockchain.
+
+// To do so,  we will need to create a class which inherits from ""FunctionMessage"". 
+// First we will decorate the class with a ""Function"" attribute, including the name and return type.
+// Each parameter of the function will be a property of the class, each of them decorated with the ""Parameter"" attribute, 
+// including the smart contract’s parameter name, type and parameter order.
+// For the ERC20 smart contract, the ""balanceOf"" function definition, 
+// provides the query interface to get the token balance of a given address. 
+// As we can see this function includes only one parameter ""\_owner"", of the type ""address"".
+
+
+		[Function(""balanceOf"", ""uint256"")]
+		public class BalanceOfFunction : FunctionMessage
+		{
+				[Parameter(""address"", ""_owner"", 1)]
+				public string Owner { get; set; }
+		}
+
+
+
+// Another type of smart contract function will be a transaction 
+// that will change the state of the smart contract (or smart contracts).
+// For example The ""transfer"" function definition for the ERC20 smart contract, 
+// includes the parameters “\_to”, which is an address parameter as a string, and the “\_value” 
+// or TokenAmount we want to transfer.
+
+
+// In a similar way to the ""balanceOf"" function, all the parameters include the solidity type, 
+// the contract’s parameter name and parameter order.
+
+
+// Note: When working with functions, it is very important to have the parameters types and function name correct 
+//as all of these make the signature of the function.
+
+		[Function(""transfer"", ""bool"")]
+		public class TransferFunction : FunctionMessage
+		{
+				[Parameter(""address"", ""_to"", 1)]
+				public string To { get; set; }
+
+				[Parameter(""uint256"", ""_value"", 2)]
+				public BigInteger TokenAmount { get; set; }
+
+		}
+
+// Finally, smart contracts also have events. Events defined in smart contracts write in the blockchain log, 
+// providing a way to retrieve further information when a smart contract interaction occurs.
+// To create an Event definition, we need to create a class that inherits from IEventDTO, decorated with the Event attribute.
+// The Transfer Event is similar to a Function: it  also includes parameters with name, order and type. 
+// But also a boolean value indicating if the parameter is indexed or not.
+// Indexed parameters will allow us later on to query the blockchain for those values.
+
+
+		[Event(""Transfer"")]
+		public class TransferEventDTO : IEventDTO
+		{
+
+				[Parameter(""address"", ""_from"", 1, true)]
+				public string From { get; set; }
+
+				[Parameter(""address"", ""_to"", 2, true)]
+				public string To { get; set; }
+
+				[Parameter(""uint256"", ""_value"", 3, false)]
+				public BigInteger Value { get; set; }
+		}
+
+// ### Multiple return types or complex objects
+// Functions of smart contracts can return one or multiple values in a single call. To decode the returned values, we use a FunctionOutputDTO.
+// Function outputs are classes which are decorated with a FunctionOutput attribute and implement the interface IFunctionOutputDTO.
+// An example of this is the following implementation that can be used to return the single value of the Balance on the ERC20 smart contract.
+
+		[FunctionOutput]
+		public class BalanceOfOutputDTO : IFunctionOutputDTO
+		{
+
+					[Parameter(""uint256"", ""balance"", 1)]
+					public BigInteger Balance { get; set; }
+		}
+
+
+// If we were going to return multiple values we could have something like:
+
+		[FunctionOutput]
+		public class BalanceOfOutputMultipleDTO : IFunctionOutputDTO
+		{
+					[Parameter(""uint256"", ""balance1"", 1)]
+					public BigInteger Balance1 { get; set; }
+
+					[Parameter(""uint256"", ""balance2"", 2)]
+					public BigInteger Balance2 { get; set; }
+					
+					[Parameter(""uint256"", ""balance3"", 3)]
+					public BigInteger Balance3 { get; set; }
+		}
+
+//**** END CONTRACT DEFINITIONS ***** ///
+
+///*** THE MAIN PROGRAM ***
+		public static async Task Main()
+		{    
+
+// ### Instantiating Web3 and the Account
+// To create an instance of web3 we first provide the url of our testchain and the private key of our account. 
+// Here we are using http://testchain.nethereum.com:8545 which is our simple single node Nethereum testchain.
+// When providing an Account instantiated with a  private key, all our transactions will be signed by Nethereum.
+
+				var url = ""http://testchain.nethereum.com:8545"";
+				var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+				var account = new Account(privateKey);
+				var web3 = new Web3(account, url);
+
+// **** DEPLOYING THE SMART CONTRACT
+// The next step is to deploy our Standard Token ERC20 smart contract, 
+//in this scenario the total supply (number of tokens) is going to be 100,000.
+
+// First we create an instance of the StandardTokenDeployment with the TotalSupply amount.
+
+				var deploymentMessage = new StandardTokenDeployment
+				{
+						TotalSupply = 100000
+				};
+
+// Then we create a deployment handler using our contract deployment definition and simply deploy the contract 
+// using the deployment message. 
+// We are auto estimating the gas, getting the latest gas price and nonce so nothing else is set on the deployment message.
+// Finally, we wait for the deployment transaction to be mined, 
+// and retrieve the contract address of the new contract from the receipt.
+
+				var deploymentHandler = web3.Eth.GetContractDeploymentHandler<StandardTokenDeployment>();
+				var transactionReceiptDeployment = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
+				var contractAddress = transactionReceiptDeployment.ContractAddress;
+				Console.WriteLine(""Smart contract deployed at address:"" + contractAddress);
+
+// *** INTERACTING WITH THE CONTRACT
+
+// #### QUERING
+
+
+// To retrieve the balance, we will create a QueryHandler and finally using our contract address 
+// and message retrieve the balance amount.
+
+					var balanceOfFunctionMessage = new BalanceOfFunction()
+					{
+							Owner = account.Address,
+					};
+
+					var balanceHandler = web3.Eth.GetContractQueryHandler<BalanceOfFunction>();
+
+					var balance = await balanceHandler.QueryAsync<BigInteger>(contractAddress, balanceOfFunctionMessage);
+
+					Console.WriteLine(""Balance of deployment owner address: "" + balance);
+
+// When Quering retrieving multiple results, we can use this method instead
+
+
+					var balanceOutput = await balanceHandler.QueryDeserializingToObjectAsync<BalanceOfOutputDTO>( balanceOfFunctionMessage, contractAddress);
+
+
+
+
+// #### Transfer
+// Making a transfer will change the state of the blockchain, 
+// so in this scenario we will need to create a TransactionHandler using the TransferFunction definition.
+
+// In the transfer message, we will include the receiver address ""To"", and the ""TokenAmount"" to transfer.
+// The final step is to Send the request, wait for the receipt to be “mined” and included in the blockchain.
+// Another option will be to not wait (poll) for the transaction to be mined and just retrieve the transaction hash.
+
+
+					var receiverAddress = ""0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"";
+					var transferHandler = web3.Eth.GetContractTransactionHandler<TransferFunction>();
+
+					var transfer = new TransferFunction()
+					{
+							To = receiverAddress,
+							TokenAmount = 100
+					};
+
+					var transactionTransferReceipt = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer);
+					Console.WriteLine(""Transaction hash transfer is: ""+transactionTransferReceipt.TransactionHash);
+
+					balance = await balanceHandler.QueryAsync<BigInteger>(contractAddress, balanceOfFunctionMessage);
+
+					Console.WriteLine(""Balance of deployment owner address after transfer: "" + balance);
+
+// #### Querying previous state of the smart contract
+
+// Another great feature of the Ethereum blockchain is the capability to retrieve the state 
+// of a smart contract from a previous block.
+
+// For example, we could get the balance of the owner at the time of deployment by using the block number 
+// in which the contract was deployed we will get the 10000
+
+
+				balanceOutput = await balanceHandler.QueryDeserializingToObjectAsync<BalanceOfOutputDTO>( balanceOfFunctionMessage, contractAddress,
+											 new Nethereum.RPC.Eth.DTOs.BlockParameter(transactionReceiptDeployment.BlockNumber));
+
+				Console.WriteLine(""Balance of deployment owner address from previous Block Number: "" + transactionReceiptDeployment.BlockNumber + "" is: "" + balanceOutput.Balance);
+				
+
+// ##### Transferring Ether to a smart contract
+
+// A function or deployment transaction can send Ether to the smart contract. The FunctionMessage and DeploymentMessage have the property ""AmountToSend"".
+
+// So if the ""transfer"" function also accepts Ether, we will set it this way.
+
+
+					transfer.AmountToSend = Nethereum.Web3.Web3.Convert.ToWei(1);
+
+// The GasPrice is set in ""Wei"" which is the lowest unit in Ethereum, so in the scenario above we have converted 1 Ether to Wei.
+// ### Gas Price
+
+// Nethereum automatically sets the GasPrice if not provided by using the clients ""GasPrice"" call, which provides the average gas price from previous blocks.
+
+// If you want to have more control over the GasPrice these can be set in both FunctionMessages and DeploymentMessages.
+
+			  	transfer.GasPrice =  Nethereum.Web3.Web3.Convert.ToWei(25, UnitConversion.EthUnit.Gwei);
+
+// The GasPrice is set in ""Wei"" which is the lowest unit in Ethereum, so if we are used to the usual ""Gwei"" units, this will need to be converted using the Nethereum Convertion utilities.
+
+// ### Estimating Gas
+
+// Nethereum does an automatic estimation of the total gas necessary to make the function transaction by calling the ""EthEstimateGas"" internally with the ""CallInput"".
+
+// If needed, this can be done manually, using the TransactionHandler and the ""transfer"" transaction FunctionMessage.
+
+			 	var estimate = await transferHandler.EstimateGasAsync(contractAddress, transfer);
+
+ 				transfer.Gas = estimate.Value;
+
+
+// ### Nonces
+// Each account transaction has a Nonce associated with it, this is the order and unique number for that transaction. This allows each transaction to be differentiated from each other, but also ensure transactions are processed in the same order.
+
+// Nethereum calculates the Nonce automatically for all Transactions by retrieving the latest count of the transactions from the chain. Also internally manages at Account level an in memory counter on the nonces, to allow for situations in which we want to send multiple transactions before giving time to the Ethereum client to update its internal counter.
+// Nevertheless there might be scenarios where we want to supply our Nonce, for example if we want to sign the transaction completely offline.
+
+					transfer.Nonce = 2;
+
+// ### Signing a Function / Deployment message online / offline
+
+// The TransactionHandler also provides a mechanism to sign the Function and Deployments messages, provided we use an Account and/or an ExternalAccount
+
+				var signedTransaction1 = await transferHandler.SignTransactionAsync(contractAddress, transfer);
+
+				Console.WriteLine(""SignedTransaction is: ""+signedTransaction1);
+
+// Nethereum internally calls the Ethereum client to set the GasPrice, Nonce and estimate the Gas, 
+// so if we want to sign the transaction for the contract completely offline we will need to set those values before hand.
+
+
+				transfer.Nonce = 2;
+
+				transfer.Gas = 21000;
+
+				transfer.GasPrice =  Nethereum.Web3.Web3.Convert.ToWei(25, UnitConversion.EthUnit.Gwei);
+
+				var signedTransaction2 = await transferHandler.SignTransactionAsync(contractAddress, transfer);
+
+				Console.WriteLine("" Full offline (no need for node) Signed Transaction (providing manually the nonce, gas and gas price) is: "" + signedTransaction2);
+
+    }
+
+}
+
+
+
+
+
+
+"
+
+                },				
+   
 
                 new CodeSample()
                 {
