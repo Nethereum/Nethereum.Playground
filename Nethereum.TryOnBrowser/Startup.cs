@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components.Builder;
+using Nethereum.TryOnBrowser.ServiceCollectionExtensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Nethereum.TryOnBrowser
@@ -7,6 +8,7 @@ namespace Nethereum.TryOnBrowser
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddBlazorModal();
         }
 
         public void Configure(IComponentsApplicationBuilder app)

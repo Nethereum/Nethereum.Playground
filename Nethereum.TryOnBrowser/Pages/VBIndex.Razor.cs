@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Nethereum.TryOnBrowser.Monaco;
+using Nethereum.TryOnBrowser.Modal;
 
 namespace Nethereum.TryOnBrowser.Pages
 {
@@ -17,30 +19,64 @@ namespace Nethereum.TryOnBrowser.Pages
     {
         protected EditorModel editorModel;
 
-        [Inject]
-        public IJSRuntime JSRuntime { get; set; }
+        [Inject] ModalService ModalServices { get; set; }
+
+        [Inject] public IJSRuntime JSRuntime { get; set; }
 
         protected string Output { get; set; }
 
         [Inject] private HttpClient Client { get; set; }
 
-        public CodeSample[] CodeSamples { get; protected set; }
+        public List<CodeSample> CodeSamples { get; protected set; }
         public int SelectedCodeSample { get; protected set; }
 
-        protected override Task OnInitAsync()
+        private VBCodeSampleRepository _codeSampleRepository;
+
+
+        protected override void OnInit()
         {
-            CodeSamples = new VBCodeSampleRepository().GetCodeSamples();
-            SelectedCodeSample = 0;
+            ModalServices.OnGetContent += OnGetContent;
+        }
+
+        public async void OnGetContent(string content, string fileName)
+        {
+            editorModel.Script = content;
+            await Monaco.Interop.EditorSetAsync(JSRuntime, editorModel);
+
+            // create a CodeSample object for this, and point to it
+            var tmp = new CodeSample();
+            tmp.Code = content;
+            tmp.Name = fileName;
+            CodeSamples.Add(tmp);
+
+            SelectedCodeSample = CodeSamples.Count - 1;
+            StateHasChanged();
+        }
+
+        protected override async Task OnInitAsync()
+        {
+            _codeSampleRepository = new VBCodeSampleRepository(Client);
+            CodeSamples = new List<CodeSample>();
+
+            // initialise first empty CodeSample class for "Create New Sample"
+            var tmp = new CodeSample();
+            tmp.Code = "";
+            tmp.Name = "<Load Local .vb Sample>";
+            CodeSamples.Add(tmp);
+
+            // load remaining code samples from repository
+            CodeSamples.AddRange(await _codeSampleRepository.GetCodeSamples());
+            SelectedCodeSample = 1;
 
             editorModel = new EditorModel
             {
                 Language = "vb",
-                Script = CodeSamples[0].Code
+                Script = CodeSamples[SelectedCodeSample].Code
             };
 
             Compiler.InitializeMetadataReferences(Client);
 
-            return base.OnInitAsync();
+            await base.OnInitAsync();
         }
 
         public void Run()
@@ -51,8 +87,17 @@ namespace Nethereum.TryOnBrowser.Pages
         public async Task CodeSampleChanged(UIChangeEventArgs evt)
         {
             SelectedCodeSample = Int32.Parse(evt.Value.ToString());
-            editorModel.Script = CodeSamples[SelectedCodeSample].Code;
-            await Monaco.Interop.EditorSetAsync(JSRuntime, editorModel);
+            if (SelectedCodeSample == 0)
+            {
+                // prompt for file import
+                ModalServices.Show("Load File", typeof(ImportForm), ".vb");
+                StateHasChanged();
+            }
+            else
+            {
+                editorModel.Script = CodeSamples[SelectedCodeSample].Code;
+                await Monaco.Interop.EditorSetAsync(JSRuntime, editorModel);
+            }
         }
 
 
@@ -127,14 +172,9 @@ namespace Nethereum.TryOnBrowser.Pages
             Console.WriteLine("Output " + Output);
 
             sw.Stop();
-
             Console.WriteLine("Done in " + sw.ElapsedMilliseconds + "ms");
-
             StateHasChanged();
-
         }
-
     }
-
 }
 
