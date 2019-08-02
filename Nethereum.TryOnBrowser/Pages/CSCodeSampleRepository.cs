@@ -32,17 +32,17 @@ namespace Nethereum.TryOnBrowser.Pages
             _codeSamples = new List<CodeSample>();
         }
 
-        public async Task<CodeSample[]> GetCodeSamples()
+        public async Task<List<CodeSample>> GetCodeSamples()
         {
             //var contents = await _httpClient.GetJsonAsync<GithubContent[]>(_githubContentUrl);
             //Console.WriteLine(contents.Length);
             //Console.WriteLine(contents[0].Name);
 
-            
+
             //foreach (var content in contents)
             //{
             //    //var code = await _httpClient.GetStringAsync(_githubFileUrl + content.Name);
-                    
+
             //    _codeSamples.Add(new CodeSample()
             //    {
             //        Name = content.Name,
@@ -51,10 +51,10 @@ namespace Nethereum.TryOnBrowser.Pages
             //}
 
             //return _codeSamples.ToArray();
-            return new CodeSample[]
+            return new List<CodeSample>
             {
 
-				new CodeSample()
+                new CodeSample()
                 {
                     Name = "Chain information: Query Ether account balance using Infura",
                     Code = @"
