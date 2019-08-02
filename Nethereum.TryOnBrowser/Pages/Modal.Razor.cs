@@ -13,14 +13,12 @@ namespace Nethereum.TryOnBrowser.Pages
 
         protected override void OnInit()
         {
-            Console.WriteLine("Loading Modal - 3 Init");
             ModalService.OnShow += ShowModal;
             ModalService.OnClose += CloseModal;
         }
 
         public void ShowModal(string title, RenderFragment content)
         {
-            Console.WriteLine("Loading Modal - 3 ShowModal");
             Title = title;
             Content = content;
             IsVisible = true;
