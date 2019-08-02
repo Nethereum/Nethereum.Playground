@@ -1,5 +1,7 @@
-﻿using Nethereum.TryOnBrowser.Modal;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Nethereum.TryOnBrowser.Components.Modal;
+using Nethereum.TryOnBrowser.Pages;
+using Nethereum.TryOnBrowser.Repositories;
 
 namespace Nethereum.TryOnBrowser.ServiceCollectionExtensions
 {
@@ -8,6 +10,11 @@ namespace Nethereum.TryOnBrowser.ServiceCollectionExtensions
         public static IServiceCollection AddBlazorModal(this IServiceCollection services)
         {
             return services.AddScoped<ModalService>();
+        }
+
+        public static IServiceCollection AddCodeRepository(this IServiceCollection services)
+        { 
+            return services.AddSingleton<CodeSampleRepository>();
         }
     }
 }

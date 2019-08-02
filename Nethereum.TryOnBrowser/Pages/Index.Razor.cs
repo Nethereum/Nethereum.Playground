@@ -4,11 +4,14 @@ using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Nethereum.TryOnBrowser.Monaco;
-using Nethereum.TryOnBrowser.Modal;
+using Nethereum.TryOnBrowser.Repositories;
+using Nethereum.TryOnBrowser.Components;
+using Nethereum.TryOnBrowser.Components.Modal;
+using Nethereum.TryOnBrowser.Components.Monaco;
 
 namespace Nethereum.TryOnBrowser.Pages
 {
@@ -22,27 +25,34 @@ namespace Nethereum.TryOnBrowser.Pages
         protected string Output {get; set;}
         [Inject] private HttpClient Client { get; set; }
 
+        [Inject] public CodeSampleRepository CodeSampleRepository { get; set;}
+
         public List<CodeSample> CodeSamples { get; protected set; }
         public int SelectedCodeSample { get; protected set; }
 
-        private CodeSampleRepository _codeSampleRepository;
+        private LoadFileModel loadFileModel;
 
 
         protected override void OnInit()
         {
-            ModalServices.OnGetContent += OnGetContent;
+            loadFileModel = new LoadFileModel();
+            loadFileModel.AllowedExtension = ".cs";
+            loadFileModel.ContentLoaded += FileLoaded;
         }
 
-        public async void OnGetContent(string content, string fileName)
+        public async void FileLoaded(string content, string fileName)
         {
+            ModalServices.Close();
             editorModel.Script = content;
-            await Monaco.Interop.EditorSetAsync(JSRuntime, editorModel);
+            await Interop.EditorSetAsync(JSRuntime, editorModel);
 
             // create a CodeSample object for this, and point to it
-            var tmp = new CodeSample();
-            tmp.Code = content;
-            tmp.Name = fileName;
-            CodeSamples.Add(tmp);
+            var codeSample = new CodeSample {Code = content,
+                                            Name = "My samples: " + fileName,
+                                            Language = CodeLanguage.CSharp,
+                                            Custom = true};
+            CodeSamples.Add(codeSample);
+            CodeSampleRepository.AddCodeSample(codeSample);
 
             SelectedCodeSample = CodeSamples.Count -1;
             StateHasChanged();
@@ -50,7 +60,6 @@ namespace Nethereum.TryOnBrowser.Pages
 
         protected override async Task OnInitAsync()
         {
-            _codeSampleRepository = new CodeSampleRepository(Client);
             CodeSamples = new List<CodeSample>();
 
             // initialise first empty CodeSample class for "Create New Sample"
@@ -60,7 +69,7 @@ namespace Nethereum.TryOnBrowser.Pages
             CodeSamples.Add(tmp);
             
             // load remaining code samples from repository
-            CodeSamples.AddRange(await _codeSampleRepository.GetCodeSamples());
+            CodeSamples.AddRange(CodeSampleRepository.GetCodeSamples(CodeLanguage.CSharp));
             SelectedCodeSample = 1;
 
             editorModel = new EditorModel
@@ -85,19 +94,21 @@ namespace Nethereum.TryOnBrowser.Pages
             if (SelectedCodeSample == 0)
             {
                 // prompt for file import
-                ModalServices.Show("Load File", typeof(ImportForm), ".cs");
+                
+                ModalServices.ShowModal<LoadFile, LoadFileModel>("Load File", loadFileModel, "Model");
+
                 StateHasChanged();
             } else
             {
                 editorModel.Script = CodeSamples[SelectedCodeSample].Code;
-                await Monaco.Interop.EditorSetAsync(JSRuntime, editorModel);
+                await Interop.EditorSetAsync(JSRuntime, editorModel);
             }
         }
 
         public async Task RunInternal()
         {
             Output = "";
-            editorModel = await Monaco.Interop.EditorGetAsync(JSRuntime, editorModel);
+            editorModel = await Interop.EditorGetAsync(JSRuntime, editorModel);
             Console.WriteLine("Compiling and Running code");
 
             var sw = Stopwatch.StartNew();

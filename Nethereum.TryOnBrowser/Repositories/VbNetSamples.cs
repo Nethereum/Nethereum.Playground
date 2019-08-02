@@ -1,36 +1,13 @@
-﻿
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Nethereum.TryOnBrowser.Pages
+namespace Nethereum.TryOnBrowser.Repositories
 {
-    public class VBCodeSampleRepository
+    public class VbNetSamples
     {
-        private HttpClient _httpClient;
-        private const string _githubPath = "nethereum/nethereum/nethereum.playground";
-
-        private const string _githubContentUrl =
-            "https://api.github.com/repos/Nethereum/Nethereum.Playground/contents/samples/vb";
-
-        private const string _githubFileUrl =
-            "https://raw.githubusercontent.com/Nethereum/Nethereum.Playground/master/samples/vb/";
-
-        private List<CodeSample> _codeSamples;
-
-        public VBCodeSampleRepository(HttpClient httpClient)
+        public static List<CodeSample> GetSamples()
         {
-            _httpClient = httpClient;
-            _codeSamples = new List<CodeSample>();
-        }
-
-        public async Task<List<CodeSample>> GetCodeSamples()
-        {
-            return new List<CodeSample>
-            {
-
-
-                new CodeSample()
+            var samples = new List<CodeSample>
+            {   new CodeSample()
                 {
                     Name="Query ERC20 Smart contract balance",
                     Code= @"
@@ -116,11 +93,14 @@ End Module
                 "
                 }
 
-
             };
+
+            foreach (var sample in samples)
+            {
+                sample.Language = CodeLanguage.VbNet;
+            }
+
+            return samples;
         }
-
     }
-
 }
-

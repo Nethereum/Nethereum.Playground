@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nethereum.TryOnBrowser.Monaco
+namespace Nethereum.TryOnBrowser.Components.Monaco
 {
 	public class EditorModel
 	{

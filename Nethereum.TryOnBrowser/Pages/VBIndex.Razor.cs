@@ -8,8 +8,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Nethereum.TryOnBrowser.Monaco;
-using Nethereum.TryOnBrowser.Modal;
+using Nethereum.TryOnBrowser.Components;
+using Nethereum.TryOnBrowser.Components.Modal;
+using Nethereum.TryOnBrowser.Components.Monaco;
+using Nethereum.TryOnBrowser.Repositories;
 
 namespace Nethereum.TryOnBrowser.Pages
 {
@@ -30,24 +32,33 @@ namespace Nethereum.TryOnBrowser.Pages
         public List<CodeSample> CodeSamples { get; protected set; }
         public int SelectedCodeSample { get; protected set; }
 
-        private VBCodeSampleRepository _codeSampleRepository;
+        [Inject] public CodeSampleRepository CodeSampleRepository { get; set; }
 
+        private LoadFileModel loadFileModel;
 
         protected override void OnInit()
         {
-            ModalServices.OnGetContent += OnGetContent;
+            loadFileModel = new LoadFileModel();
+            loadFileModel.AllowedExtension = ".vb";
+            loadFileModel.ContentLoaded += FileLoaded;
         }
 
-        public async void OnGetContent(string content, string fileName)
+        public async void FileLoaded(string content, string fileName)
         {
+            ModalServices.Close();
             editorModel.Script = content;
-            await Monaco.Interop.EditorSetAsync(JSRuntime, editorModel);
+            await Interop.EditorSetAsync(JSRuntime, editorModel);
 
             // create a CodeSample object for this, and point to it
-            var tmp = new CodeSample();
-            tmp.Code = content;
-            tmp.Name = fileName;
-            CodeSamples.Add(tmp);
+            var codeSample = new CodeSample
+            {
+                Code = content,
+                Name = "My samples: " + fileName,
+                Language = CodeLanguage.VbNet,
+                Custom = true
+            };
+            CodeSamples.Add(codeSample);
+            CodeSampleRepository.AddCodeSample(codeSample);
 
             SelectedCodeSample = CodeSamples.Count - 1;
             StateHasChanged();
@@ -55,7 +66,6 @@ namespace Nethereum.TryOnBrowser.Pages
 
         protected override async Task OnInitAsync()
         {
-            _codeSampleRepository = new VBCodeSampleRepository(Client);
             CodeSamples = new List<CodeSample>();
 
             // initialise first empty CodeSample class for "Create New Sample"
@@ -65,7 +75,7 @@ namespace Nethereum.TryOnBrowser.Pages
             CodeSamples.Add(tmp);
 
             // load remaining code samples from repository
-            CodeSamples.AddRange(await _codeSampleRepository.GetCodeSamples());
+            CodeSamples.AddRange( CodeSampleRepository.GetCodeSamples(CodeLanguage.VbNet));
             SelectedCodeSample = 1;
 
             editorModel = new EditorModel
@@ -86,17 +96,17 @@ namespace Nethereum.TryOnBrowser.Pages
 
         public async Task CodeSampleChanged(UIChangeEventArgs evt)
         {
-            SelectedCodeSample = Int32.Parse(evt.Value.ToString());
+            SelectedCodeSample = int.Parse(evt.Value.ToString());
             if (SelectedCodeSample == 0)
             {
                 // prompt for file import
-                ModalServices.Show("Load File", typeof(ImportForm), ".vb");
+                ModalServices.ShowModal<LoadFile, LoadFileModel>("Load File", loadFileModel, "Model");
                 StateHasChanged();
             }
             else
             {
                 editorModel.Script = CodeSamples[SelectedCodeSample].Code;
-                await Monaco.Interop.EditorSetAsync(JSRuntime, editorModel);
+                await Interop.EditorSetAsync(JSRuntime, editorModel);
             }
         }
 
@@ -106,7 +116,7 @@ namespace Nethereum.TryOnBrowser.Pages
 
             Output = "";
 
-            editorModel = await Monaco.Interop.EditorGetAsync(JSRuntime, editorModel);
+            editorModel = await Interop.EditorGetAsync(JSRuntime, editorModel);
 
             Console.WriteLine("Compiling and Running code");
 

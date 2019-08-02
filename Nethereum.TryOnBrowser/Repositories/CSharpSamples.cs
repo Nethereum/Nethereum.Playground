@@ -1,57 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
 
-namespace Nethereum.TryOnBrowser.Pages
+namespace Nethereum.TryOnBrowser.Repositories
 {
-
-    public class GithubContent
+    public class CSharpSamples
     {
-        public string Name { get; set; }
-        public string Path { get; set; }
-
-    }
-    public class CodeSampleRepository
-    {
-        private HttpClient _httpClient;
-        private const string _githubPath = "nethereum/nethereum/nethereum.playground";
-
-        private const string _githubContentUrl =
-            "https://api.github.com/repos/Nethereum/Nethereum.Playground/contents/samples/csharp";
-
-        private const string _githubFileUrl =
-            "https://raw.githubusercontent.com/Nethereum/Nethereum.Playground/master/samples/csharp/";
-
-        private List<CodeSample> _codeSamples;
-
-        public CodeSampleRepository(HttpClient httpClient)
+        public static List<CodeSample> GetSamples()
         {
-            _httpClient = httpClient;
-            _codeSamples = new List<CodeSample>();
-        }
-
-        public async Task<List<CodeSample>> GetCodeSamples()
-        {
-            //var contents = await _httpClient.GetJsonAsync<GithubContent[]>(_githubContentUrl);
-            //Console.WriteLine(contents.Length);
-            //Console.WriteLine(contents[0].Name);
-
-
-            //foreach (var content in contents)
-            //{
-            //    //var code = await _httpClient.GetStringAsync(_githubFileUrl + content.Name);
-
-            //    _codeSamples.Add(new CodeSample()
-            //    {
-            //        Name = content.Name,
-            //       // Code = code   
-            //    });
-            //}
-
-            //return _codeSamples.ToArray();
-            return new List<CodeSample>
+            var samples = new List<CodeSample>
             {
 
                 new CodeSample()
@@ -89,8 +47,8 @@ public class Program
 }
                 "
                 },
-				
-				new CodeSample()
+
+                new CodeSample()
                 {
                     Name = "Chain information: Get Block number, Block, Transaction and Receipt using Infura",
                     Code = @"
@@ -138,10 +96,11 @@ public class EthRpcCalls_BlockNumber_Block_Transaction_Receipt
 	}
 
 }
-" },
+"
+                },
 
-								
-new CodeSample()
+
+                new CodeSample()
                 {
                     Name = "Ether: Transfer Ether to an account",
                     Code = @"				
@@ -182,12 +141,12 @@ public class Program
 
 }	
 "
-                },			
-				
+                },
+
                 new CodeSample()
                 {
-                    Name="Smart Contracts: Query ERC20 Smart contract balance",
-                    Code= @"
+                    Name = "Smart Contracts: Query ERC20 Smart contract balance",
+                    Code = @"
 using System;
 using System.Numerics;
 using System.Threading.Tasks;	
@@ -228,8 +187,8 @@ public class Program
 
 "
                 },
-				
-new CodeSample()
+
+                new CodeSample()
 
                 {
 
@@ -312,14 +271,15 @@ public class SmartContracts_DeployingContract
 
 "
 
-    },				
+                },
 
 
- new CodeSample()
+                new CodeSample()
 
                 {
 
-                    Name = "Smart Contracts: Smart Contracts Deployment, Querying, Transactions, Nonces, Estimating Gas, Gas Price",
+                    Name =
+                        "Smart Contracts: Smart Contracts Deployment, Querying, Transactions, Nonces, Estimating Gas, Gas Price",
 
                     Code = @"
 
@@ -655,9 +615,9 @@ public class GetStartedSmartContracts
 
 "
 
-                },				
-   
-   new CodeSample()
+                },
+
+                new CodeSample()
                 {
                     Name = "Smart contracts: Signing offline Function / Contract Deployment messages",
                     Code = @"
@@ -748,9 +708,10 @@ public class FunctionMessage_Signing
 
 
 
-" },
+"
+                },
 
-new CodeSample()
+                new CodeSample()
                 {
                     Name = "Smart contracts: Working with Structs",
                     Code = @"
@@ -1021,7 +982,8 @@ contract StructsSamplePO
 
 
 
-" },
+"
+                },
 
 
 
@@ -1059,7 +1021,7 @@ public class Program
                 },
 
 
-				new CodeSample()
+                new CodeSample()
                 {
                     Name = "Ether: Unit conversion between Ether and Wei",
                     Code = @"
@@ -1099,8 +1061,8 @@ public class Program
 }
                 "
                 },
-				
-				new CodeSample()
+
+                new CodeSample()
                 {
                     Name = "ABI Encoding: Encoding using ABI Values, Parameters and Default values",
                     Code = @"
@@ -1144,9 +1106,10 @@ public class AbiEncode_AbiValue_Parameters_Default
 		Console.WriteLine(""Encoded hello, 69 and world using Parameter attributes: "" + result);
     }
 }
-" },
-				
-				new CodeSample()
+"
+                },
+
+                new CodeSample()
                 {
                     Name = "ABI Encoding Packed: Encoding using ABI Values",
                     Code = @"
@@ -1190,8 +1153,9 @@ public class AbiEncodePacked_UsingABIValue
             
     }
 }
-" },
-				
+"
+                },
+
                 new CodeSample()
                 {
                     Name = "ABI Encoding Packed: Encoding using parameters",
@@ -1228,8 +1192,8 @@ public class AbiEncodePacked_UsingParams
 
 "
                 },
-				
-				
+
+
                 new CodeSample()
                 {
                     Name = "ABI Encoding Packed: Encoding using default values",
@@ -1262,10 +1226,10 @@ public class AbiEncodePacked_UsingDefaultValues
 
 "
                 },
-				
-				
-				
-				                new CodeSample()
+
+
+
+                new CodeSample()
                 {
                     Name = "Accounts: HD Wallets",
                     Code = @"
@@ -1483,8 +1447,8 @@ public class Program
 }
                 "
                 },
-				
-				new CodeSample()
+
+                new CodeSample()
                 {
                     Name = "Key Store: Create Scrypt based KeyStore using custom params",
                     Code = @"
@@ -1518,9 +1482,10 @@ public class Program
     }
 
 }
-" },
-				
-							
+"
+                },
+
+
                 new CodeSample()
                 {
                     Name = "Block Crawl Processing: Process block and cancel",
@@ -1570,8 +1535,8 @@ public class BlockProcessing_Cancellation
 }
                 "
                 },
-				
- new CodeSample()
+
+                new CodeSample()
                 {
                     Name = "Block Crawl Processing: Process blocks for a specific contract",
                     Code = @"
@@ -1624,7 +1589,7 @@ public class BlockProcessing_ForASpecificContract
                 "
                 },
 
- new CodeSample()
+                new CodeSample()
                 {
                     Name = "Block Crawl Processing: Process blocks for a specific function",
                     Code = @"
@@ -1680,9 +1645,9 @@ public class BlockProcessing_ForASpecificFunction
         Console.WriteLine($""Logs. Expected: 1, Actual: {filterLogs.Count}"");
     }
 }"
-                },	
+                },
 
- new CodeSample()
+                new CodeSample()
                 {
                     Name = "Block Crawl Processing: Full sample",
                     Code = @"
@@ -1772,7 +1737,7 @@ public class BlockProcessing_StartHere
 }"
                 },
 
- new CodeSample()
+                new CodeSample()
                 {
                     Name = "Block Crawl Processing: Transaction criteria",
                     Code = @"
@@ -1820,7 +1785,7 @@ public class BlockProcessing_WithTransactionCriteria
 }"
                 },
 
- new CodeSample()
+                new CodeSample()
                 {
                     Name = "Log Processing: Any contract any log",
                     Code = @"
@@ -1857,10 +1822,10 @@ public class LogProcessing_AnyContractAnyLog
 
 }"
 
-},
+                },
 
 
- new CodeSample()
+                new CodeSample()
                 {
                     Name = "Log Processing: Any contract any log with criteria",
                     Code = @"
@@ -1901,9 +1866,9 @@ public class LogProcessing_AnyContractAnyLogWithCriteria
 
 }"
 
-},
+                },
 
- new CodeSample()
+                new CodeSample()
                 {
                     Name = "Log Processing: Any contract many event async",
                     Code = @"
@@ -1980,9 +1945,9 @@ public class LogProcessing_AnyContractManyEventAsync
     }
 }"
 
-				},
+                },
 
-new CodeSample()
+                new CodeSample()
                 {
                     Name = "Log Processing: One contract many event async",
                     Code = @"
@@ -2060,9 +2025,10 @@ public class LogProcessing_OneContractManyEventsAsync
         Console.WriteLine($""Expected 2 ERC20 transfers. Logs found: {erc20transferEventLogs.Count}."");
         Console.WriteLine($""Expected 1 Approval. Logs found: {approvalEventLogs.Count}."");
     }
-}" },
+}"
+                },
 
-new CodeSample()
+                new CodeSample()
                 {
                     Name = "Log Processing: Any contract one event",
                     Code = @"
@@ -2115,9 +2081,10 @@ public class LogProcessing_AnyContractOneEvent
     }
 
 
-}" },
+}"
+                },
 
-new CodeSample()
+                new CodeSample()
                 {
                     Name = "Log Processing: Many contracts one event",
                     Code = @"
@@ -2172,9 +2139,10 @@ public class LogProcessing_ManyContractsOneEvent
 
   
 }
-" },
+"
+                },
 
-new CodeSample()
+                new CodeSample()
                 {
                     Name = "Log Processing: One contract any log",
                     Code = @"
@@ -2210,9 +2178,10 @@ public class LogProcessing_OneContractAnyLog
         Console.WriteLine($""Expected 4 logs. Logs found: {logs.Count}."");
     }
 }
-" },
+"
+                },
 
-new CodeSample()
+                new CodeSample()
                 {
                     Name = "Log Processing: One contract one event",
                     Code = @"
@@ -2265,9 +2234,10 @@ public class LogProcessing_OneContractOneEvent
     }
 
 }
-" },
+"
+                },
 
-new CodeSample()
+                new CodeSample()
                 {
                     Name = "Log Processing: One contract one event async",
                     Code = @"
@@ -2325,9 +2295,10 @@ public class LogProcessing_OneContractOneEventAsync
     }
 
 }
-" },
+"
+                },
 
-new CodeSample()
+                new CodeSample()
                 {
                     Name = "Log Processing: One contract one event with criteria",
                     Code = @"
@@ -2381,9 +2352,10 @@ public class LogProcessing_OneContractOneEventWithCriteria
     }
 
 }
-" },
+"
+                },
 
-new CodeSample()
+                new CodeSample()
                 {
                     Name = "Getting Started: Events",
                     Code = @"				
@@ -2784,7 +2756,7 @@ for (int i = 0; i < 2; i++)
 "
                 },
 
-new CodeSample()
+                new CodeSample()
                 {
                     Name = "Getting Started: Estimating Gas",
                     Code = @"
@@ -2966,11 +2938,17 @@ public class GettingStarted_EstimatingGas
     }
 
 }
-" }
+"
+                }
 
             };
+
+            foreach(var sample in samples)
+            {
+                sample.Language = CodeLanguage.CSharp;
+            }
+
+            return samples;
         }
-
     }
-
 }

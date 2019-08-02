@@ -1,0 +1,18 @@
+﻿@inherits LoadFileBase;
+
+    <div class="simple-form">
+        <div class="form-group">
+            <input type="file" accept="@Model.AllowedExtension" ref="@FileUpload" onchange="@OnChange" />
+            
+            @if (string.IsNullOrEmpty(Model.FileName))
+            {
+                <button class="btn btn-primary" disabled >Load file</button>
+            }
+            else
+            {
+                <button onclick="@ReadFile" class="btn btn-primary">Load file</button>
+            }
+       
+        </div>
+        <p><small>*Note that loaded files are temporary and will be discarded upon page refresh. Remember to save your file locally if you'd like to continue working on it.</small></p>
+    </div>

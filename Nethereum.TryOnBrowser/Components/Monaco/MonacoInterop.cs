@@ -1,7 +1,7 @@
-﻿using Microsoft.JSInterop;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.JSInterop;
 
-namespace Nethereum.TryOnBrowser.Monaco
+namespace Nethereum.TryOnBrowser.Components.Monaco
 {
 	public static class Interop
 	{

@@ -1,8 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Components;
-using Nethereum.TryOnBrowser.Modal;
 
-namespace Nethereum.TryOnBrowser.Pages
+namespace Nethereum.TryOnBrowser.Components.Modal
 {
     public class ModalBase : ComponentBase, IDisposable
     {

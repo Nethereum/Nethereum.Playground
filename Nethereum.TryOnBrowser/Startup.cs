@@ -9,17 +9,18 @@ namespace Nethereum.TryOnBrowser
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddBlazorModal();
+            services.AddCodeRepository();
         }
 
         public void Configure(IComponentsApplicationBuilder app)
         {
             //adding web3 and accounts to ensure they get included
+            //this is a workaround it will be removed in the future
             var web3 = new Nethereum.Web3.Web3();
             var account = new Nethereum.Web3.Accounts.Managed.ManagedAccount("", "");
-            string Words = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
-            string Password1 = "password";
-            var wallet = new Nethereum.HdWallet.Wallet(Words,Password1);
-            NBitcoin.Mnemonic mnemo = new NBitcoin.Mnemonic(NBitcoin.Wordlist.English, NBitcoin.WordCount.Twelve);
+            var words = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
+            var wallet = new Nethereum.HdWallet.Wallet(words, null);
+            
             app.AddComponent<App>("app");
         }
     }
