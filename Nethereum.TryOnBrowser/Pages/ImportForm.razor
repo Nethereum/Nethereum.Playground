@@ -9,30 +9,30 @@
 </div>
 
 @code {
-public ElementRef fileUpload { get; set; }
-public String fileName { get; set; }
-public String allowedExtension { get; protected set; }
+    public ElementRef fileUpload { get; set; }
+    public String fileName { get; set; }
+    public String allowedExtension { get; protected set; }
 
-protected override void OnInit()
-{
-    allowedExtension = ModalServices.Language;
-}
+    protected override void OnInit()
+    {
+        allowedExtension = ModalServices.Language;
+    }
 
-void OnChange(UIEventArgs eventArgs)
-{
-    var changeEventArgs = (UIChangeEventArgs)eventArgs;
-    fileName = changeEventArgs.Value.ToString().Remove(0, changeEventArgs.Value.ToString().LastIndexOf("\\") + 1);
-}
+    void OnChange(UIEventArgs eventArgs)
+    {
+        var changeEventArgs = (UIChangeEventArgs)eventArgs;
+        fileName = changeEventArgs.Value.ToString().Remove(0, changeEventArgs.Value.ToString().LastIndexOf("\\") + 1);
+    }
 
-async Task createFileReader()
-{
-    var fileReaderService = new Blazor.FileReader.FileReaderService(JSRuntime);
-    var file = await fileReaderService.CreateReference(fileUpload).EnumerateFilesAsync();
-    System.IO.Stream stream = await file.First().CreateMemoryStreamAsync(); //assuming it's only one file (?)
-    var sr = new System.IO.StreamReader(stream);
-    var filecontent = sr.ReadToEnd();
+    async Task createFileReader()
+    {
+        var fileReaderService = new Blazor.FileReader.FileReaderService(JSRuntime);
+        var file = await fileReaderService.CreateReference(fileUpload).EnumerateFilesAsync();
+        System.IO.Stream stream = await file.First().CreateMemoryStreamAsync(); //assuming it's only one file (?)
+        var sr = new System.IO.StreamReader(stream);
+        var filecontent = sr.ReadToEnd();
 
-    ModalServices.GetContent(filecontent, fileName);
-    ModalServices.Close();
-}
+        ModalServices.GetContent(filecontent, fileName);
+        ModalServices.Close();
+    }
 }
