@@ -32,14 +32,6 @@ namespace Nethereum.TryOnBrowser.Pages
 
         private LoadFileModel loadFileModel;
 
-
-        protected override void OnInit()
-        {
-            loadFileModel = new LoadFileModel();
-            loadFileModel.AllowedExtension = ".cs";
-            loadFileModel.ContentLoaded += FileLoaded;
-        }
-
         public async Task FileLoaded(string content, string fileName)
         {
             ModalServices.Close();
@@ -60,17 +52,12 @@ namespace Nethereum.TryOnBrowser.Pages
 
         protected override async Task OnInitAsync()
         {
-            CodeSamples = new List<CodeSample>();
+            await base.OnInitAsync();
+            loadFileModel = new LoadFileModel();
+            loadFileModel.AllowedExtension = ".cs";
+            loadFileModel.ContentLoaded += FileLoaded;
 
-            // initialise first empty CodeSample class for "Create New Sample"
-            var tmp = new CodeSample();
-            tmp.Code = "";
-            tmp.Name = "<Load Local .cs Sample>";
-            CodeSamples.Add(tmp);
-            
-            // load remaining code samples from repository
-            CodeSamples.AddRange(await CodeSampleRepository.GetCodeSamplesAsync(CodeLanguage.CSharp));
-            SelectedCodeSample = 1;
+            await LoadCodeSamplesAsync();
 
             editorModel = new EditorModel
             {
@@ -79,7 +66,7 @@ namespace Nethereum.TryOnBrowser.Pages
             };
 
             Compiler.InitializeMetadataReferences(Client);
-            await base.OnInitAsync();
+           
         }
 
         public void Run()
@@ -87,22 +74,48 @@ namespace Nethereum.TryOnBrowser.Pages
              Compiler.WhenReady(RunInternal);
         }
 
+        public async Task LoadSavedAsync()
+        {
+            await CodeSampleRepository.LoadUserSamplesAsync();
+            await LoadCodeSamplesAsync();
+        }
+
+        public async Task SaveAsync()
+        {
+            await CodeSampleRepository.SaveCustomCodeSamples();
+        }
+
+        public async Task RemoveAsync()
+        {
+            await CodeSampleRepository.RemoveCodeSampleAsync(CodeSamples[SelectedCodeSample]);
+            CodeSamples.Remove(CodeSamples[SelectedCodeSample]);
+            SelectedCodeSample = 0;
+        }
+
+        public async Task SaveAsAsync()
+        {
+
+        }
+
+        public async Task LoadCodeSamplesAsync()
+        {
+            CodeSamples = new List<CodeSample>();
+            var codeSamples = await CodeSampleRepository.GetCodeSamplesAsync(CodeLanguage.CSharp);
+            CodeSamples.AddRange(codeSamples);
+            SelectedCodeSample = 0;
+        }
+
+        public async Task LoadFromFileAsync()
+        {
+            ModalServices.ShowModal<LoadFile, LoadFileModel>("Load File", loadFileModel, "Model");
+            StateHasChanged();
+        }
 
         public async Task CodeSampleChanged(UIChangeEventArgs evt)
         {
             SelectedCodeSample = Int32.Parse(evt.Value.ToString());
-            if (SelectedCodeSample == 0)
-            {
-                // prompt for file import
-                
-                ModalServices.ShowModal<LoadFile, LoadFileModel>("Load File", loadFileModel, "Model");
-
-                StateHasChanged();
-            } else
-            {
-                editorModel.Script = CodeSamples[SelectedCodeSample].Code;
-                await Interop.EditorSetAsync(JSRuntime, editorModel);
-            }
+            editorModel.Script = CodeSamples[SelectedCodeSample].Code;
+            await Interop.EditorSetAsync(JSRuntime, editorModel);
         }
 
         public async Task RunInternal()

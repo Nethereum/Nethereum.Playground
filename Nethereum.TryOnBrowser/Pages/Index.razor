@@ -2,7 +2,7 @@
 
 @inherits IndexModel
 
-    <div class="card" style="width:1200px">
+    <div class="card" style="width:1400px">
         <div class="card-header">
             <h5>
                  Nethereum Playground
@@ -10,36 +10,80 @@
             <div class="sub-content"> The Nethereum Playground compiles and executes your .Net code in the browser using Wasm.</div>
         </div>
         <div class="card-body">
-
-            <div class="input-group m-2 row justify-content-end">
-                
-                <div class="input-group-prepend">
-                    <div class="input-group-text" id="selectCodeSample">Select code sample:</div>
-                </div>
-                <select id="selectCodeSample" class="form-control col-sm-7" onchange="@CodeSampleChanged">
-                    @for (int i = 0; i < CodeSamples.Count; i++)
+            <div class="btn-toolbar mb-3" role="toolbar">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-primary s-2 right" onclick="@LoadSavedAsync">Load Saved</button>
+                    <button class="btn btn-primary s-2 right" onclick="@LoadFromFileAsync">Open File</button>
+                    @if (@CodeSamples[SelectedCodeSample].Custom)
                     {
-                        if (i == @SelectedCodeSample)
-                        {
-                            <option value="@i" selected>@CodeSamples[i].Name</option>
-                        }
-                        else
-                        {
-                            <option value="@i">@CodeSamples[i].Name</option>
-
-                        }
+                        <button class="btn btn-primary s-2 right" onclick="@SaveAsync">Save</button>
                     }
-                </select>
-            </div>
+                    else
+                    {
+                        <button class="btn btn-primary s-2 right" disabled>Save</button>
+                    }
+                    <button class="btn btn-primary s-2 right" onclick="@SaveAsAsync">Save As</button>
+
+                    @if (@CodeSamples[SelectedCodeSample].Custom)
+                    {
+                        <button class="btn btn-primary s-2 right" onclick="@RemoveAsync">Remove</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary s-2 right" disabled>Remove</button>
+                    }
+                </div>
+                <div class="input-group m-2 row justify-content-end">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text" id="selectCodeSample">Select code sample:</div>
+                    </div>
+                    <select id="selectCodeSample" class="form-control col-sm-7" onchange="@CodeSampleChanged">
+                        @for (int i = 0; i < CodeSamples.Count; i++)
+                        {
+                            if (i == @SelectedCodeSample)
+                            {
+                                <option value="@i" selected>@TruncateTitle(CodeSamples[i].Name)</option>
+                            }
+                            else
+                            {
+                                <option value="@i">@TruncateTitle(CodeSamples[i].Name)</option>
+
+                            }
+                        }
+                    </select>
+                </div>
+           </div>
+                
+                <h5>@CodeSamples[SelectedCodeSample].Name</h5>
+
+                <div class="row">
+                    <MonacoEditor EditorModel="@editorModel" Width="1400" Height="600" />
+                </div>
 
 
-            <div class="row">
-                <MonacoEditor EditorModel="@editorModel" Width="1200" Height="600" />
-            </div>
-            <button class="btn btn-primary m-2 right" onclick="@Run">Run Code</button>
-            <div class="row form-group">
-                <label for="id=" txtOutput">Output</label>
-                <textarea bind="@Output" class="form-control" id="txtOutput" rows="10"></textarea>
+                <div class="btn-toolbar justify-content-between" role="toolbar">
+                    <div class="btn-group" role="group" aria-label="First group">
+                        <button class="btn btn-primary m-2 right" onclick="@Run">Run Code</button>
+                    </div>
+                </div>
+
+
+                <div class="row form-group">
+                    <label for="id=" txtOutput">Output</label>
+                    <textarea bind="@Output" class="form-control" id="txtOutput" rows="10"></textarea>
+                </div>
             </div>
         </div>
-    </div>
+
+@code
+{
+    public string TruncateTitle(string value)
+    {
+        return Truncate(value, 80);
+    }
+
+    public string Truncate(string value, int maxChars)
+    {
+        return value.Length <= maxChars ? value : value.Substring(0, maxChars) + "...";
+    }
+}

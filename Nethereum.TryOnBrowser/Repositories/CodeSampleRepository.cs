@@ -12,6 +12,7 @@ namespace Nethereum.TryOnBrowser.Repositories
 {
     public class CodeSampleRepository
     {
+        private const string _storageKey = "User samples";
         private HttpClient _httpClient;
 
         private List<CodeSample> _codeSamples = new List<CodeSample>();
@@ -27,19 +28,18 @@ namespace Nethereum.TryOnBrowser.Repositories
          
         }
 
-        private async Task LoadUserSamplesAsync()
+        public async Task LoadUserSamplesAsync()
         {
             if (LocalStorage == null) Console.WriteLine("This is nulll");
+            
             if (!loadedUserSamples && LocalStorage != null)
             {
+                var samples = await LocalStorage.GetItem<CodeSample[]>(_storageKey);
 
-                //var samples = await LocalStorage.GetItem<CodeSample[]>("User samples");
-
-
-                //if (samples != null)
-                //{
-                //    _codeSamples.AddRange(samples);
-                //}
+                if (samples != null)
+                {
+                   _codeSamples.AddRange(samples);
+                }
 
                 loadedUserSamples = true;
             }
@@ -54,22 +54,24 @@ namespace Nethereum.TryOnBrowser.Repositories
         public Task SaveCustomCodeSamples()
         {
             Console.WriteLine("writing");
-            return LocalStorage.SetItem("User samples", _codeSamples.Where(x => x.Custom).ToArray());
+            return LocalStorage.SetItem(_storageKey, _codeSamples.Where(x => x.Custom).ToArray());
         }
 
-        public void RemoveCodeSample(CodeSample codeSample)
+        public Task RemoveCodeSampleAsync(CodeSample codeSample)
         {
             if (codeSample.Custom)
             {
                 _codeSamples.Remove(codeSample);
             }
+
+            return SaveCustomCodeSamples();
         }
 
         public async Task<List<CodeSample>> GetCodeSamplesAsync(CodeLanguage language)
         {
-            await LoadUserSamplesAsync();
             return _codeSamples.Where(x => x.Language == language).ToList();
         }
+        
 
         public void LoadCSharpSamples()
         {
