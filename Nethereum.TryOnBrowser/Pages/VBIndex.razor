@@ -2,14 +2,37 @@
 
 @inherits VBIndexModel
 
-    <div class="card" style="width:1200px">
-        <div class="card-header">
-            <h5> Nethereum Playground
-            </h5>
-            <div class="sub-content"> The Nethereum Playground compiles and executes your .Net code in the browser using Wasm.</div>
-        </div>
-        <div class="card-body">
+<div class="card" style="width:1400px">
+    <div class="card-header">
+        <h5>
+            Nethereum Playground
+        </h5>
+        <div class="sub-content"> The Nethereum Playground compiles and executes your .Net code in the browser using Wasm.</div>
+    </div>
+    <div class="card-body">
+        <div class="btn-toolbar mb-3" role="toolbar">
+            <div class="btn-group" role="group">
+                <button class="btn btn-primary s-2 right" onclick="@LoadSavedAsync">Load Saved</button>
+                <button class="btn btn-primary s-2 right" onclick="@LoadFromFileAsync">Open File</button>
+                @if (@CodeSamples[SelectedCodeSample].Custom)
+                {
+                    <button class="btn btn-primary s-2 right" onclick="@SaveAsync">Save</button>
+                }
+                else
+                {
+                    <button class="btn btn-primary s-2 right" disabled>Save</button>
+                }
+                <button class="btn btn-primary s-2 right" onclick="@SaveAsAsync">Save As</button>
 
+                @if (@CodeSamples[SelectedCodeSample].Custom)
+                {
+                    <button class="btn btn-primary s-2 right" onclick="@RemoveAsync">Remove</button>
+                }
+                else
+                {
+                    <button class="btn btn-primary s-2 right" disabled>Remove</button>
+                }
+            </div>
             <div class="input-group m-2 row justify-content-end">
                 <div class="input-group-prepend">
                     <div class="input-group-text" id="selectCodeSample">Select code sample:</div>
@@ -19,23 +42,36 @@
                     {
                         if (i == @SelectedCodeSample)
                         {
-                            <option value="@i" selected>@CodeSamples[i].Name</option>
+                            <option value="@i" selected>@GetDisplayTitle(CodeSamples[i])</option>
                         }
                         else
                         {
-                            <option value="@i">@CodeSamples[i].Name</option>
+                            <option value="@i">@GetDisplayTitle(CodeSamples[i])</option>
 
                         }
                     }
                 </select>
             </div>
-            <div class="row">
-                <MonacoEditor EditorModel="@editorModel" Width="1200" Height="600" />
-            </div>
-            <button class="btn btn-primary m-2 right" onclick="@Run">Run Code</button>
-            <div class="row form-group">
-                <label for="id=" txtOutput">Output</label>
-                <textarea bind=@Output class="form-control" id="txtOutput" rows="10"></textarea>
+        </div>
+
+        <h5>@CodeSamples[SelectedCodeSample].Name</h5>
+
+        <div class="row">
+            <MonacoEditor EditorModel="@editorModel" Width="1400" Height="600" />
+        </div>
+
+
+        <div class="btn-toolbar justify-content-between" role="toolbar">
+            <div class="btn-group" role="group" aria-label="First group">
+                <button class="btn btn-primary m-2 right" onclick="@Run">Run Code</button>
             </div>
         </div>
+
+
+        <div class="row form-group">
+            <label for="id=" txtOutput">Output</label>
+            <textarea @bind="@Output" class="form-control" id="txtOutput" rows="10"></textarea>
         </div>
+    </div>
+</div>
+

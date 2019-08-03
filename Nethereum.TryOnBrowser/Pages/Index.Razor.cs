@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
@@ -16,21 +17,25 @@ using Nethereum.TryOnBrowser.Components.Monaco;
 namespace Nethereum.TryOnBrowser.Pages
 {
     // Based on https://github.com/Suchiman/Runny all credit to him
-    public class IndexModel : ComponentBase
+
+    public abstract class EditorModelBase : ComponentBase
     {
+
         protected EditorModel editorModel;
         [Inject] ModalService ModalServices { get; set; }
 
-        [Inject] public IJSRuntime JSRuntime { get; set; }        
-        protected string Output {get; set;}
+        [Inject] public IJSRuntime JSRuntime { get; set; }
+        protected string Output { get; set; }
         [Inject] private HttpClient Client { get; set; }
 
-        [Inject] public CodeSampleRepository CodeSampleRepository { get; set;}
+        [Inject] public CodeSampleRepository CodeSampleRepository { get; set; }
 
         public List<CodeSample> CodeSamples { get; protected set; }
         public int SelectedCodeSample { get; protected set; }
 
         private LoadFileModel loadFileModel;
+
+        private SaveAsFileModel savesAsFileModel;
 
         public async Task FileLoaded(string content, string fileName)
         {
@@ -38,40 +43,62 @@ namespace Nethereum.TryOnBrowser.Pages
             editorModel.Script = content;
             await Interop.EditorSetAsync(JSRuntime, editorModel);
 
-            // create a CodeSample object for this, and point to it
-            var codeSample = new CodeSample {Code = content,
-                                            Name = "My samples: " + fileName,
-                                            Language = CodeLanguage.CSharp,
-                                            Custom = true};
+            await AddNewCodeSample(content, fileName);
+        }
+
+        private async Task AddNewCodeSample(string content, string fileName)
+        {
+            var codeSample = new CodeSample
+            {
+                Code = content,
+                Name = fileName,
+                Language = GetCodeLanguage(),
+                Custom = true
+            };
             CodeSamples.Add(codeSample);
             await CodeSampleRepository.AddCodeSampleAsync(codeSample);
 
-            SelectedCodeSample = CodeSamples.Count -1;
+            SelectedCodeSample = CodeSamples.Count - 1;
             StateHasChanged();
         }
+
+        public abstract CodeLanguage GetCodeLanguage();
 
         protected override async Task OnInitAsync()
         {
             await base.OnInitAsync();
             loadFileModel = new LoadFileModel();
-            loadFileModel.AllowedExtension = ".cs";
+            loadFileModel.AllowedExtension = GetAllowedExtension();
             loadFileModel.ContentLoaded += FileLoaded;
+
+            savesAsFileModel = new SaveAsFileModel();
+            savesAsFileModel.SaveFileAs += SaveAsAsyncCallBack;
 
             await LoadCodeSamplesAsync();
 
             editorModel = new EditorModel
             {
-                Language = "csharp",
+                Language = GetEditorLanguage(),
                 Script = CodeSamples[SelectedCodeSample].Code
             };
 
             Compiler.InitializeMetadataReferences(Client);
-           
+
+        }
+
+        public abstract string GetEditorLanguage();
+        public abstract string GetAllowedExtension();
+
+
+        public async Task SaveAsAsyncCallBack(string content, string name)
+        {
+            ModalServices.Close();
+            await AddNewCodeSample(content, name);
         }
 
         public void Run()
         {
-             Compiler.WhenReady(RunInternal);
+            Compiler.WhenReady(RunInternal);
         }
 
         public async Task LoadSavedAsync()
@@ -94,13 +121,15 @@ namespace Nethereum.TryOnBrowser.Pages
 
         public async Task SaveAsAsync()
         {
-
+            savesAsFileModel.Init(CodeSamples[SelectedCodeSample].Name, editorModel.Script);
+            ModalServices.ShowModal<SaveAsFile, SaveAsFileModel>("Save As", savesAsFileModel, "Model");
+            StateHasChanged();
         }
 
         public async Task LoadCodeSamplesAsync()
         {
             CodeSamples = new List<CodeSample>();
-            var codeSamples = await CodeSampleRepository.GetCodeSamplesAsync(CodeLanguage.CSharp);
+            var codeSamples = await CodeSampleRepository.GetCodeSamplesAsync(GetCodeLanguage());
             CodeSamples.AddRange(codeSamples);
             SelectedCodeSample = 0;
         }
@@ -118,13 +147,20 @@ namespace Nethereum.TryOnBrowser.Pages
             await Interop.EditorSetAsync(JSRuntime, editorModel);
         }
 
+        public string GetDisplayTitle(CodeSample codeSample)
+        {
+            return Truncate(codeSample.DisplayTitle, 80);
+        }
+
+        public string Truncate(string value, int maxChars)
+        {
+            return value.Length <= maxChars ? value : value.Substring(0, maxChars) + "...";
+        }
+
         public async Task RunInternal()
         {
             Output = "";
             editorModel = await Interop.EditorGetAsync(JSRuntime, editorModel);
-            Console.WriteLine("Compiling and Running code");
-
-            var sw = Stopwatch.StartNew();
 
             var currentOut = Console.Out;
             var writer = new StringWriter();
@@ -133,23 +169,7 @@ namespace Nethereum.TryOnBrowser.Pages
             Exception exception = null;
             try
             {
-                var (success, asm, rawBytes) = Compiler.LoadSource(editorModel.Script, editorModel.Language);
-
-                if (success)
-                {
-                    var assembly = AppDomain.CurrentDomain.Load(rawBytes);
-                    var entry = assembly.EntryPoint;
-                    if (entry.Name == "<Main>") // sync wrapper over async Task Main
-                    {
-                        entry = entry.DeclaringType.GetMethod("Main", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static); // reflect for the async Task Main
-                    }
-                    var hasArgs = entry.GetParameters().Length > 0;
-                    var result = entry.Invoke(null, hasArgs ? new object[] { new string[0] } : null);
-                    if (result is Task t)
-                    {
-                        await t;
-                    }
-                }
+                await CompileAndRun();
             }
             catch (Exception ex)
             {
@@ -164,13 +184,57 @@ namespace Nethereum.TryOnBrowser.Pages
             }
 
             Console.SetOut(currentOut);
-            Console.WriteLine("Output " + Output);
 
-            sw.Stop();
-
-            Console.WriteLine("Done in " + sw.ElapsedMilliseconds + "ms");
             StateHasChanged();
         }
+
+        protected abstract Task CompileAndRun();
+       
     }
+
+    public class IndexModel : EditorModelBase
+    {
+        public override string GetEditorLanguage()
+        {
+            return "csharp";
+        }
+
+        public override string GetAllowedExtension()
+        {
+            return ".cs";
+        }
+
+        public override CodeLanguage GetCodeLanguage()
+        {
+            return CodeLanguage.CSharp;
+        }
+
+        protected override async Task CompileAndRun()
+        {
+            var (success, asm, rawBytes) = Compiler.LoadSource(editorModel.Script, editorModel.Language);
+
+            if (success)
+            {
+                var assembly = AppDomain.CurrentDomain.Load(rawBytes);
+                var entry = assembly.EntryPoint;
+                if (entry.Name == "<Main>") // sync wrapper over async Task Main
+                {
+                    entry = entry.DeclaringType.GetMethod("Main",
+                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static); // reflect for the async Task Main
+                }
+
+                var hasArgs = entry.GetParameters().Length > 0;
+                var result = entry.Invoke(null, hasArgs ? new object[] { new string[0] } : null);
+                if (result is Task t)
+                {
+                    await t;
+                }
+            }
+        }
+
+    }
+
+   
+
 }
 

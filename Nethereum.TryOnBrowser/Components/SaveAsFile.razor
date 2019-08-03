@@ -1,0 +1,21 @@
+﻿@inherits SaveAsFileBase;
+
+    <div class="simple-form">
+        <div class="form-group">
+
+            <label for="newName">New Name:</label>
+            <input type="newName" class="form-control" @bind="@Model.NewName" aria-describedby="newNameHelp" placeholder="Copy: @Model.OriginalName"/>
+            <small id="newNameHelp" class="form-text text-muted">Saving copy of: @Model.OriginalName</small>
+            
+            @if (string.IsNullOrEmpty(Model.NewName))
+            {
+                <button class="btn btn-primary" disabled >Save code</button>
+            }
+            else
+            {
+                <button onclick="@Model.SaveFileAsAsync" class="btn btn-primary">Save code</button>
+            }
+       
+        </div>
+        <p><small>*Note that files are saved on the browser local storage</small></p>
+    </div>

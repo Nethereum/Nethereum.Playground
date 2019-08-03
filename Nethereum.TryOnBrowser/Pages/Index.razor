@@ -1,5 +1,5 @@
 ﻿@page "/"
-
+@using Nethereum.TryOnBrowser.Repositories;
 @inherits IndexModel
 
     <div class="card" style="width:1400px">
@@ -42,11 +42,11 @@
                         {
                             if (i == @SelectedCodeSample)
                             {
-                                <option value="@i" selected>@TruncateTitle(CodeSamples[i].Name)</option>
+                                <option value="@i" selected>@GetDisplayTitle(CodeSamples[i])</option>
                             }
                             else
                             {
-                                <option value="@i">@TruncateTitle(CodeSamples[i].Name)</option>
+                                <option value="@i">@GetDisplayTitle(CodeSamples[i])</option>
 
                             }
                         }
@@ -70,20 +70,8 @@
 
                 <div class="row form-group">
                     <label for="id=" txtOutput">Output</label>
-                    <textarea bind="@Output" class="form-control" id="txtOutput" rows="10"></textarea>
+                    <textarea @bind="@Output" class="form-control" id="txtOutput" rows="10"></textarea>
                 </div>
             </div>
         </div>
 
-@code
-{
-    public string TruncateTitle(string value)
-    {
-        return Truncate(value, 80);
-    }
-
-    public string Truncate(string value, int maxChars)
-    {
-        return value.Length <= maxChars ? value : value.Substring(0, maxChars) + "...";
-    }
-}
