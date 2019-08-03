@@ -31,8 +31,8 @@ window.BlazorBitsMonacoInterop = {
         }
 
         // Update the model
-        editorModel.Script = myEditor.editor.getValue();
-
+        editorModel.script = myEditor.editor.getValue();
+       
         return editorModel;
     },
 

@@ -51,20 +51,21 @@ namespace Nethereum.TryOnBrowser.Repositories
             return SaveCustomCodeSamples();
         }
 
-        public Task SaveCustomCodeSamples()
+        public async Task SaveCustomCodeSamples()
         {
-            Console.WriteLine("writing");
-            return LocalStorage.SetItem(_storageKey, _codeSamples.Where(x => x.Custom).ToArray());
+            await LoadUserSamplesAsync();
+            await LocalStorage.SetItem(_storageKey, _codeSamples.Where(x => x.Custom).ToArray());
         }
 
-        public Task RemoveCodeSampleAsync(CodeSample codeSample)
+        public async Task RemoveCodeSampleAsync(CodeSample codeSample)
         {
+            await LoadUserSamplesAsync();
             if (codeSample.Custom)
             {
                 _codeSamples.Remove(codeSample);
             }
 
-            return SaveCustomCodeSamples();
+            await SaveCustomCodeSamples();
         }
 
         public async Task<List<CodeSample>> GetCodeSamplesAsync(CodeLanguage language)

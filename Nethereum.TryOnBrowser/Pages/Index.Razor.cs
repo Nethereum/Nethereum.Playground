@@ -109,6 +109,8 @@ namespace Nethereum.TryOnBrowser.Pages
 
         public async Task SaveAsync()
         {
+            editorModel = await Interop.EditorGetAsync(JSRuntime, editorModel);
+            CodeSamples[SelectedCodeSample].Code = editorModel.Script;
             await CodeSampleRepository.SaveCustomCodeSamples();
         }
 
@@ -121,6 +123,7 @@ namespace Nethereum.TryOnBrowser.Pages
 
         public async Task SaveAsAsync()
         {
+            editorModel = await Interop.EditorGetAsync(JSRuntime, editorModel);
             savesAsFileModel.Init(CodeSamples[SelectedCodeSample].Name, editorModel.Script);
             ModalServices.ShowModal<SaveAsFile, SaveAsFileModel>("Save As", savesAsFileModel, "Model");
             StateHasChanged();
