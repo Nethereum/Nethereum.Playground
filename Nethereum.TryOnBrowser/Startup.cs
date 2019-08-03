@@ -1,6 +1,8 @@
+using Blazor.Extensions.Storage;
 using Microsoft.AspNetCore.Components.Builder;
 using Nethereum.TryOnBrowser.ServiceCollectionExtensions;
 using Microsoft.Extensions.DependencyInjection;
+using Blazor.FileReader;
 
 namespace Nethereum.TryOnBrowser
 {
@@ -8,8 +10,12 @@ namespace Nethereum.TryOnBrowser
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddStorage();
             services.AddBlazorModal();
             services.AddCodeRepository();
+            services.AddFileReaderService();
+
+
         }
 
         public void Configure(IComponentsApplicationBuilder app)

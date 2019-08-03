@@ -40,7 +40,7 @@ namespace Nethereum.TryOnBrowser.Pages
             loadFileModel.ContentLoaded += FileLoaded;
         }
 
-        public async void FileLoaded(string content, string fileName)
+        public async Task FileLoaded(string content, string fileName)
         {
             ModalServices.Close();
             editorModel.Script = content;
@@ -52,7 +52,7 @@ namespace Nethereum.TryOnBrowser.Pages
                                             Language = CodeLanguage.CSharp,
                                             Custom = true};
             CodeSamples.Add(codeSample);
-            CodeSampleRepository.AddCodeSample(codeSample);
+            await CodeSampleRepository.AddCodeSampleAsync(codeSample);
 
             SelectedCodeSample = CodeSamples.Count -1;
             StateHasChanged();
@@ -69,7 +69,7 @@ namespace Nethereum.TryOnBrowser.Pages
             CodeSamples.Add(tmp);
             
             // load remaining code samples from repository
-            CodeSamples.AddRange(CodeSampleRepository.GetCodeSamples(CodeLanguage.CSharp));
+            CodeSamples.AddRange(await CodeSampleRepository.GetCodeSamplesAsync(CodeLanguage.CSharp));
             SelectedCodeSample = 1;
 
             editorModel = new EditorModel

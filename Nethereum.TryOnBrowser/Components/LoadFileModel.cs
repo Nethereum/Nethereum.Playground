@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Nethereum.TryOnBrowser.Components
 {
@@ -13,13 +14,20 @@ namespace Nethereum.TryOnBrowser.Components
         public string FileContent
         {
             get => _fileContent;
-            set
-            {
-                _fileContent = value;
-                ContentLoaded?.Invoke(_fileContent, FileName);
-            }
+            
         }
 
-        public event Action<string, string> ContentLoaded;
+        public async Task SetFileContentAsync(string content)
+        {
+        
+            _fileContent = content;
+            if (ContentLoaded != null)
+            {
+                await ContentLoaded.Invoke(_fileContent, FileName);
+            }
+
+        }
+
+        public event Func<string, string, Task> ContentLoaded;
     }
 }

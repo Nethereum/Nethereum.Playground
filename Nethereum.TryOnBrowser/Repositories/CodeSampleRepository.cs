@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using Blazor.Extensions.Storage;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace Nethereum.TryOnBrowser.Repositories
 {
@@ -11,21 +16,45 @@ namespace Nethereum.TryOnBrowser.Repositories
 
         private List<CodeSample> _codeSamples = new List<CodeSample>();
 
-        public CodeSampleRepository(HttpClient httpClient)
+        public LocalStorage LocalStorage { get; set; }
+
+        public CodeSampleRepository(HttpClient httpClient, IJSRuntime runtime)
         {
+            LocalStorage = new LocalStorage(runtime);
             _httpClient = httpClient;
             LoadCSharpSamples();
             LoadVbSamples();
+         
         }
 
-        public void AddCodeSample(CodeSample codeSample)
+        private async Task LoadUserSamplesAsync()
+        {
+            if (LocalStorage == null) Console.WriteLine("This is nulll");
+            if (!loadedUserSamples && LocalStorage != null)
+            {
+
+                //var samples = await LocalStorage.GetItem<CodeSample[]>("User samples");
+
+
+                //if (samples != null)
+                //{
+                //    _codeSamples.AddRange(samples);
+                //}
+
+                loadedUserSamples = true;
+            }
+        }
+
+        public Task AddCodeSampleAsync(CodeSample codeSample)
         {
             _codeSamples.Add(codeSample);
+            return SaveCustomCodeSamples();
         }
 
-        public void SaveCustomCodeSamples()
+        public Task SaveCustomCodeSamples()
         {
-            //_codeSamples.Add(codeSample);
+            Console.WriteLine("writing");
+            return LocalStorage.SetItem("User samples", _codeSamples.Where(x => x.Custom).ToArray());
         }
 
         public void RemoveCodeSample(CodeSample codeSample)
@@ -36,8 +65,9 @@ namespace Nethereum.TryOnBrowser.Repositories
             }
         }
 
-        public List<CodeSample> GetCodeSamples(CodeLanguage language)
+        public async Task<List<CodeSample>> GetCodeSamplesAsync(CodeLanguage language)
         {
+            await LoadUserSamplesAsync();
             return _codeSamples.Where(x => x.Language == language).ToList();
         }
 
@@ -50,6 +80,9 @@ namespace Nethereum.TryOnBrowser.Repositories
         {
             _codeSamples.AddRange(VbNetSamples.GetSamples());
         }
+
+        private bool loadedUserSamples = false;
+
 
     }
 
