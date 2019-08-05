@@ -163,7 +163,7 @@ namespace Nethereum.TryOnBrowser.Components.PlaygroundEditor
         {
             editorModel = await Interop.EditorGetAsync(JSRuntime, editorModel);
             await JSRuntime.SaveAs(CodeSamples[SelectedCodeSample].GetFileName(),
-                UTF8Encoding.Unicode.GetBytes(editorModel.Script));
+                UTF8Encoding.UTF8.GetBytes(editorModel.Script));
         }
 
         public async Task SaveAsync()
