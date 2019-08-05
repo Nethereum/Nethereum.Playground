@@ -1,4 +1,6 @@
-﻿namespace Nethereum.TryOnBrowser.Repositories
+﻿using System;
+
+namespace Nethereum.TryOnBrowser.Repositories
 {
     public class CodeSample
     {
@@ -13,6 +15,19 @@
             {
                 if (Custom) return "My Sample:" + Name;
                 return Name;
+            }
+        }
+
+        public string GetFileName()
+        {
+            switch (Language)
+            {
+                case CodeLanguage.CSharp:
+                    return Name + ".cs";
+                case CodeLanguage.VbNet:
+                    return Name + ".vb";
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
         

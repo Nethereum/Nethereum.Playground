@@ -12,9 +12,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="NetDapps\AssemblyCache.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="wwwroot\js\BlazorComponents.js">
       <LogicalName>blazor:js:%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="NetDapps\AssemblyCache.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,10 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Nethereum.TryOnBrowser.Components.FileUtils;
 using Nethereum.TryOnBrowser.Components.Modal;
 using Nethereum.TryOnBrowser.Components.Monaco;
 using Nethereum.TryOnBrowser.Repositories;
@@ -155,6 +157,13 @@ namespace Nethereum.TryOnBrowser.Components.PlaygroundEditor
         {
             await CodeSampleRepository.LoadUserSamplesAsync();
             await LoadCodeSamplesAsync();
+        }
+
+        public async Task SaveToFileAsync()
+        {
+            editorModel = await Interop.EditorGetAsync(JSRuntime, editorModel);
+            await JSRuntime.SaveAs(CodeSamples[SelectedCodeSample].GetFileName(),
+                UTF8Encoding.Unicode.GetBytes(editorModel.Script));
         }
 
         public async Task SaveAsync()

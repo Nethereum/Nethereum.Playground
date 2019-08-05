@@ -12,6 +12,7 @@
         <div class="btn-toolbar mb-3" role="toolbar">
             <div class="btn-group" role="group">
                 <button class="btn btn-primary s-2 right" onclick="@LoadFromFileAsync">Open File</button>
+                <button class="btn btn-primary s-2 right" onclick="@SaveToFileAsync">Save File</button>
                 @if (@CodeSamples[SelectedCodeSample].Custom)
                 {
                     <button class="btn btn-primary s-2 right" onclick="@SaveAsync">Save</button>
