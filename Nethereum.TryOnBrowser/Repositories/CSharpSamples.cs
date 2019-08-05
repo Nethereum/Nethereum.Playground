@@ -617,6 +617,593 @@ public class GetStartedSmartContracts
 
                 },
 
+                 new CodeSample()
+                {
+                    Name = "Smart Contracts: Events",
+                    Code = @"				
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Util;
+using Nethereum.Contracts;
+using Nethereum.Contracts.Extensions;
+using Nethereum.Contracts.CQS;
+using System.Numerics;
+
+public class GettingStarted_Events
+{
+
+						// Events in smart contracts write data to the transaction receipt logs, providing a way to get extra information
+						//about a smart contract transactions.
+
+						// A very good example is the “Transfer” event in the ERC20 Standard Token contract.
+						//Everytime that a token transfer has ocurred, an event gets logged providing information of the “sender”,
+						// “receiver” and the token amount. In this scenario we are only interested
+						// in the Deployment, Transfer function and Transfer Event of the ERC20 smart contract.
+						//
+						//_____________________________________________________________________________________________________
+						//
+						// event Transfer(address indexed _from, address indexed _to, uint256 _value);
+						//
+						// function transfer(address _to, uint256 _value) public returns (bool success) {
+						//     require(balances[msg.sender] >= _value, ""Balance amount lower than amount requested"");
+						//     balances[msg.sender] -= _value;
+						//     balances[_to] += _value;
+						//     emit Transfer(msg.sender, _to, _value);
+						//     return true;
+						//}
+						//_____________________________________________________________________________________________________
+						//
+						// 
+						// Above we can see, the event declaration with the different indexed parameters, these will allow us
+						// later on to “filter” for specific events.
+						// For example ,“Transfer” events for a specific receiver address “\_to”.
+
+						// The Transfer event can be seen in the function prefixed with the “emit” keyword.
+
+
+
+						// To deploy a contract we will create a class inheriting from the ContractDeploymentMessage,
+						// here we can include our compiled byte code and other constructor parameters.
+
+						// As we can see below the StandardToken deployment message includes the compiled bytecode of the ERC20
+						// smart contract and the constructor parameter with the “totalSupply” of tokens.
+
+						// Each parameter is described with an attribute Parameter, including its name
+						// ""totalSupply"", type ""uint256"" and order.
+
+						///**** START CONTRACT DEFINITION
+						public class StandardTokenDeployment : ContractDeploymentMessage
+						{
+
+								public static string BYTECODE = ""0x60606040526040516020806106f5833981016040528080519060200190919050505b80600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005081905550806000600050819055505b506106868061006f6000396000f360606040523615610074576000357c010000000000000000000000000000000000000000000000000000000090048063095ea7b31461008157806318160ddd146100b657806323b872dd146100d957806370a0823114610117578063a9059cbb14610143578063dd62ed3e1461017857610074565b61007f5b610002565b565b005b6100a060048080359060200190919080359060200190919050506101ad565b6040518082815260200191505060405180910390f35b6100c36004805050610674565b6040518082815260200191505060405180910390f35b6101016004808035906020019091908035906020019091908035906020019091905050610281565b6040518082815260200191505060405180910390f35b61012d600480803590602001909190505061048d565b6040518082815260200191505060405180910390f35b61016260048080359060200190919080359060200190919050506104cb565b6040518082815260200191505060405180910390f35b610197600480803590602001909190803590602001909190505061060b565b6040518082815260200191505060405180910390f35b600081600260005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008573ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905061027b565b92915050565b600081600160005060008673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561031b575081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505410155b80156103275750600082115b1561047c5781600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a381600160005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505403925050819055506001905061048656610485565b60009050610486565b5b9392505050565b6000600160005060008373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505490506104c6565b919050565b600081600160005060003373ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561050c5750600082115b156105fb5781600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905061060556610604565b60009050610605565b5b92915050565b6000600260005060008473ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005054905061066e565b92915050565b60006000600050549050610683565b9056"";
+
+								public StandardTokenDeployment() : base(BYTECODE){}
+
+								[Parameter(""uint256"", ""totalSupply"")]
+								public BigInteger TotalSupply { get; set; }
+						}
+
+
+						// We can call the functions of smart contract to query the state of a smart contract or do any computation,
+						// which will not affect the state of the blockchain.
+
+						// To do so we will need to create a class which inherits from ""FunctionMessage"".
+						// First we will decorate the class with a ""Function"" attribute, including the name and return type.
+
+						// Each parameter of the the function will be a property of the class, each of them decorated with the
+						// ""Parameter"" attribute, including the smart contract name, type and parameter order.
+
+						// For the ERC20 smart contract, the ""balanceOf"" function definition, provides the query interface
+						// to get the token balance of a given address. As we can see this function includes only one parameter
+						// ""\_owner"", of the type ""address"".
+
+
+						[Function(""balanceOf"", ""uint256"")]
+						public class BalanceOfFunction : FunctionMessage
+						{
+								[Parameter(""address"", ""_owner"", 1)]
+								public string Owner { get; set; }
+						}
+
+
+						// Another type of smart contract function will be correspondent to a transaction that will change
+						// the state of the smart contract (or smart contracts).
+
+						// For example The ""transfer"" function definition for the ERC20 smart contract, includes the parameters
+						// “\_to” address parameter as a string, and the “\_value”
+						// or TokenAmount we want to transfer.
+
+						// In a similar way to the ""balanceOf"" function, all the parameters include the solidity type,
+						// parameter name and parameter order.
+
+						// Note: When working with functions, it is very important to have the parameters types, and function name
+						// correct as all of these make the signature of the function.
+
+
+						[Function(""transfer"", ""bool"")]
+						public class TransferFunction : FunctionMessage
+						{
+								[Parameter(""address"", ""_to"", 1)]
+								public string To { get; set; }
+
+								[Parameter(""uint256"", ""_value"", 2)]
+								public BigInteger TokenAmount { get; set; }
+						}
+
+
+						// Finally smart contracts also have events. Events in smart contracts write the blockchain log,
+						// providing a way to retrieve further information of any smart contract interaction occurred.
+
+						// To create an Event definition, we need to create a class that inherits from IEventDTO,
+						// decorated with the Event attribute.
+
+						// The Transfer Event, similar to the Function it also includes the parameters with the name,
+						// order and type. But also a boolean value indicating if the parameter is indexed or not.
+
+						// Indexed parameters will allow us later on to query the blockchain for those values.
+
+
+						[Event(""Transfer"")]
+						public class TransferEventDTO : IEventDTO
+						{
+								[Parameter(""address"", ""_from"", 1, true)]
+								public string From { get; set; }
+
+								[Parameter(""address"", ""_to"", 2, true)]
+								public string To { get; set; }
+
+								[Parameter(""uint256"", ""_value"", 3, false)]
+								public BigInteger Value { get; set; }
+						}
+						
+					///**** END CONTRACT DEFINITION
+					
+
+					public static async Task Main(string[] args)
+					{
+
+						// ### Instantiating Web3 and the Account
+
+						// To create an instance of web3 we first provide the url of our testchain and the private key of our account.
+						// When providing an Account instantiated with a  private key all our transactions will be signed
+						// “offline” by Nethereum.
+
+
+						var url = ""http://testchain.nethereum.com:8545"";
+						var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+						var account = new Account(privateKey);
+						var web3 = new Web3(account, url);
+
+
+						// ### Deploying the Contract
+
+						// The next step is to deploy our Standard Token ERC20 smart contract, in this scenario the total supply
+						// (number of tokens) is going to be 100,000.
+
+						// First we create an instance of the StandardTokenDeployment with the TotalSupply amount.
+
+
+						var deploymentMessage = new StandardTokenDeployment
+						{
+								TotalSupply = 100000
+						};
+
+
+						// Then we create a deployment handler using our contract deployment definition and simply deploy the
+						// contract using the deployment message. We are auto estimating the gas, getting the latest gas price
+						// and nonce so nothing else is set anything on the deployment message.
+
+						// Finally, we wait for the deployment transaction to be mined, and retrieve the contract address of
+						// the new contract from the receipt.
+
+
+						var deploymentHandler = web3.Eth.GetContractDeploymentHandler<StandardTokenDeployment>();
+						var transactionReceipt = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
+						var contractAddress = transactionReceipt.ContractAddress;
+						Console.WriteLine(""contractAddress is: "" + contractAddress);
+
+						// ### Transfer
+
+						// Once we have deployed the contract, we can execute our first transfer transaction.
+						// The transfer function will write to the log the transfer event.
+
+						// First we can create a TransactionHandler using the TrasferFunction definition and a
+						// TransferFunction message including the “receiverAddress” and the amount of tokens we want to send.
+
+						// Finally do the transaction transfer and wait for the receipt to be “mined”
+						// and included in the blockchain.
+
+
+						var receiverAddress = ""0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"";
+						var transferHandler = web3.Eth.GetContractTransactionHandler<TransferFunction>();
+						var transfer = new TransferFunction()
+						{
+								To = receiverAddress,
+								TokenAmount = 100
+						};
+						var transactionReceipt2 = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer);
+
+
+						// ## Decoding the Event from the TransactionReceipt
+
+						// Event logs are part of the TransactionReceipts, so using the Transaction receipt from the previous
+						// transfer we can decode the TransferEvent using the extension method
+						// “DecodeAllEvents<TransferEventDTO>()”.
+
+						// Note that this method returns an array of Decoded Transfer Events as opposed to a single value,
+						// because the receipt can include more than one event of the same signature.
+
+
+						var transferEventOutput = transactionReceipt2.DecodeAllEvents<TransferEventDTO>();
+
+
+						// ## Contract Filters and Event Logs
+
+						// Another way to access the event logs of a smart contract is to either get all changes of the logs
+						// (providing a filter message) or create filters and retrieve changes which apply to our filter message
+						// periodically.                                  \
+						// \
+						// To access the logs, first of all, we need to create a transfer event handler for our contract address,
+						// and Evend definition.(TransferEventDTO).
+
+
+						var transferEventHandler = web3.Eth.GetEvent<TransferEventDTO>(contractAddress);
+
+
+						// Using the event handler, we can create a filter message for our transfer event using the default values.
+
+						// The default values for BlockParameters are Earliest and Latest, so when we retrieve the logs
+						// we will get all the transfer events from the first block to the latest block of this contract.
+
+
+						var filterAllTransferEventsForContract = transferEventHandler.CreateFilterInput();
+
+
+						// Once we have created the message we can retrieve all the logs using the event and GetAllChanges.
+						// In this scenario, because we have made only one transfer, we will have only one Transfer Event.
+
+
+						var allTransferEventsForContract = await transferEventHandler.GetAllChanges(filterAllTransferEventsForContract);
+
+								Console.WriteLine(""Transfer event TransactionHash : ""+ allTransferEventsForContract[0].Log.TransactionHash);
+
+						// If we now make another Transfer to a different address
+
+
+						var receiverAddress2 = ""0x3e0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"";
+						var transfer2 = new TransferFunction()
+						{
+								To = receiverAddress2,
+								TokenAmount = 1000
+						};
+						var transactionReceipt3 = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer2);
+
+
+						// Using the same filter input message and making another GetAllChanges call, we will now get
+						// the two Transfer Event logs.
+
+
+						var allTransferEventsForContract2 = await transferEventHandler.GetAllChanges(filterAllTransferEventsForContract);
+
+						for (int i = 0; i < 2; i++)
+						{
+								Console.WriteLine(""Transfer event number : ""+ i +"" - TransactionHash : ""+ allTransferEventsForContract2[(i)].Log.TransactionHash);
+						}
+
+						// Filter messages can limit the results (similar to block ranges) to the indexed parameters,
+						// for example we can create a filter for only our sender address AND the receiver address.
+						// As a reminder our Event has as indexed parameters the “\_from” address
+						// and “\_to” address.
+
+
+						var filterTransferEventsForContractReceiverAddress2 = transferEventHandler.CreateFilterInput(account.Address, receiverAddress2);
+						var transferEventsForContractReceiverAddress2 = await transferEventHandler.GetAllChanges(filterTransferEventsForContractReceiverAddress2);
+
+
+						// The order the filter values is based on the event parameters order, if we want to include all the transfers to the “receiverAddress2”, the account address from will need to be set to null to be ignored.
+
+						// Note: We are using the array format to allow for null input of the first parameter.
+
+
+						var filterTransferEventsForContractAllReceiverAddress2 = transferEventHandler.CreateFilterInput(null, new []{receiverAddress2});
+						var transferEventsForContractAllReceiverAddress2 = await transferEventHandler.GetAllChanges(filterTransferEventsForContractAllReceiverAddress2);
+
+
+						// Another scenario is when you want to include multiple indexed values, for example transfers for
+						// “receiverAddress1” OR “receiverAddress2”.
+						// Then you will need to use an array of the values you are interested.
+
+
+						var filterTransferEventsForContractAllReceiverAddresses = transferEventHandler.CreateFilterInput(null, new []{receiverAddress2, receiverAddress});
+						var transferEventsForContractAllReceiverAddresses = await transferEventHandler.GetAllChanges(filterTransferEventsForContractAllReceiverAddresses);
+
+
+						// ### Creating filters to retrieve periodic changes
+
+						// Another option is to create filters that return only the changes occurred since we got the previous results.
+						// This eliminates the need of tracking the last block the events were checked and delegate this
+						// to the Ethereum client.
+
+						// Using the same filter message we created before we can create the filter and get the filterId.
+
+
+						var filterIdTransferEventsForContractAllReceiverAddress2  = await transferEventHandler.CreateFilterAsync(filterTransferEventsForContractAllReceiverAddress2);
+
+
+						// One thing to note, if  try to get the filter changes now, we will not get any results because
+						// the filter only returns the changes since creation.
+
+
+						var result = await transferEventHandler.GetFilterChanges(filterIdTransferEventsForContractAllReceiverAddress2);
+
+
+						// But, if we make another transfer using the same values
+
+
+						await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer2);
+
+
+						// and execute get filter changes using the same filter id, we will get the event for the previous transfer.
+
+
+						var result2 = await transferEventHandler.GetFilterChanges(filterIdTransferEventsForContractAllReceiverAddress2);
+						Console.WriteLine(""result2/TransactionHash: "" + result2[0].Log.TransactionHash);
+
+
+						// Executing the same again will return no results because no new transfers have occurred
+						// since the last execution of GetFilterChanges.
+
+
+						var result3 = await transferEventHandler.GetFilterChanges(filterIdTransferEventsForContractAllReceiverAddress2);
+
+						Console.WriteLine(""result3/TransactionHash: "" + result3);
+
+						// ## Events for all Contracts
+
+						// Different contracts can have and raise/log the same event with the same signature,
+						// a simple example is the multiple standard token ERC20 smart contracts that are part of Ethereum.
+						// There might be scenarios you want to capture all the Events for different contracts using a specific filter,
+						// for example all the transfers to an address.
+
+						// In Nethereum creating an Event (handler) without a contract address allows to create filters
+						// which are not attached to a specific contract.
+
+
+						var transferEventHandlerAnyContract = web3.Eth.GetEvent<TransferEventDTO>();
+
+
+						// There is already a contract deployed in the chain, from the previous sample,
+						// so to demonstrate the access to events of multiple contracts we can deploy another standard token contract.
+
+
+						var transactionReceiptNewContract = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
+						var contractAddress2 = transactionReceiptNewContract.ContractAddress;
+
+
+						// and make another transfer using this new contract and the same receiver address.
+
+
+						await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress2, transfer);
+
+
+						// Creating a default filter input, and getting all changes, will retrieve all the transfer events
+						// for all contracts.
+
+
+						var filterAllTransferEventsForAllContracts = transferEventHandlerAnyContract.CreateFilterInput();
+						var allTransferEventsForContract3 = await transferEventHandlerAnyContract.GetAllChanges(filterAllTransferEventsForAllContracts);
+
+
+						// If we want to retrieve only all the transfers to the “receiverAddress”,
+						// we can create the same filter as before ,including only the second indexed parameter (“to”). This will return the Transfers only to this address for both contracts.
+
+
+						var filterTransferEventsForAllContractsReceiverAddress2 = transferEventHandlerAnyContract.CreateFilterInput(null, new[]{receiverAddress});
+						var result4 = await transferEventHandlerAnyContract.GetAllChanges(filterTransferEventsForAllContractsReceiverAddress2);
+
+
+						for (int i = 0; i < 2; i++)
+						{
+								Console.WriteLine(""Transfer event number : ""+ i +"" - TransactionHash : ""+ result4[(i)].Log.TransactionHash);
+						}
+
+    }
+
+}					
+	
+"},
+                new CodeSample()
+                {
+                    Name = "Smart Contracts: Estimating Gas",
+                    Code = @"
+
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+using System;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.Contracts.CQS;
+using Nethereum.Util;
+using Nethereum.Web3.Accounts;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Contracts.Extensions;
+
+        //# Estimating the cost of a transaction with Nethereum
+
+        //Documentation about Nethereum can be found at: <https://docs.nethereum.com>
+
+        //The purpose of this sample is to estimate the gas cost of a simple transaction and modify the assigned 
+        //values of `gas` and `gasprice`. To do so, we'll use a sample based on deploying a token contract and 
+        // performing transactions with this contract.
+
+        //## Ethereum and Gas: a primer
+
+        //Gas is the pricing system used for running a transaction or contract in Ethereum.
+        //The gas system is not very different from the use of kW-h for measuring electricity home use. 
+        //One difference from actual energy market is that the originator of the transaction sets the price of gas,
+        //which the miner can accept or not, this causes an emergence of a market around gas. You can see the evolution
+        //of the price of gas at: <https://etherscan.io/chart/gasprice>.
+
+        //The gas price per transaction or per contract is set up to deal with the Turing Complete nature of Ethereum 
+        //and its EVM (Ethereum Virtual Machine Code) – the idea is to prevent infinite loops. If there is not enough 
+        //Ether in the account to perform the transaction or message then it is considered invalid. The idea is to stop
+        //denial of service attacks from infinite loops, encourage efficiency in the code – and to make an attacker pay 
+        //for the resources they use, from bandwidth through to CPU calculations through to storage.
+
+        //Here are the terms needed to define the **gas** cost of a transaction:
+
+        //* **Gas limit** refers to the maximum amount of gas you’re willing to spend on a particular transaction.
+
+        //* **Gas price** refers to the amount of Ether you’re willing to pay for every unit of gas, and is usually
+        //measured in “Gwei”.
+
+        //It would be difficult to send transaction without an idea of their cost in gas, fortunately Ethereum provides
+        //ways to obtain a gas estimate prior to sending a transaction.
+
+        //The following article explains how to anticipate the cost of an unsent transaction by returning an 
+        //estimation.
+
+        //##### A word of caution
+
+        //Because of the Turing completeness of the EVM, it is easy to write functions that will take different code 
+        //paths with wildly different gas costs. For example, a function could choose to take different code paths 
+        //according to the value of some global state variable. The real code path taken in the function is not known 
+        //until transaction execution time. Therefore the gas estimate can only give an approximation of the actual 
+        //cost of a transaction.
+
+public class GettingStarted_EstimatingGas
+{
+// Let's start by deploying a contract to which we'll send transactions. We do this by creating a class 
+// inheriting from the ContractDeploymentMessage, 
+// here we can include our compiled byte code and other constructor parameters.
+// As we can see below the StandardToken deployment message includes the compiled bytecode 
+// of the ERC20 smart contract and the constructor parameter with the “totalSupply” of tokens.
+// Each parameter is described with an attribute Parameter, including its name ""totalSupply"", type ""uint256"" and order.
+
+    public class StandardTokenDeployment : ContractDeploymentMessage
+    {
+
+                public static string BYTECODE = ""0x60606040526040516020806106f5833981016040528080519060200190919050505b80600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005081905550806000600050819055505b506106868061006f6000396000f360606040523615610074576000357c010000000000000000000000000000000000000000000000000000000090048063095ea7b31461008157806318160ddd146100b657806323b872dd146100d957806370a0823114610117578063a9059cbb14610143578063dd62ed3e1461017857610074565b61007f5b610002565b565b005b6100a060048080359060200190919080359060200190919050506101ad565b6040518082815260200191505060405180910390f35b6100c36004805050610674565b6040518082815260200191505060405180910390f35b6101016004808035906020019091908035906020019091908035906020019091905050610281565b6040518082815260200191505060405180910390f35b61012d600480803590602001909190505061048d565b6040518082815260200191505060405180910390f35b61016260048080359060200190919080359060200190919050506104cb565b6040518082815260200191505060405180910390f35b610197600480803590602001909190803590602001909190505061060b565b6040518082815260200191505060405180910390f35b600081600260005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008573ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905061027b565b92915050565b600081600160005060008673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561031b575081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505410155b80156103275750600082115b1561047c5781600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a381600160005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505403925050819055506001905061048656610485565b60009050610486565b5b9392505050565b6000600160005060008373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505490506104c6565b919050565b600081600160005060003373ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561050c5750600082115b156105fb5781600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905061060556610604565b60009050610605565b5b92915050565b6000600260005060008473ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005054905061066e565b92915050565b60006000600050549050610683565b9056"";
+
+        public StandardTokenDeployment() : base(BYTECODE){}
+
+        [Parameter(""uint256"", ""totalSupply"")]
+        public BigInteger TotalSupply { get; set; }
+    }
+    // We now create the classes and function that will allow us to interact with the deployed contract
+
+    [Function(""transfer"", ""bool"")]
+    public class TransferFunction : FunctionMessage
+    {
+        [Parameter(""address"", ""_to"", 1)]
+        public string To { get; set; }
+
+        [Parameter(""uint256"", ""_value"", 2)]
+        public BigInteger TokenAmount { get; set; }
+    }
+        
+    public static async Task Main(string[] args)
+    {
+    //  Let's create the deployment message 
+        var deploymentMessage = new StandardTokenDeployment
+        {
+            TotalSupply = 100000
+        };
+
+
+        //### Setting up sender account
+
+        //Let's declare our private key and address as variables (we'll use the address to send the transaction) and 
+        //use them to create a new account:
+
+        var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+        var account = new Nethereum.Web3.Accounts.Account(privateKey);
+
+
+        //### Web3
+
+        //Web3 provides a simple interaction wrapper with Ethereum clients. To create an instance of Web3, we need to 
+        //supply our Account and the RPC uri of the Ethereum client. In this scenario we will only use the Account, as 
+        //we will be interacting with Nethereum's testchain on the default RPC uri 
+        //""http://testchain.nethereum.com:8545"" 
+
+        var web3 = new Web3(account, ""http://testchain.nethereum.com:8545"");
+        var deploymentHandler = web3.Eth.GetContractDeploymentHandler<StandardTokenDeployment>();
+        var transactionReceipt1 = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
+        string contractAddress = transactionReceipt1.ContractAddress;
+        Console.WriteLine($""Contract address: {contractAddress}."");
+        Console.WriteLine($""transactionReceipt1's TransactionHash: {transactionReceipt1.TransactionHash}."");
+
+        //## Transfering token
+
+        //Making a transfer will change the state of the blockchain, so in this scenario we will need to create 
+        //a TransactionHandler using the TransferFunction definition.
+
+        //In the transfer message, we will include the receiver address `To`, and the `TokenAmount` to transfer.
+
+        //The final step is to Send the request, wait for the receipt to be “mined” and included in the blockchain.
+
+
+        var receiverAddress = ""0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"";
+        var transferHandler = web3.Eth.GetContractTransactionHandler<TransferFunction>();
+        var transfer = new TransferFunction()
+        {
+            To = receiverAddress,
+            TokenAmount = 100
+        };
+        var transactionReceipt2 = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer);
+        Console.WriteLine($""transactionReceipt2's TransactionHash: {transactionReceipt2.TransactionHash}."");
+
+        //### Gas Price
+
+        //Nethereum automatically sets the GasPrice if not provided by using the clients ""GasPrice"" call, which 
+        //provides the average gas price from previous blocks.
+
+        //If you want to have more control over the GasPrice these can be set in both `FunctionMessages` and 
+        //`DeploymentMessages`.
+
+        //The GasPrice is set in ""Wei"" which is the lowest unit in Ethereum, so if we are used to the usual ""Gwei"" 
+        //units, this will need to be converted using the Nethereum Conversion utilities.
+
+
+        transfer.GasPrice =  Nethereum.Web3.Web3.Convert.ToWei(25, UnitConversion.EthUnit.Gwei);
+        Console.WriteLine($""transfer.GasPrice set for transaction: {transfer.GasPrice}."");
+
+
+        //### Estimating Gas
+
+        //Nethereum does an automatic estimation of the total gas necessary to make the function transaction by calling
+        // the `EthEstimateGas` internally with the ""CallInput"".
+
+        //If needed, this can be done manually, using the TransactionHandler and the ""transfer"" transaction 
+        //FunctionMessage.
+
+
+        var estimate = await transferHandler.EstimateGasAsync(contractAddress, transfer);
+        Console.WriteLine($""Future transaction gas estimate: {estimate}."");
+         transfer.Gas = estimate.Value;
+
+
+        //Now the transaction will have the correct amount of `gas` at the right `gasprice`:
+
+
+        var transactionReceipt3 = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer);
+        var receiptHash = transactionReceipt3.TransactionHash;
+        Console.WriteLine($""transactionReceipt3's TransactionHash: {transactionReceipt3.TransactionHash}."");
+    }
+
+}
+"
+                },
+
                 new CodeSample()
                 {
                     Name = "Smart contracts: Signing offline Function / Contract Deployment messages",
@@ -2354,592 +2941,6 @@ public class LogProcessing_OneContractOneEventWithCriteria
 }
 "
                 },
-
-                new CodeSample()
-                {
-                    Name = "Getting Started: Events",
-                    Code = @"				
-				
-using System;
-using System.Text;
-using Nethereum.Hex.HexConvertors.Extensions;
-using System.Threading;
-using System.Threading.Tasks;
-using Nethereum.Web3;
-using Nethereum.Web3.Accounts;
-using Nethereum.ABI.FunctionEncoding.Attributes;
-using Nethereum.Util;
-using Nethereum.Contracts;
-using Nethereum.Contracts.Extensions;
-using Nethereum.Contracts.CQS;
-using System.Numerics;
-
-public class GettingStarted_Events
-{
-
-// Events in smart contracts write data to the transaction receipt logs, providing a way to get extra information
-//about a smart contract transactions.
-
-// A very good example is the “Transfer” event in the ERC20 Standard Token contract.
-//Everytime that a token transfer has ocurred, an event gets logged providing information of the “sender”,
-// “receiver” and the token amount. In this scenario we are only interested
-// in the Deployment, Transfer function and Transfer Event of the ERC20 smart contract.
-//
-//_____________________________________________________________________________________________________
-//
-// event Transfer(address indexed _from, address indexed _to, uint256 _value);
-//
-// function transfer(address _to, uint256 _value) public returns (bool success) {
-//     require(balances[msg.sender] >= _value, ""Balance amount lower than amount requested"");
-//     balances[msg.sender] -= _value;
-//     balances[_to] += _value;
-//     emit Transfer(msg.sender, _to, _value);
-//     return true;
-//}
-//_____________________________________________________________________________________________________
-//
-// 
-// Above we can see, the event declaration with the different indexed parameters, these will allow us
-// later on to “filter” for specific events.
-// For example ,“Transfer” events for a specific receiver address “\_to”.
-
-// The Transfer event can be seen in the function prefixed with the “emit” keyword.
-
-
-
-// To deploy a contract we will create a class inheriting from the ContractDeploymentMessage,
-// here we can include our compiled byte code and other constructor parameters.
-
-// As we can see below the StandardToken deployment message includes the compiled bytecode of the ERC20
-// smart contract and the constructor parameter with the “totalSupply” of tokens.
-
-// Each parameter is described with an attribute Parameter, including its name
- // ""totalSupply"", type ""uint256"" and order.
-
-
-public class StandardTokenDeployment : ContractDeploymentMessage
-{
-
-            public static string BYTECODE = ""0x60606040526040516020806106f5833981016040528080519060200190919050505b80600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005081905550806000600050819055505b506106868061006f6000396000f360606040523615610074576000357c010000000000000000000000000000000000000000000000000000000090048063095ea7b31461008157806318160ddd146100b657806323b872dd146100d957806370a0823114610117578063a9059cbb14610143578063dd62ed3e1461017857610074565b61007f5b610002565b565b005b6100a060048080359060200190919080359060200190919050506101ad565b6040518082815260200191505060405180910390f35b6100c36004805050610674565b6040518082815260200191505060405180910390f35b6101016004808035906020019091908035906020019091908035906020019091905050610281565b6040518082815260200191505060405180910390f35b61012d600480803590602001909190505061048d565b6040518082815260200191505060405180910390f35b61016260048080359060200190919080359060200190919050506104cb565b6040518082815260200191505060405180910390f35b610197600480803590602001909190803590602001909190505061060b565b6040518082815260200191505060405180910390f35b600081600260005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008573ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905061027b565b92915050565b600081600160005060008673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561031b575081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505410155b80156103275750600082115b1561047c5781600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a381600160005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505403925050819055506001905061048656610485565b60009050610486565b5b9392505050565b6000600160005060008373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505490506104c6565b919050565b600081600160005060003373ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561050c5750600082115b156105fb5781600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905061060556610604565b60009050610605565b5b92915050565b6000600260005060008473ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005054905061066e565b92915050565b60006000600050549050610683565b9056"";
-
-    public StandardTokenDeployment() : base(BYTECODE){}
-
-    [Parameter(""uint256"", ""totalSupply"")]
-    public BigInteger TotalSupply { get; set; }
-}
-
-
-// We can call the functions of smart contract to query the state of a smart contract or do any computation,
-// which will not affect the state of the blockchain.
-
-// To do so we will need to create a class which inherits from ""FunctionMessage"".
-// First we will decorate the class with a ""Function"" attribute, including the name and return type.
-
-// Each parameter of the the function will be a property of the class, each of them decorated with the
- // ""Parameter"" attribute, including the smart contract name, type and parameter order.
-
-// For the ERC20 smart contract, the ""balanceOf"" function definition, provides the query interface
-// to get the token balance of a given address. As we can see this function includes only one parameter
-// ""\_owner"", of the type ""address"".
-
-
-[Function(""balanceOf"", ""uint256"")]
-public class BalanceOfFunction : FunctionMessage
-{
-    [Parameter(""address"", ""_owner"", 1)]
-    public string Owner { get; set; }
-}
-
-
-// Another type of smart contract function will be correspondent to a transaction that will change
-// the state of the smart contract (or smart contracts).
-
-// For example The ""transfer"" function definition for the ERC20 smart contract, includes the parameters
-// “\_to” address parameter as a string, and the “\_value”
-// or TokenAmount we want to transfer.
-
-// In a similar way to the ""balanceOf"" function, all the parameters include the solidity type,
-// parameter name and parameter order.
-
-// Note: When working with functions, it is very important to have the parameters types, and function name
-// correct as all of these make the signature of the function.
-
-
-[Function(""transfer"", ""bool"")]
-public class TransferFunction : FunctionMessage
-{
-    [Parameter(""address"", ""_to"", 1)]
-    public string To { get; set; }
-
-    [Parameter(""uint256"", ""_value"", 2)]
-    public BigInteger TokenAmount { get; set; }
-}
-
-
-// Finally smart contracts also have events. Events in smart contracts write the blockchain log,
-// providing a way to retrieve further information of any smart contract interaction occurred.
-
-// To create an Event definition, we need to create a class that inherits from IEventDTO,
-// decorated with the Event attribute.
-
-// The Transfer Event, similar to the Function it also includes the parameters with the name,
-// order and type. But also a boolean value indicating if the parameter is indexed or not.
-
-// Indexed parameters will allow us later on to query the blockchain for those values.
-
-
-[Event(""Transfer"")]
-public class TransferEventDTO : IEventDTO
-{
-    [Parameter(""address"", ""_from"", 1, true)]
-    public string From { get; set; }
-
-    [Parameter(""address"", ""_to"", 2, true)]
-    public string To { get; set; }
-
-    [Parameter(""uint256"", ""_value"", 3, false)]
-    public BigInteger Value { get; set; }
-}
-
-    public static async Task Main(string[] args)
-    {
-
-
-// ### Instantiating Web3 and the Account
-
-// To create an instance of web3 we first provide the url of our testchain and the private key of our account.
-// When providing an Account instantiated with a  private key all our transactions will be signed
-// “offline” by Nethereum.
-
-
-var url = ""http://testchain.nethereum.com:8545"";
-var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
-var account = new Account(privateKey);
-var web3 = new Web3(account, url);
-
-
-// ### Deploying the Contract
-
-// The next step is to deploy our Standard Token ERC20 smart contract, in this scenario the total supply
-// (number of tokens) is going to be 100,000.
-
-// First we create an instance of the StandardTokenDeployment with the TotalSupply amount.
-
-
-var deploymentMessage = new StandardTokenDeployment
-{
-    TotalSupply = 100000
-};
-
-
-// Then we create a deployment handler using our contract deployment definition and simply deploy the
-// contract using the deployment message. We are auto estimating the gas, getting the latest gas price
-// and nonce so nothing else is set anything on the deployment message.
-
-// Finally, we wait for the deployment transaction to be mined, and retrieve the contract address of
-// the new contract from the receipt.
-
-
-var deploymentHandler = web3.Eth.GetContractDeploymentHandler<StandardTokenDeployment>();
-var transactionReceipt = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
-var contractAddress = transactionReceipt.ContractAddress;
-Console.WriteLine(""contractAddress is: "" + contractAddress);
-
-// ### Transfer
-
-// Once we have deployed the contract, we can execute our first transfer transaction.
-// The transfer function will write to the log the transfer event.
-
-// First we can create a TransactionHandler using the TrasferFunction definition and a
-// TransferFunction message including the “receiverAddress” and the amount of tokens we want to send.
-
-// Finally do the transaction transfer and wait for the receipt to be “mined”
-// and included in the blockchain.
-
-
-var receiverAddress = ""0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"";
-var transferHandler = web3.Eth.GetContractTransactionHandler<TransferFunction>();
-var transfer = new TransferFunction()
-{
-    To = receiverAddress,
-    TokenAmount = 100
-};
-var transactionReceipt2 = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer);
-
-
-// ## Decoding the Event from the TransactionReceipt
-
-// Event logs are part of the TransactionReceipts, so using the Transaction receipt from the previous
-// transfer we can decode the TransferEvent using the extension method
-// “DecodeAllEvents<TransferEventDTO>()”.
-
-// Note that this method returns an array of Decoded Transfer Events as opposed to a single value,
-// because the receipt can include more than one event of the same signature.
-
-
-var transferEventOutput = transactionReceipt2.DecodeAllEvents<TransferEventDTO>();
-
-
-// ## Contract Filters and Event Logs
-
-// Another way to access the event logs of a smart contract is to either get all changes of the logs
-// (providing a filter message) or create filters and retrieve changes which apply to our filter message
-// periodically.                                  \
-// \
-// To access the logs, first of all, we need to create a transfer event handler for our contract address,
-// and Evend definition.(TransferEventDTO).
-
-
-var transferEventHandler = web3.Eth.GetEvent<TransferEventDTO>(contractAddress);
-
-
-// Using the event handler, we can create a filter message for our transfer event using the default values.
-
-// The default values for BlockParameters are Earliest and Latest, so when we retrieve the logs
-// we will get all the transfer events from the first block to the latest block of this contract.
-
-
-var filterAllTransferEventsForContract = transferEventHandler.CreateFilterInput();
-
-
-// Once we have created the message we can retrieve all the logs using the event and GetAllChanges.
-// In this scenario, because we have made only one transfer, we will have only one Transfer Event.
-
-
-var allTransferEventsForContract = await transferEventHandler.GetAllChanges(filterAllTransferEventsForContract);
-
-    Console.WriteLine(""Transfer event TransactionHash : ""+ allTransferEventsForContract[0].Log.TransactionHash);
-
-// If we now make another Transfer to a different address
-
-
-var receiverAddress2 = ""0x3e0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"";
-var transfer2 = new TransferFunction()
-{
-    To = receiverAddress2,
-    TokenAmount = 1000
-};
-var transactionReceipt3 = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer2);
-
-
-// Using the same filter input message and making another GetAllChanges call, we will now get
-// the two Transfer Event logs.
-
-
-var allTransferEventsForContract2 = await transferEventHandler.GetAllChanges(filterAllTransferEventsForContract);
-
-for (int i = 0; i < 2; i++)
-{
-    Console.WriteLine(""Transfer event number : ""+ i +"" - TransactionHash : ""+ allTransferEventsForContract2[(i)].Log.TransactionHash);
-}
-
-// Filter messages can limit the results (similar to block ranges) to the indexed parameters,
-// for example we can create a filter for only our sender address AND the receiver address.
-// As a reminder our Event has as indexed parameters the “\_from” address
-// and “\_to” address.
-
-
-var filterTransferEventsForContractReceiverAddress2 = transferEventHandler.CreateFilterInput(account.Address, receiverAddress2);
-var transferEventsForContractReceiverAddress2 = await transferEventHandler.GetAllChanges(filterTransferEventsForContractReceiverAddress2);
-
-
-// The order the filter values is based on the event parameters order, if we want to include all the transfers to the “receiverAddress2”, the account address from will need to be set to null to be ignored.
-
-// Note: We are using the array format to allow for null input of the first parameter.
-
-
-var filterTransferEventsForContractAllReceiverAddress2 = transferEventHandler.CreateFilterInput(null, new []{receiverAddress2});
-var transferEventsForContractAllReceiverAddress2 = await transferEventHandler.GetAllChanges(filterTransferEventsForContractAllReceiverAddress2);
-
-
-// Another scenario is when you want to include multiple indexed values, for example transfers for
-// “receiverAddress1” OR “receiverAddress2”.
-// Then you will need to use an array of the values you are interested.
-
-
-var filterTransferEventsForContractAllReceiverAddresses = transferEventHandler.CreateFilterInput(null, new []{receiverAddress2, receiverAddress});
-var transferEventsForContractAllReceiverAddresses = await transferEventHandler.GetAllChanges(filterTransferEventsForContractAllReceiverAddresses);
-
-
-// ### Creating filters to retrieve periodic changes
-
-// Another option is to create filters that return only the changes occurred since we got the previous results.
-// This eliminates the need of tracking the last block the events were checked and delegate this
-// to the Ethereum client.
-
-// Using the same filter message we created before we can create the filter and get the filterId.
-
-
-var filterIdTransferEventsForContractAllReceiverAddress2  = await transferEventHandler.CreateFilterAsync(filterTransferEventsForContractAllReceiverAddress2);
-
-
-// One thing to note, if  try to get the filter changes now, we will not get any results because
-// the filter only returns the changes since creation.
-
-
-var result = await transferEventHandler.GetFilterChanges(filterIdTransferEventsForContractAllReceiverAddress2);
-
-
-// But, if we make another transfer using the same values
-
-
-await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer2);
-
-
-// and execute get filter changes using the same filter id, we will get the event for the previous transfer.
-
-
-var result2 = await transferEventHandler.GetFilterChanges(filterIdTransferEventsForContractAllReceiverAddress2);
-Console.WriteLine(""result2/TransactionHash: "" + result2[0].Log.TransactionHash);
-
-
-// Executing the same again will return no results because no new transfers have occurred
-// since the last execution of GetFilterChanges.
-
-
-var result3 = await transferEventHandler.GetFilterChanges(filterIdTransferEventsForContractAllReceiverAddress2);
-
-Console.WriteLine(""result3/TransactionHash: "" + result3);
-
-// ## Events for all Contracts
-
-// Different contracts can have and raise/log the same event with the same signature,
-// a simple example is the multiple standard token ERC20 smart contracts that are part of Ethereum.
-// There might be scenarios you want to capture all the Events for different contracts using a specific filter,
-// for example all the transfers to an address.
-
-// In Nethereum creating an Event (handler) without a contract address allows to create filters
-// which are not attached to a specific contract.
-
-
-var transferEventHandlerAnyContract = web3.Eth.GetEvent<TransferEventDTO>();
-
-
-// There is already a contract deployed in the chain, from the previous sample,
-// so to demonstrate the access to events of multiple contracts we can deploy another standard token contract.
-
-
-var transactionReceiptNewContract = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
-var contractAddress2 = transactionReceiptNewContract.ContractAddress;
-
-
-// and make another transfer using this new contract and the same receiver address.
-
-
-await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress2, transfer);
-
-
-// Creating a default filter input, and getting all changes, will retrieve all the transfer events
-// for all contracts.
-
-
-var filterAllTransferEventsForAllContracts = transferEventHandlerAnyContract.CreateFilterInput();
-var allTransferEventsForContract3 = await transferEventHandlerAnyContract.GetAllChanges(filterAllTransferEventsForAllContracts);
-
-
-// If we want to retrieve only all the transfers to the “receiverAddress”,
-// we can create the same filter as before ,including only the second indexed parameter (“to”). This will return the Transfers only to this address for both contracts.
-
-
-var filterTransferEventsForAllContractsReceiverAddress2 = transferEventHandlerAnyContract.CreateFilterInput(null, new[]{receiverAddress});
-var result4 = await transferEventHandlerAnyContract.GetAllChanges(filterTransferEventsForAllContractsReceiverAddress2);
-
-
-for (int i = 0; i < 2; i++)
-{
-    Console.WriteLine(""Transfer event number : ""+ i +"" - TransactionHash : ""+ result4[(i)].Log.TransactionHash);
-}
-
-    }
-
-}	
-"
-                },
-
-                new CodeSample()
-                {
-                    Name = "Getting Started: Estimating Gas",
-                    Code = @"
-using Nethereum.ABI.FunctionEncoding.Attributes;
-using Nethereum.Contracts;
-using System;
-using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
-using Nethereum.Web3;
-using Nethereum.Contracts.CQS;
-using Nethereum.Util;
-using Nethereum.Web3.Accounts;
-using Nethereum.Hex.HexConvertors.Extensions;
-using Nethereum.Contracts.Extensions;
-
-        //# Estimating the cost of a transaction with Nethereum
-
-        //Documentation about Nethereum can be found at: <https://docs.nethereum.com>
-
-        //The purpose of this sample is to estimate the gas cost of a simple transaction and modify the assigned 
-        //values of `gas` and `gasprice`. To do so, we'll use a sample based on deploying a token contract and 
-        // performing transactions with this contract.
-
-        //## Ethereum and Gas: a primer
-
-        //Gas is the pricing system used for running a transaction or contract in Ethereum.
-        //The gas system is not very different from the use of kW-h for measuring electricity home use. 
-        //One difference from actual energy market is that the originator of the transaction sets the price of gas,
-        //which the miner can accept or not, this causes an emergence of a market around gas. You can see the evolution
-        //of the price of gas at: <https://etherscan.io/chart/gasprice>.
-
-        //The gas price per transaction or per contract is set up to deal with the Turing Complete nature of Ethereum 
-        //and its EVM (Ethereum Virtual Machine Code) – the idea is to prevent infinite loops. If there is not enough 
-        //Ether in the account to perform the transaction or message then it is considered invalid. The idea is to stop
-        //denial of service attacks from infinite loops, encourage efficiency in the code – and to make an attacker pay 
-        //for the resources they use, from bandwidth through to CPU calculations through to storage.
-
-        //Here are the terms needed to define the **gas** cost of a transaction:
-
-        //* **Gas limit** refers to the maximum amount of gas you’re willing to spend on a particular transaction.
-
-        //* **Gas price** refers to the amount of Ether you’re willing to pay for every unit of gas, and is usually
-        //measured in “Gwei”.
-
-        //It would be difficult to send transaction without an idea of their cost in gas, fortunately Ethereum provides
-        //ways to obtain a gas estimate prior to sending a transaction.
-
-        //The following article explains how to anticipate the cost of an unsent transaction by returning an 
-        //estimation.
-
-        //##### A word of caution
-
-        //Because of the Turing completeness of the EVM, it is easy to write functions that will take different code 
-        //paths with wildly different gas costs. For example, a function could choose to take different code paths 
-        //according to the value of some global state variable. The real code path taken in the function is not known 
-        //until transaction execution time. Therefore the gas estimate can only give an approximation of the actual 
-        //cost of a transaction.
-
-public class GettingStarted_EstimatingGas
-{
-// Let's start by deploying a contract to which we'll send transactions. We do this by creating a class 
-// inheriting from the ContractDeploymentMessage, 
-// here we can include our compiled byte code and other constructor parameters.
-// As we can see below the StandardToken deployment message includes the compiled bytecode 
-// of the ERC20 smart contract and the constructor parameter with the “totalSupply” of tokens.
-// Each parameter is described with an attribute Parameter, including its name ""totalSupply"", type ""uint256"" and order.
-
-    public class StandardTokenDeployment : ContractDeploymentMessage
-    {
-
-                public static string BYTECODE = ""0x60606040526040516020806106f5833981016040528080519060200190919050505b80600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005081905550806000600050819055505b506106868061006f6000396000f360606040523615610074576000357c010000000000000000000000000000000000000000000000000000000090048063095ea7b31461008157806318160ddd146100b657806323b872dd146100d957806370a0823114610117578063a9059cbb14610143578063dd62ed3e1461017857610074565b61007f5b610002565b565b005b6100a060048080359060200190919080359060200190919050506101ad565b6040518082815260200191505060405180910390f35b6100c36004805050610674565b6040518082815260200191505060405180910390f35b6101016004808035906020019091908035906020019091908035906020019091905050610281565b6040518082815260200191505060405180910390f35b61012d600480803590602001909190505061048d565b6040518082815260200191505060405180910390f35b61016260048080359060200190919080359060200190919050506104cb565b6040518082815260200191505060405180910390f35b610197600480803590602001909190803590602001909190505061060b565b6040518082815260200191505060405180910390f35b600081600260005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008573ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905061027b565b92915050565b600081600160005060008673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561031b575081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505410155b80156103275750600082115b1561047c5781600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a381600160005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505403925050819055506001905061048656610485565b60009050610486565b5b9392505050565b6000600160005060008373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505490506104c6565b919050565b600081600160005060003373ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561050c5750600082115b156105fb5781600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905061060556610604565b60009050610605565b5b92915050565b6000600260005060008473ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005054905061066e565b92915050565b60006000600050549050610683565b9056"";
-
-        public StandardTokenDeployment() : base(BYTECODE){}
-
-        [Parameter(""uint256"", ""totalSupply"")]
-        public BigInteger TotalSupply { get; set; }
-    }
-    // We now create the classes and function that will allow us to interact with the deployed contract
-
-    [Function(""transfer"", ""bool"")]
-    public class TransferFunction : FunctionMessage
-    {
-        [Parameter(""address"", ""_to"", 1)]
-        public string To { get; set; }
-
-        [Parameter(""uint256"", ""_value"", 2)]
-        public BigInteger TokenAmount { get; set; }
-    }
-        
-    public static async Task Main(string[] args)
-    {
-    //  Let's create the deployment message 
-        var deploymentMessage = new StandardTokenDeployment
-        {
-            TotalSupply = 100000
-        };
-
-
-        //### Setting up sender account
-
-        //Let's declare our private key and address as variables (we'll use the address to send the transaction) and 
-        //use them to create a new account:
-
-        var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
-        var account = new Nethereum.Web3.Accounts.Account(privateKey);
-
-
-        //### Web3
-
-        //Web3 provides a simple interaction wrapper with Ethereum clients. To create an instance of Web3, we need to 
-        //supply our Account and the RPC uri of the Ethereum client. In this scenario we will only use the Account, as 
-        //we will be interacting with Nethereum's testchain on the default RPC uri 
-        //""http://testchain.nethereum.com:8545"" 
-
-        var web3 = new Web3(account, ""http://testchain.nethereum.com:8545"");
-        var deploymentHandler = web3.Eth.GetContractDeploymentHandler<StandardTokenDeployment>();
-        var transactionReceipt1 = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
-        string contractAddress = transactionReceipt1.ContractAddress;
-        Console.WriteLine($""Contract address: {contractAddress}."");
-        Console.WriteLine($""transactionReceipt1's TransactionHash: {transactionReceipt1.TransactionHash}."");
-
-        //## Transfering token
-
-        //Making a transfer will change the state of the blockchain, so in this scenario we will need to create 
-        //a TransactionHandler using the TransferFunction definition.
-
-        //In the transfer message, we will include the receiver address `To`, and the `TokenAmount` to transfer.
-
-        //The final step is to Send the request, wait for the receipt to be “mined” and included in the blockchain.
-
-
-        var receiverAddress = ""0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"";
-        var transferHandler = web3.Eth.GetContractTransactionHandler<TransferFunction>();
-        var transfer = new TransferFunction()
-        {
-            To = receiverAddress,
-            TokenAmount = 100
-        };
-        var transactionReceipt2 = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer);
-        Console.WriteLine($""transactionReceipt2's TransactionHash: {transactionReceipt2.TransactionHash}."");
-
-        //### Gas Price
-
-        //Nethereum automatically sets the GasPrice if not provided by using the clients ""GasPrice"" call, which 
-        //provides the average gas price from previous blocks.
-
-        //If you want to have more control over the GasPrice these can be set in both `FunctionMessages` and 
-        //`DeploymentMessages`.
-
-        //The GasPrice is set in ""Wei"" which is the lowest unit in Ethereum, so if we are used to the usual ""Gwei"" 
-        //units, this will need to be converted using the Nethereum Conversion utilities.
-
-
-        transfer.GasPrice =  Nethereum.Web3.Web3.Convert.ToWei(25, UnitConversion.EthUnit.Gwei);
-        Console.WriteLine($""transfer.GasPrice set for transaction: {transfer.GasPrice}."");
-
-
-        //### Estimating Gas
-
-        //Nethereum does an automatic estimation of the total gas necessary to make the function transaction by calling
-        // the `EthEstimateGas` internally with the ""CallInput"".
-
-        //If needed, this can be done manually, using the TransactionHandler and the ""transfer"" transaction 
-        //FunctionMessage.
-
-
-        var estimate = await transferHandler.EstimateGasAsync(contractAddress, transfer);
-        Console.WriteLine($""Future transaction gas estimate: {estimate}."");
-         transfer.Gas = estimate.Value;
-
-
-        //Now the transaction will have the correct amount of `gas` at the right `gasprice`:
-
-
-        var transactionReceipt3 = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress, transfer);
-        var receiptHash = transactionReceipt3.TransactionHash;
-        Console.WriteLine($""transactionReceipt3's TransactionHash: {transactionReceipt3.TransactionHash}."");
-    }
-
-}
-"
-                }
 
             };
 
