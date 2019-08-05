@@ -32,7 +32,7 @@ namespace Nethereum.TryOnBrowser.Repositories
         {
             if (LocalStorage == null) Console.WriteLine("This is nulll");
             
-            if (!loadedUserSamples && LocalStorage != null)
+            if (!LoadedUserSamples && LocalStorage != null)
             {
                 var samples = await LocalStorage.GetItem<CodeSample[]>(_storageKey);
 
@@ -41,7 +41,7 @@ namespace Nethereum.TryOnBrowser.Repositories
                    _codeSamples.AddRange(samples);
                 }
 
-                loadedUserSamples = true;
+                LoadedUserSamples = true;
             }
         }
 
@@ -68,8 +68,9 @@ namespace Nethereum.TryOnBrowser.Repositories
             await SaveCustomCodeSamples();
         }
 
+
         public async Task<List<CodeSample>> GetCodeSamplesAsync(CodeLanguage language)
-        {
+        { 
             return _codeSamples.Where(x => x.Language == language).ToList();
         }
         
@@ -84,9 +85,7 @@ namespace Nethereum.TryOnBrowser.Repositories
             _codeSamples.AddRange(VbNetSamples.GetSamples());
         }
 
-        private bool loadedUserSamples = false;
-
-
+        public bool LoadedUserSamples { get; private set; } = false;
     }
 
 

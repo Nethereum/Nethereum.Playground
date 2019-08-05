@@ -16,5 +16,10 @@ namespace Nethereum.TryOnBrowser.ServiceCollectionExtensions
         { 
             return services.AddSingleton<CodeSampleRepository>();
         }
+
+        public static IServiceCollection AddCompiler(this IServiceCollection services)
+        {
+            return services.AddSingleton<Compiler>();
+        }
     }
 }

@@ -13,6 +13,7 @@ namespace Nethereum.TryOnBrowser
             services.AddStorage();
             services.AddBlazorModal();
             services.AddCodeRepository();
+            services.AddCompiler();
             services.AddFileReaderService();
 
 

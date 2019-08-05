@@ -4,18 +4,16 @@ BlazorEditors = BlazorEditors;
 window.BlazorBitsMonacoInterop = {
     EditorInitialize: (editorModel) => {
         console.debug(`Registering new editor ${editorModel.id}...`);
-        let thisEditor = monaco.editor.create(document.getElementById(editorModel.id), {
-            value: editorModel.script,
-            language: editorModel.language,
-            automaticLayout: true
-        });
-
-        monaco.editor.setTheme('vs-dark');
-
         if (BlazorEditors.find(e => e.id === editorModel.id)) {
             console.error(`Refused to register duplicate editor ${editorModel.id}`);
-        }
-        else {
+        } else {
+            let thisEditor = monaco.editor.create(document.getElementById(editorModel.id), {
+                value: editorModel.script,
+                language: editorModel.language,
+                automaticLayout: true
+            });
+            monaco.editor.setTheme('vs-dark');
+
             console.debug(`Registered new editor ${editorModel.id}`);
             BlazorEditors.push({ id: editorModel.id, editor: thisEditor });
         }

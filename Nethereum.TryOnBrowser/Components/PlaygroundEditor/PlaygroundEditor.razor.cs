@@ -1,24 +1,22 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Nethereum.TryOnBrowser.Repositories;
-using Nethereum.TryOnBrowser.Components;
 using Nethereum.TryOnBrowser.Components.Modal;
 using Nethereum.TryOnBrowser.Components.Monaco;
+using Nethereum.TryOnBrowser.Repositories;
 
-namespace Nethereum.TryOnBrowser.Pages
+namespace Nethereum.TryOnBrowser.Components.PlaygroundEditor
 {
     // Based on https://github.com/Suchiman/Runny all credit to him
 
-    public abstract class EditorModelBase : ComponentBase
+    public class PlaygroundEditorViewModel : ComponentBase
     {
 
         protected EditorModel editorModel;
@@ -30,12 +28,15 @@ namespace Nethereum.TryOnBrowser.Pages
 
         [Inject] public CodeSampleRepository CodeSampleRepository { get; set; }
 
+        [Inject] public Compiler Compiler { get;set;}
+
         public List<CodeSample> CodeSamples { get; protected set; }
         public int SelectedCodeSample { get; protected set; }
 
         private LoadFileModel loadFileModel;
 
         private SaveAsFileModel savesAsFileModel;
+        [Parameter] CodeLanguage CodeLanguage { get; set; }
 
         public async Task FileLoaded(string content, string fileName)
         {
@@ -52,7 +53,7 @@ namespace Nethereum.TryOnBrowser.Pages
             {
                 Code = content,
                 Name = fileName,
-                Language = GetCodeLanguage(),
+                Language = CodeLanguage,
                 Custom = true
             };
             CodeSamples.Add(codeSample);
@@ -62,18 +63,21 @@ namespace Nethereum.TryOnBrowser.Pages
             StateHasChanged();
         }
 
-        public abstract CodeLanguage GetCodeLanguage();
+        private Timer _timer;
 
         protected override async Task OnInitAsync()
         {
-            await base.OnInitAsync();
             loadFileModel = new LoadFileModel();
             loadFileModel.AllowedExtension = GetAllowedExtension();
             loadFileModel.ContentLoaded += FileLoaded;
 
             savesAsFileModel = new SaveAsFileModel();
             savesAsFileModel.SaveFileAs += SaveAsAsyncCallBack;
-
+         
+        }
+        
+        protected override async Task OnParametersSetAsync()
+        {
             await LoadCodeSamplesAsync();
 
             editorModel = new EditorModel
@@ -81,13 +85,59 @@ namespace Nethereum.TryOnBrowser.Pages
                 Language = GetEditorLanguage(),
                 Script = CodeSamples[SelectedCodeSample].Code
             };
-
-            Compiler.InitializeMetadataReferences(Client);
-
+            await base.OnParametersSetAsync();
         }
 
-        public abstract string GetEditorLanguage();
-        public abstract string GetAllowedExtension();
+        /// <summary>
+        /// Super workaround:
+        /// Storage is not available until we have rendered,
+        /// We can then load User code samples stored in storage
+        /// But if we call StateHasChanged then the Editor is duplicated
+        /// So to avoid this a timer is set to run only one which will call StateHasChanged after
+        /// 1 second
+        /// </summary>
+        /// <returns></returns>
+        protected override async Task OnAfterRenderAsync()
+        {
+          
+            if (!CodeSampleRepository.LoadedUserSamples)
+            {
+                await LoadSavedAsync();
+                //waiting a second to do a state has changed to display the items
+                // and avoid confusion with the editor.
+                _timer = new Timer(new TimerCallback(_ => {
+                    StateHasChanged();
+                    _timer.Dispose();
+                }), null, 1000, 1000);
+            }
+          
+        }
+
+
+        public string GetEditorLanguage()
+        {
+            switch (CodeLanguage)
+            {
+                case CodeLanguage.CSharp:
+                    return "csharp";
+                case CodeLanguage.VbNet:
+                    return "vb";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        public string GetAllowedExtension()
+        {
+            switch (CodeLanguage)
+            {
+                case CodeLanguage.CSharp:
+                    return ".cs";
+                case CodeLanguage.VbNet:
+                    return ".vb";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
 
 
         public async Task SaveAsAsyncCallBack(string content, string name)
@@ -132,7 +182,7 @@ namespace Nethereum.TryOnBrowser.Pages
         public async Task LoadCodeSamplesAsync()
         {
             CodeSamples = new List<CodeSample>();
-            var codeSamples = await CodeSampleRepository.GetCodeSamplesAsync(GetCodeLanguage());
+            var codeSamples = await CodeSampleRepository.GetCodeSamplesAsync(CodeLanguage);
             CodeSamples.AddRange(codeSamples);
             SelectedCodeSample = 0;
         }
@@ -191,28 +241,20 @@ namespace Nethereum.TryOnBrowser.Pages
             StateHasChanged();
         }
 
-        protected abstract Task CompileAndRun();
-       
-    }
-
-    public class IndexModel : EditorModelBase
-    {
-        public override string GetEditorLanguage()
+        protected Task CompileAndRun()
         {
-            return "csharp";
+            switch (CodeLanguage)
+            {
+                case CodeLanguage.CSharp:
+                    return CompileAndRunCsharp();
+                case CodeLanguage.VbNet:
+                    return CompileAndRunVbNet();
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-        public override string GetAllowedExtension()
-        {
-            return ".cs";
-        }
-
-        public override CodeLanguage GetCodeLanguage()
-        {
-            return CodeLanguage.CSharp;
-        }
-
-        protected override async Task CompileAndRun()
+        protected async Task CompileAndRunCsharp()
         {
             var (success, asm, rawBytes) = Compiler.LoadSource(editorModel.Script, editorModel.Language);
 
@@ -224,6 +266,44 @@ namespace Nethereum.TryOnBrowser.Pages
                 {
                     entry = entry.DeclaringType.GetMethod("Main",
                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static); // reflect for the async Task Main
+                }
+
+                var hasArgs = entry.GetParameters().Length > 0;
+                var result = entry.Invoke(null, hasArgs ? new object[] { new string[0] } : null);
+                if (result is Task task)
+                {
+                    await task;
+                }
+            }
+        }
+
+        protected async Task CompileAndRunVbNet()
+        {
+            var (success, asm, rawBytes) = Compiler.LoadSource(editorModel.Script, editorModel.Language);
+            if (success)
+
+            {
+                // well this is interesting - We can't do async task main in VB
+                // attempting to run an async function through Sub Main causes Invoke to hang
+                // until a more concrete solution is found, running async should be done through another function (RunAsync() as Task)
+                // non-async ones can run through Sub Main or RunAsync (as a function name though not as apt)
+                var assembly = AppDomain.CurrentDomain.Load(rawBytes);
+
+                // check if RunAsync exists, favor this over Main
+                var RunAsyncExists = (from type in assembly.GetTypes()
+                    where type.GetMethod("RunAsync") != null
+                    select type.GetMethod("RunAsync")).Any();
+
+                var entry = assembly.EntryPoint;
+                if (RunAsyncExists) // if RunAsync does not exist, fallback to Main
+                {
+                    entry = entry.DeclaringType.GetMethod("RunAsync",
+                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static); // reflect for RunAsync
+                }
+                else
+                {
+                    entry = entry.DeclaringType.GetMethod("Main",
+                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static); // reflect for Main
                 }
 
                 var hasArgs = entry.GetParameters().Length > 0;

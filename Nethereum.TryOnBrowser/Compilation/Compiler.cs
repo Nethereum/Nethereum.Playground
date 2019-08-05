@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace Nethereum.TryOnBrowser
 {
     //// Based on https://github.com/Suchiman/Runny all credit to him
-    public static class Compiler
+    public class Compiler
 
     {
 
@@ -48,7 +48,7 @@ namespace Nethereum.TryOnBrowser
 
         public static List<Assembly> Assemblies;
 
-        public static void InitializeMetadataReferences(HttpClient client)
+        public Compiler(HttpClient client)
         {
 
             async Task InitializeInternal()
@@ -85,7 +85,7 @@ namespace Nethereum.TryOnBrowser
 
         }
 
-        public static void WhenReady(Func<Task> action)
+        public void WhenReady(Func<Task> action)
         {
             if (InitializationTask.Status != TaskStatus.RanToCompletion)
             {
@@ -97,45 +97,17 @@ namespace Nethereum.TryOnBrowser
             }
         }
 
-        //attempt to use scripting.. does not resolve assemblies
-        public static async Task<object> RuWithScriptingAsync(string source)
+  
+        public (bool success, Assembly asm, Byte[] rawAssembly) LoadSource(string source, string language)
         {
-
-            Console.WriteLine("Start scripting");
-
-            using (var interactiveLoader = new InteractiveAssemblyLoader())
-            {
-                foreach (var assembly in Assemblies)
-                {
-                    interactiveLoader.RegisterDependency(assembly);
-                }
-
-                var script = CSharpScript.Create(source, ScriptOptions.Default.AddReferences(References),
-                 null, interactiveLoader);
-                script.Compile();
-                
-                Console.WriteLine("Compiled");
-                return script.RunAsync();
-            }
-        }
-
-
-
-
-        public static (bool success, Assembly asm, Byte[] rawAssembly) LoadSource(string source, string language)
-                
-        {
-
             dynamic compilation = new object();
             if(language=="csharp")
             {
-                //Console.WriteLine("CSharp");
                 compilation = CSharpCompilation.Create("DynamicCode")
                 .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
                 .AddReferences(References)
                 .AddSyntaxTrees(CSharpSyntaxTree.ParseText(source));
             } else if(language=="vb") {
-                //Console.WriteLine("VB");
                 compilation = VisualBasicCompilation.Create("DynamicCode")
                 .WithOptions(new VisualBasicCompilationOptions(OutputKind.WindowsApplication, embedVbCoreRuntime: true))
                 .AddReferences(References)
@@ -143,21 +115,21 @@ namespace Nethereum.TryOnBrowser
             }
 
             ImmutableArray<Diagnostic> diagnostics  = compilation.GetDiagnostics();
-            bool error = false;
+            var error = false;
 
-            foreach (Diagnostic diag in diagnostics)
+            foreach (var diagnostic in diagnostics)
             {
-                switch (diag.Severity)
+                switch (diagnostic.Severity)
                 {
                     case DiagnosticSeverity.Info:
-                        Console.WriteLine(diag.ToString());
+                        //Console.WriteLine(diag.ToString());
                         break;
                     case DiagnosticSeverity.Warning:
-                        Console.WriteLine(diag.ToString());
+                        //Console.WriteLine(diag.ToString());
                         break;
                     case DiagnosticSeverity.Error:
                         error = true;
-                        Console.WriteLine(diag.ToString());
+                        Console.WriteLine(diagnostic.ToString());
                         break;
                 }
             }
@@ -173,22 +145,6 @@ namespace Nethereum.TryOnBrowser
 
                 return (true, Assembly.Load(outputAssembly.ToArray()), outputAssembly.ToArray());
             }
-        }
-
-
-
-        public static string Format(string source)
-
-        {
-
-            var tree = CSharpSyntaxTree.ParseText(source);
-
-            var root = tree.GetRoot();
-
-            var normalized = root.NormalizeWhitespace();
-
-            return normalized.ToString();
-
         }
 
     }
