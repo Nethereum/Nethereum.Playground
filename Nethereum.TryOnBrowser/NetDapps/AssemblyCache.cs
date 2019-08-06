@@ -9,9 +9,14 @@ using Microsoft.CodeAnalysis;
 
 namespace NetDapps.Assemblies
 {
-
+	
     public class AssemblyLoadInfo
     {
+        public AssemblyLoadInfo()
+        {
+            
+        }
+
         public AssemblyLoadInfo(string fullName)
         {
             FullName = fullName;
@@ -85,18 +90,26 @@ namespace NetDapps.Assemblies
             }
         }
 
+        public MetadataReference[] GetAllMetadataReferences()
+        {
+            return LoadedAssemblies.Select(x => x.MetadataReference).ToArray();
+        }
+
         public async Task LoadAssembly(HttpClient client, AssemblyLoadInfo assemblyInfo)
         {
             try
             {
+				Console.WriteLine("Loading: " + assemblyInfo.FullName);
                 if (!ContainsAssembly(assemblyInfo.FullName) && !ContainsAssemblyRemotePath(assemblyInfo.PublishedRemotePath))
                 {
-                    var assemblyStream = await client.GetByteArrayAsync(assemblyInfo.PublishedRemotePath);
+
+                    var assemblyStream = await client.GetByteArrayAsync(GetAssemblyRemotePath(assemblyInfo.PublishedRemotePath));
                     var assembly = AppDomain.CurrentDomain.Load(assemblyStream);
                     //making sure we have the right name as we may not have passed it as a parameter.
                     assemblyInfo.FullName = assembly.FullName;
                     assemblyInfo.MetadataReference = MetadataReference.CreateFromImage(assemblyStream);
                     LoadedAssemblies.Add(assemblyInfo);
+					
                 }
                 else
                 {
@@ -108,6 +121,12 @@ namespace NetDapps.Assemblies
                 Console.WriteLine(
                     $"Error occurred loading assembly {assemblyInfo.FullName} from url:{assemblyInfo.PublishedRemotePath}, {ex.Message}");
             }
+        }
+
+        public string GetAssemblyRemotePath(string remotePath)
+        {
+            if (remotePath.StartsWith("ipfs:")) return remotePath.Replace("ipfs:", "https://ipfs.infura.io/ipfs/");
+            return remotePath;
         }
 
         public string GetAllLoadedAssemblies()

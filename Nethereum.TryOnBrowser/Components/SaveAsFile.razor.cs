@@ -5,7 +5,6 @@ using Blazor.FileReader;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Nethereum.TryOnBrowser.Components.Modal;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace Nethereum.TryOnBrowser.Components
 {

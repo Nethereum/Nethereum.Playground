@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.VisualBasic.CompilerServices;
 using System.Threading.Tasks;
+using NetDapps.Assemblies;
 
 namespace Nethereum.TryOnBrowser
 {
@@ -22,6 +23,7 @@ namespace Nethereum.TryOnBrowser
     public class Compiler
 
     {
+        private readonly AssemblyCache _assemblyCache;
 
         class BlazorBoot
 
@@ -50,35 +52,48 @@ namespace Nethereum.TryOnBrowser
 
         public Compiler(HttpClient client)
         {
+ 
 
             async Task InitializeInternal()
 
             {
-                var response = await client.GetJsonAsync<BlazorBoot>("_framework/blazor.boot.json");
-
-                var assemblyFiles = await Task.WhenAll(response.assemblyReferences.Where(x => x.EndsWith(".dll")).Select(x => client.GetAsync("_framework/_bin/" + x)));
-
-                var references = new List<MetadataReference>(assemblyFiles.Length);
-                var assemblies = new List<Assembly>(assemblyFiles.Length);
-
-                foreach (var assemblyFile in assemblyFiles)
+                try
                 {
+   
+                    var response = await client.GetJsonAsync<AssemblyLoadInfo[]>("/assemblies.json");
+                    await AssemblyCache.Current.LoadAssemblies(client, response);
+                    await Task.WhenAll(response.Select(x => AssemblyCache.Current.LoadAssembly(client, x)));
 
-                    using (var stream = await assemblyFile.Content.ReadAsStreamAsync())
-                    {
-                       byte[] data = new byte[stream.Length];
-                       await stream.ReadAsync(data, 0, data.Length);
-                       var assemblyInstance = Assembly.Load(data);
-                       assemblies.Add(assemblyInstance);
-                       var metadataReference = MetadataReference.CreateFromImage(data);
-                       references.Add(metadataReference);
-                    }
+                    //var response = await client.GetJsonAsync<BlazorBoot>("_framework/blazor.boot.json");
 
+                    //var assemblyFiles = await Task.WhenAll(response.assemblyReferences.Where(x => x.EndsWith(".dll")).Select(x => client.GetAsync("_framework/_bin/" + x)));
+                    //var assemblyFiles = await Task.WhenAll(response.assemblyReferences.Where(x => x.EndsWith(".dll")).Select(x => client.GetAsync("_framework/_bin/" + x)));
+
+                    //var references = new List<MetadataReference>(assemblyFiles.Length);
+                    //var assemblies = new List<Assembly>(assemblyFiles.Length);
+
+                    //foreach (var assemblyFile in assemblyFiles)
+                    //{
+
+                    //    using (var stream = await assemblyFile.Content.ReadAsStreamAsync())
+                    //    {
+                    //       byte[] data = new byte[stream.Length];
+                    //       await stream.ReadAsync(data, 0, data.Length);
+                    //       var assemblyInstance = Assembly.Load(data);
+                    //       assemblies.Add(assemblyInstance);
+                    //       var metadataReference = MetadataReference.CreateFromImage(data);
+                    //       references.Add(metadataReference);
+                    //    }
+
+                    //}
+
+                    //Assemblies = assemblies;
+                    //References = references;
                 }
-
-                Assemblies = assemblies;
-                References = references;
-
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error:" + ex.Message);
+                }
             }
 
             InitializationTask = InitializeInternal();
@@ -105,12 +120,12 @@ namespace Nethereum.TryOnBrowser
             {
                 compilation = CSharpCompilation.Create("DynamicCode")
                 .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
-                .AddReferences(References)
+                .AddReferences(AssemblyCache.Current.GetAllMetadataReferences())
                 .AddSyntaxTrees(CSharpSyntaxTree.ParseText(source));
             } else if(language=="vb") {
                 compilation = VisualBasicCompilation.Create("DynamicCode")
                 .WithOptions(new VisualBasicCompilationOptions(OutputKind.WindowsApplication, embedVbCoreRuntime: true))
-                .AddReferences(References)
+                .AddReferences(AssemblyCache.Current.GetAllMetadataReferences())
                 .AddSyntaxTrees(VisualBasicSyntaxTree.ParseText(source));
             }
 
