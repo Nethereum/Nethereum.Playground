@@ -1,7 +1,7 @@
 ﻿@using Nethereum.Playground.Repositories;
 @inherits PlaygroundEditorViewModel
 
-<div class="card" style="width:1400px">
+<div class="card" >
     <div class="card-header">
         <h5>
             Nethereum Playground
@@ -9,32 +9,33 @@
         <div class="sub-content"> The Nethereum Playground compiles and executes your .Net code in the browser using Wasm.</div>
     </div>
     <div class="card-body">
-        <div class="btn-toolbar mb-3" role="toolbar">
-            <div class="btn-group" role="group">
-                <button class="btn btn-primary s-2 right" onclick="@LoadFromFileAsync">Open File</button>
-                <button class="btn btn-primary s-2 right" onclick="@SaveToFileAsync">Save File</button>
+        <div class="btn-toolbar m-1 mb-3" role="toolbar">
+            <div class="btn-group mr-3" role="group">
+                <button class="btn btn-secondary" onclick="@LoadFromFileAsync">Open File</button>
+                <button class="btn btn-secondary" onclick="@SaveToFileAsync">Save File</button>
                 @if (@CodeSamples[SelectedCodeSample].Custom)
                 {
-                    <button class="btn btn-primary s-2 right" onclick="@SaveAsync">Save</button>
+                    <button class="btn btn-secondary" onclick="@SaveAsync">Save</button>
                 }
                 else
                 {
-                    <button class="btn btn-primary s-2 right" disabled>Save</button>
+                    <button class="btn btn-secondary" disabled>Save</button>
                 }
-                <button class="btn btn-primary s-2 right" onclick="@SaveAsAsync">Save As</button>
+                <button class="btn btn-secondary" onclick="@SaveAsAsync">Save As</button>
 
                 @if (@CodeSamples[SelectedCodeSample].Custom)
                 {
-                    <button class="btn btn-primary s-2 right" onclick="@RemoveAsync">Remove</button>
+                    <button class="btn btn-secondary" onclick="@RemoveAsync">Remove</button>
                 }
                 else
                 {
-                    <button class="btn btn-primary s-2 right" disabled>Remove</button>
+                    <button class="btn btn-secondary" disabled>Remove</button>
                 }
+                
             </div>
-            <div class="input-group m-2 row justify-content-end">
+            <div class="input-group">
                 <div class="input-group-prepend">
-                    <div class="input-group-text" id="selectCodeSample">Select code sample:</div>
+                    <div class="input-group-text" id="selectCodeSampleP">Select sample:</div>
                 </div>
                 <select id="selectCodeSample" class="form-control col-sm-7" onchange="@CodeSampleChanged">
                     @for (int i = 0; i < CodeSamples.Count; i++)
@@ -52,23 +53,20 @@
                 </select>
             </div>
         </div>
-
         <h5>@CodeSamples[SelectedCodeSample].Name</h5>
 
         <div class="row">
-            <MonacoEditor EditorModel="@editorModel" Width="1400" Height="600" />
+            <MonacoEditor EditorModel="@editorModel" Width="1200" Height="600" />
         </div>
 
 
-        <div class="btn-toolbar justify-content-between" role="toolbar">
-            <div class="btn-group" role="group" aria-label="First group">
-                <button class="btn btn-primary m-2 right" onclick="@Run">Run Code</button>
-            </div>
-        </div>
+       
+        <button class="btn btn-secondary m-1 mt-2" onclick="@Run">Compile and Execute</button>
+        
 
 
         <div class="row form-group">
-            <label for="id=" txtOutput">Output</label>
+            <label for="txtOutput">Output</label>
             <textarea @bind="@Output" class="form-control" id="txtOutput" rows="10"></textarea>
         </div>
     </div>
