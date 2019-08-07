@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nethereum.Playground", "Nethereum.Playground\Nethereum.Playground.csproj", "{6383917C-C048-4C00-8A1C-7D9B3090B0B4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ModulesDapps", "ModulesDapps", "{C74B95AF-8CBD-4A9F-BF65-CFF0B9C7D074}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nethereum.Components.BuildHost", "ModulesDapps\Nethereum.Components.BuildHost\Nethereum.Components.BuildHost.csproj", "{5944ED8E-697E-4738-BA8F-84BC0BA59372}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetDapps.ERC20Token", "ModulesDapps\NetDapps.TokenTransfer\NetDapps.ERC20Token.csproj", "{979E5190-1411-443F-BE30-C41EF250EB6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDapps.MessageSigning", "ModulesDapps\NetDapps.MessageSigning\NetDapps.MessageSigning.csproj", "{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6383917C-C048-4C00-8A1C-7D9B3090B0B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6383917C-C048-4C00-8A1C-7D9B3090B0B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6383917C-C048-4C00-8A1C-7D9B3090B0B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6383917C-C048-4C00-8A1C-7D9B3090B0B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5944ED8E-697E-4738-BA8F-84BC0BA59372}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5944ED8E-697E-4738-BA8F-84BC0BA59372}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5944ED8E-697E-4738-BA8F-84BC0BA59372}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5944ED8E-697E-4738-BA8F-84BC0BA59372}.Release|Any CPU.Build.0 = Release|Any CPU
+		{979E5190-1411-443F-BE30-C41EF250EB6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{979E5190-1411-443F-BE30-C41EF250EB6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{979E5190-1411-443F-BE30-C41EF250EB6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{979E5190-1411-443F-BE30-C41EF250EB6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5944ED8E-697E-4738-BA8F-84BC0BA59372} = {C74B95AF-8CBD-4A9F-BF65-CFF0B9C7D074}
+		{979E5190-1411-443F-BE30-C41EF250EB6A} = {C74B95AF-8CBD-4A9F-BF65-CFF0B9C7D074}
+		{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D} = {C74B95AF-8CBD-4A9F-BF65-CFF0B9C7D074}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FB8D7FFD-9F30-4B04-BF65-F5E84CE3704E}
+	EndGlobalSection
+EndGlobal

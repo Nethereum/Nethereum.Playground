@@ -1,0 +1,28 @@
+﻿@inherits NetDapps.MessageSigning.Components.SignMessageBase
+@using Microsoft.AspNetCore.Components
+
+
+<div class="form-group">
+    <label for="privateKey">Private Key:</label>
+    <input type="text" class="form-control" id="privateKey" aria-describedby="privateKeyHelp" placeholder="Enter the private key" @bind="@PrivateKey" />
+    <small id="privateKeyHelp" class="form-text text-muted">The private key to sign the message</small>
+</div>
+<div class="form-group">
+    <label for="message">Message:</label>
+    <input type="text" class="form-control" id="message" aria-describedby="messageHelp" placeholder="Enter the message to sign" @bind="@Message" />
+    <small id="messageHelp" class="form-text text-muted">The message to sign</small>
+</div>
+
+
+<div class="form-group">
+    <label for="accountAddress">Account address:</label>
+    <label id="accountAddress">@AccountAddress</label>
+</div>
+
+<div class="form-group">
+    <label for="signedMessage">Signed Message:</label>
+    <label id="signedMessage">@SignedMessage</label>
+</div>
+
+
+<button type="submit" class="btn btn-primary" onclick="@SignMessage">Sign Message</button>
