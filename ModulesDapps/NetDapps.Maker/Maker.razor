@@ -1,0 +1,47 @@
+﻿@using Microsoft.AspNetCore.Components
+
+    <div class="card">
+        <div class="card-header">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+
+                <button type="button" class="btn @GetActive(0)" onclick="@(() => Select(0))">Global CDP Info</button>
+                <button type="button" class="btn @GetActive(1)" onclick="@(() => Select(1))">Account info</button>
+            </div>
+          
+        </div>
+        <div class="card-body">
+        @if (ActiveTab == 0)
+        {
+            <h5>Global CDP Info</h5>
+            <SaiTub ContractAddress="0x448a5065aebb8e423f0896e6c5d525c040f59af3" RpcUrl="@RpcUrl"></SaiTub>
+        }
+
+        @if (ActiveTab == 1)
+        {
+            <h5>Account balances info</h5>
+            <TokenBalance RpcUrl="@RpcUrl" MakerContractAddress="0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"
+                          DaiContractAddress="0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359"
+                          PethContractAddress="0xf53ad2c6851052a81b42133467480961b2321c09"
+                          WethContractAddress="0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" />
+        }
+        </div>
+    </div>
+
+
+
+@code{
+string RpcUrl = "https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c";
+int ActiveTab = 0;
+
+protected void Select(int tab)
+{
+    ActiveTab = tab;
+}
+
+protected string GetActive(int tab)
+{
+if (ActiveTab == tab) return "btn-light";
+return "btn-secondary";
+}
+
+}

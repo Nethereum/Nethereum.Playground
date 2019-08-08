@@ -1,0 +1,19 @@
+﻿@inherits NetDapps.Maker.Components.SaiTubInfoBase
+@using Microsoft.AspNetCore.Components
+
+<div class="form-group">
+    <label for="cdpDebt">Total CDP Debt:</label>
+    <label id="cdpDebt">@TotalCDPDebt</label>
+</div>
+
+<div class="form-group">
+    <label for="backingCollateral">Backing collateral:</label>
+    <label id="backingCollateral">@BackingCollateral</label>
+</div>
+
+<div class="form-group">
+    <label for="rawCollateral">Raw collateral:</label>
+    <label id="rawCollateral">@RawCollateral</label>
+</div>
+
+<button type="submit" class="btn btn-primary" onclick="@GetInfo">Refresh Info</button>

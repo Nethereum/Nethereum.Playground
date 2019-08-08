@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Mono" Version="0.10.0-preview7.19351.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NetDapps.Maker\NetDapps.Maker.csproj" />
     <ProjectReference Include="..\NetDapps.MessageSigning\NetDapps.MessageSigning.csproj" />
     <ProjectReference Include="..\NetDapps.TokenTransfer\NetDapps.ERC20Token.csproj" />
   </ItemGroup>

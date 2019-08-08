@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetDapps.ERC20Token", "Modu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDapps.MessageSigning", "ModulesDapps\NetDapps.MessageSigning\NetDapps.MessageSigning.csproj", "{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDapps.Maker", "ModulesDapps\NetDapps.Maker\NetDapps.Maker.csproj", "{F3FE7534-81E4-4C26-B9C5-270882BB9244}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3FE7534-81E4-4C26-B9C5-270882BB9244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3FE7534-81E4-4C26-B9C5-270882BB9244}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3FE7534-81E4-4C26-B9C5-270882BB9244}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3FE7534-81E4-4C26-B9C5-270882BB9244}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,6 +49,7 @@ Global
 		{5944ED8E-697E-4738-BA8F-84BC0BA59372} = {C74B95AF-8CBD-4A9F-BF65-CFF0B9C7D074}
 		{979E5190-1411-443F-BE30-C41EF250EB6A} = {C74B95AF-8CBD-4A9F-BF65-CFF0B9C7D074}
 		{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D} = {C74B95AF-8CBD-4A9F-BF65-CFF0B9C7D074}
+		{F3FE7534-81E4-4C26-B9C5-270882BB9244} = {C74B95AF-8CBD-4A9F-BF65-CFF0B9C7D074}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FB8D7FFD-9F30-4B04-BF65-F5E84CE3704E}

@@ -1,0 +1,36 @@
+﻿@page "/remoteassembliesinfo"
+@using Microsoft.AspNetCore.Components
+@using NetDapps.Assemblies
+
+<div class="card">
+<div class="card-header">
+    <h5>
+        Nethereum Playground Remote Assemblies information
+    </h5>
+    <div class="sub-content">These are the remote assemblies loaded to enable compilation or NetDapp modules</div>
+</div>
+<div class="card-body">
+   @if (AssemblyCache.Current.LoadedAssemblies != null && AssemblyCache.Current.LoadedAssemblies.Count != 0)
+   {
+       <table class="table">
+           <thead>
+           <tr>
+               <th>Name</th>
+               <th>Remote Path</th>
+           </tr>
+           </thead>
+           <tbody>
+           @foreach (var assembly in AssemblyCache.Current.LoadedAssemblies)
+           {
+               <tr>
+                   <td>@assembly.FullName</td>
+                   <td>@assembly.PublishedRemotePath</td>
+               
+               </tr>
+           }
+           </tbody>
+       </table>
+   }
+  
+</div>
+   </div>
