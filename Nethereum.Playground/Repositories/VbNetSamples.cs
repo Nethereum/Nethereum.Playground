@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Nethereum.TryOnBrowser.Repositories
+namespace Nethereum.Playground.Repositories
 {
     public class VbNetSamples
     {
