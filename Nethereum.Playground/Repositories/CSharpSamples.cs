@@ -962,7 +962,7 @@ public class GettingStarted_Events
 
 						var result3 = await transferEventHandler.GetFilterChanges(filterIdTransferEventsForContractAllReceiverAddress2);
 
-						Console.WriteLine(""result3/TransactionHash: "" + result3);
+						Console.WriteLine(""result3/TransactionHash: "" + result3[0].Log.TransactionHash);
 
 						// ## Events for all Contracts
 
