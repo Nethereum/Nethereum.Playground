@@ -12,9 +12,14 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using Microsoft.VisualBasic.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Completion;
+using Microsoft.CodeAnalysis.Host.Mef;
+using Microsoft.CodeAnalysis.QuickInfo;
+using Microsoft.CodeAnalysis.Text;
 using NetDapps.Assemblies;
 
 namespace Nethereum.Playground
@@ -23,72 +28,31 @@ namespace Nethereum.Playground
     public class Compiler
 
     {
+        public static Compiler Current { get; private set; }
         private readonly AssemblyCache _assemblyCache;
-
-        class BlazorBoot
-
-        {
-
-            public string main { get; set; }
-
-            public string entryPoint { get; set; }
-
-            public string[] assemblyReferences { get; set; }
-
-            public string[] cssReferences { get; set; }
-
-            public string[] jsReferences { get; set; }
-
-            public bool linkerEnabled { get; set; }
-
-        }
-
-
         private static Task InitializationTask;
 
-        private static List<MetadataReference> References;
 
-        public static List<Assembly> Assemblies;
 
         public Compiler(HttpClient client)
         {
- 
+            Current = this;
 
             async Task InitializeInternal()
 
             {
                 try
                 {
-   
                     var response = await client.GetJsonAsync<AssemblyLoadInfo[]>("/assemblies.json");
-                    await AssemblyCache.Current.LoadAssemblies(client, response);
+                    //await AssemblyCache.Current.LoadAssemblies(client, response);
                     await Task.WhenAll(response.Select(x => AssemblyCache.Current.LoadAssembly(client, x)));
 
-                    //var response = await client.GetJsonAsync<BlazorBoot>("_framework/blazor.boot.json");
+                    //await Task.WhenAll(GetLocalAssembliesLoadInfo().Select(x => AssemblyCache.Current.LoadAssembly(client, x)));
 
-                    //var assemblyFiles = await Task.WhenAll(response.assemblyReferences.Where(x => x.EndsWith(".dll")).Select(x => client.GetAsync("_framework/_bin/" + x)));
-                    //var assemblyFiles = await Task.WhenAll(response.assemblyReferences.Where(x => x.EndsWith(".dll")).Select(x => client.GetAsync("_framework/_bin/" + x)));
+                    await AssemblyCache.Current.LoadAssembly(client,
+                        new AssemblyLoadInfo(null, "Microsoft.CodeAnalysis.CSharp.Features.dll"));
 
-                    //var references = new List<MetadataReference>(assemblyFiles.Length);
-                    //var assemblies = new List<Assembly>(assemblyFiles.Length);
-
-                    //foreach (var assemblyFile in assemblyFiles)
-                    //{
-
-                    //    using (var stream = await assemblyFile.Content.ReadAsStreamAsync())
-                    //    {
-                    //       byte[] data = new byte[stream.Length];
-                    //       await stream.ReadAsync(data, 0, data.Length);
-                    //       var assemblyInstance = Assembly.Load(data);
-                    //       assemblies.Add(assemblyInstance);
-                    //       var metadataReference = MetadataReference.CreateFromImage(data);
-                    //       references.Add(metadataReference);
-                    //    }
-
-                    //}
-
-                    //Assemblies = assemblies;
-                    //References = references;
+                    InitialiseCSharpProject();
                 }
                 catch (Exception ex)
                 {
@@ -112,7 +76,99 @@ namespace Nethereum.Playground
             }
         }
 
+        private Document csharpDocumentForCompletion;
+        private AdhocWorkspace csharpWorkspaceForCompletion;
+        private Project csharpProjectForCompletion;
+
+        public void InitialiseCSharpProject()
+        {
+            var host = MefHostServices.Create(MefHostServices.DefaultAssemblies);
+
+            csharpWorkspaceForCompletion = new AdhocWorkspace(host);
+            var projectInfo = ProjectInfo.Create(ProjectId.CreateNewId(), VersionStamp.Create(), "MyProject",
+                    "MyProject",
+                    LanguageNames.CSharp)
+                //isSubmission: true)
+                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
+                .WithMetadataReferences(AssemblyCache.Current.GetAllMetadataReferences());
+
+
+            csharpProjectForCompletion = csharpWorkspaceForCompletion.AddProject(projectInfo);
+        }
+
+        public Document GetCSharpDocumentForCompletion(string source)
+        {
+            if (csharpDocumentForCompletion == null)
+            {
+                csharpDocumentForCompletion = csharpWorkspaceForCompletion.AddDocument(csharpProjectForCompletion.Id, "MyFile.cs", SourceText.From(source));
+            }
+            else
+            {
+                csharpDocumentForCompletion = csharpDocumentForCompletion.WithText(SourceText.From(source));
+            }
+
+            return csharpDocumentForCompletion;
+        }
+
+
+        public async Task<string[]> GetQuickInfo(string source, string language, int position)
+        {
+            if (language == "csharp")
+            {
+                if (csharpProjectForCompletion == null) return null;
+                var document = GetCSharpDocumentForCompletion(source);
+                
+                    var result = new List<string>();
+                    var quickInfoService = QuickInfoService.GetService(document);
+                    var info = await quickInfoService.GetQuickInfoAsync(document, position);
+                    if (info != null)
+                    {
+
+                        foreach (var section in info.Sections)
+                        {
+                            result.Add("**" + section.Kind + "**");
+                            result.Add(section.Text);
+                        }
+                    }
+
+                    return result.ToArray();
+            }
+            
+            else if (language == "vb")
+            {
+
+            }
+
+            return null;
+        }
+
+        public async Task<(CompletionList, string)> GetCompletion(string source, string language, int position)
+        {
+            var description = string.Empty;
+            if (language == "csharp")
+            {
+                if (csharpProjectForCompletion == null) return (null, null);
+                var document = GetCSharpDocumentForCompletion(source);
+                var completionService = CompletionService.GetService(document);
+                var items = await completionService.GetCompletionsAsync(document, position);
+                if (items != null && items.Items.Length == 1)
+                {
+                    var documentDescription = await completionService.GetDescriptionAsync(document, items.Items[0]);
+                    description = documentDescription.Text;
+                }
+
+                return (items, description);
+
+            }
+            else if (language == "vb")
+            {
   
+            }
+
+            return (null, null);
+        }
+
+
         public (bool success, Assembly asm, Byte[] rawAssembly) LoadSource(string source, string language)
         {
             dynamic compilation = new object();
@@ -162,6 +218,139 @@ namespace Nethereum.Playground
             }
         }
 
+
+        //var assemblyFiles = await Task.WhenAll(response.assemblyReferences.Where(x => x.EndsWith(".dll")).Select(x => client.GetAsync("_framework/_bin/" + x)));
+        //var assemblyFiles = await Task.WhenAll(response.assemblyReferences.Where(x => x.EndsWith(".dll")).Select(x => client.GetAsync("_framework/_bin/" + x)));
+
+        //var references = new List<MetadataReference>(assemblyFiles.Length);
+        //var assemblies = new List<Assembly>(assemblyFiles.Length);
+
+        //foreach (var assemblyFile in assemblyFiles)
+        //{
+
+        //    using (var stream = await assemblyFile.Content.ReadAsStreamAsync())
+        //    {
+        //       byte[] data = new byte[stream.Length];
+        //       await stream.ReadAsync(data, 0, data.Length);
+        //       var assemblyInstance = Assembly.Load(data);
+        //       assemblies.Add(assemblyInstance);
+        //       var metadataReference = MetadataReference.CreateFromImage(data);
+        //       references.Add(metadataReference);
+        //    }
+
+        //}
+
+        //Assemblies = assemblies;
+        //References = references;
+
+        //class BlazorBoot
+        //{
+        //    public string main { get; set; }
+
+        //    public string entryPoint { get; set; }
+
+        //    public string[] assemblyReferences { get; set; }
+
+        //    public string[] cssReferences { get; set; }
+
+        //    public string[] jsReferences { get; set; }
+
+        //    public bool linkerEnabled { get; set; }
+
+        //}
+        //private static List<MetadataReference> References;
+
+        //public static List<Assembly> Assemblies;
+
+        //public string[] GetLocalAssembliesNames()
+        //{
+        //    var assemblyNames = new string[]
+        //    {
+        //        "Microsoft.CodeAnalysis.Workspaces",
+        //        "Microsoft.CodeAnalysis.Workspaces.Common",
+        //        "Microsoft.CodeAnalysis.CSharp.Workspaces",
+        //        "Microsoft.CodeAnalysis.CSharp",
+        //        "Microsoft.CodeAnalysis.Common",
+        //        "Microsoft.CodeAnalysis.VisualBasic.Workspaces",
+        //        "Microsoft.CodeAnalysis.Features",
+        //        "Microsoft.CodeAnalysis.CSharp.Features",
+        //        "Microsoft.CodeAnalysis.VisualBasic.Features"
+        //    };
+        //    return assemblyNames;
+        //}
+
+        //public List<AssemblyLoadInfo> GetLocalAssembliesLoadInfo()
+        //{
+        //    var list = new List<AssemblyLoadInfo>();
+        //    foreach (var assemblyName in GetLocalAssembliesNames())
+        //    {
+        //        list.Add(new AssemblyLoadInfo(null, "_framework/_bin/" + assemblyName + ".dll"));
+        //    }
+
+        //    return list;
+        //}
+
+        //private static ImmutableArray<Assembly> LoadDefaultAssemblies()
+        //{
+        //    // build a MEF composition using the main workspaces assemblies and the known VisualBasic/CSharp workspace assemblies.
+        //    // updated: includes feature assemblies since they now have public API's.
+        //    var assemblyNames = new string[]
+        //    {
+        //        "Microsoft.CodeAnalysis.Workspaces",
+        //        "Microsoft.CodeAnalysis.CSharp.Workspaces",
+        //        "Microsoft.CodeAnalysis.VisualBasic.Workspaces",
+        //        "Microsoft.CodeAnalysis.Features",
+        //        "Microsoft.CodeAnalysis.CSharp.Features",
+        //        "Microsoft.CodeAnalysis.VisualBasic.Features"
+        //    };
+
+        //    return LoadNearbyAssemblies(assemblyNames);
+        //}
+
+        //internal static ImmutableArray<Assembly> LoadNearbyAssemblies(string[] assemblyNames)
+        //{
+        //    var assemblies = new List<Assembly>();
+
+        //    foreach (var assemblyName in assemblyNames)
+        //    {
+        //        var assembly = TryLoadNearbyAssembly(assemblyName);
+        //        if (assembly != null)
+        //        {
+        //            assemblies.Add(assembly);
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine("Could not load:" + assemblyName);
+        //        }
+        //    }
+
+        //    return assemblies.ToImmutableArray();
+        //}
+
+        //private static Assembly TryLoadNearbyAssembly(string assemblySimpleName)
+        //{
+        //    var thisAssemblyName = typeof(MefHostServices).GetTypeInfo().Assembly.GetName();
+        //    var assemblyShortName = thisAssemblyName.Name;
+        //    var assemblyVersion = thisAssemblyName.Version;
+        //    var publicKeyToken = thisAssemblyName.GetPublicKeyToken().Aggregate(string.Empty, (s, b) => s + b.ToString("x2"));
+
+        //    if (string.IsNullOrEmpty(publicKeyToken))
+        //    {
+        //        publicKeyToken = "null";
+        //    }
+
+        //    var assemblyName = new AssemblyName(string.Format("{0}, Version={1}, Culture=neutral, PublicKeyToken={2}", assemblySimpleName, assemblyVersion, publicKeyToken));
+
+        //    try
+        //    {
+        //        return Assembly.Load(assemblyName);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return null;
+        //    }
+        //}
+
     }
-    
+
 }

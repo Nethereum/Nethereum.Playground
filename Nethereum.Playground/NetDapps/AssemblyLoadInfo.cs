@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Reflection;
+using Microsoft.CodeAnalysis;
 
 namespace NetDapps.Assemblies
 {
@@ -26,6 +27,7 @@ namespace NetDapps.Assemblies
         public string FullName { get; set; }
         public string PublishedRemotePath { get; set; }
         public MetadataReference MetadataReference { get; set;}
+        public Assembly Assembly { get; set; }
 
     }
 }

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Components.Builder;
 using Nethereum.Playground.ServiceCollectionExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Blazor.FileReader;
+using Nethereum.Playground.Components.Sqlite;
+using Microsoft.CodeAnalysis.CSharp.AddAccessibilityModifiers;
 
 namespace Nethereum.Playground
 {
@@ -16,7 +18,7 @@ namespace Nethereum.Playground
             services.AddCodeRepository();
             services.AddCompiler();
             services.AddFileReaderService();
-
+            SQLitePCL.raw.SetProvider(new SQLite3Provider_WebAssembly());
 
         }
 
@@ -27,10 +29,14 @@ namespace Nethereum.Playground
             //var web3 = new Nethereum.Web3.Web3();
             var js = Newtonsoft.Json.ConstructorHandling.AllowNonPublicDefaultConstructor;
             var jsarray = new Newtonsoft.Json.Linq.JArray();
+            
+            //hack workspace
+            var x = Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentBlock;
+            //var y = Microsoft.CodeAnalysis.CSharp.CSharpFeaturesResources
             //var account = new Nethereum.Web3.Accounts.Managed.ManagedAccount("", "");
             //var words = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
             //var wallet = new Nethereum.HdWallet.Wallet(words, null);
-            
+
             app.AddComponent<App>("app");
         }
     }

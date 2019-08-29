@@ -86,6 +86,7 @@ namespace NetDapps.Assemblies
                     //making sure we have the right name as we may not have passed it as a parameter.
                     assemblyInfo.FullName = assembly.FullName;
                     assemblyInfo.MetadataReference = MetadataReference.CreateFromImage(assemblyStream);
+                    assemblyInfo.Assembly = assembly;
                     LoadedAssemblies.Add(assemblyInfo);
 					
                 }
