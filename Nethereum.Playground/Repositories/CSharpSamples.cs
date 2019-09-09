@@ -695,6 +695,8 @@ public class TransferFunction : FunctionMessage
 
 //**** END CONTRACT DEFINITIONS ***** ///
 
+public static async Task Main()
+{
 // An instance ManagedAccount object can simply be declared using the ""sender"" account public address as well as its password:
 
 var senderAddress = ""0x12890d2cce102216644c59daE5baed380d84830c"";
@@ -742,6 +744,7 @@ var transfer = new TransferFunction()
 };
 var transactionReceipt2 = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress1, transfer);
 var transactionHash = transactionReceipt2.TransactionHash;
+}
 }
 
 "
