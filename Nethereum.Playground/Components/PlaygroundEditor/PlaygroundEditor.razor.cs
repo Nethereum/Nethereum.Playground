@@ -15,6 +15,9 @@ using Nethereum.Playground.Components.FileUtils;
 using Nethereum.Playground.Components.Modal;
 using Nethereum.Playground.Components.Monaco;
 using Nethereum.Playground.Repositories;
+//using Ipfs;
+//using Ipfs.Api;
+//using Ipfs.CoreApi;
 
 namespace Nethereum.Playground.Components.PlaygroundEditor
 {
@@ -41,6 +44,8 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
         private SaveAsFileModel savesAsFileModel;
         [Parameter] CodeLanguage CodeLanguage { get; set; }
+
+        private const string IPFS_API_URL = "https://ipfs.infura.io:5001/7238211010344719ad14a89db874158c/api/";
 
         public async Task FileLoaded(string content, string fileName)
         {
@@ -293,6 +298,35 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             {
                 return 1;
             }
+
+            /*
+             Method = 0,
+            Function = 1,
+            Constructor = 2,
+            Field = 3,
+            Variable = 4,
+            Class = 5,
+            Struct = 6,
+            Interface = 7,
+            Module = 8,
+            Property = 9,
+            Event = 10,
+            Operator = 11,
+            Unit = 12,
+            Value = 13,
+            Constant = 14,
+            Enum = 15,
+            EnumMember = 16,
+            Keyword = 17,
+            Text = 18,
+            Color = 19,
+            File = 20,
+            Reference = 21,
+            Customcolor = 22,
+            Folder = 23,
+            TypeParameter = 24,
+            Snippet = 25
+             */
         }
 
         public static string TryGetPropertyValue(CompletionItem completionItem, string key)
@@ -390,6 +424,39 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
             StateHasChanged();
         }
+
+        protected async Task PublishToIPFSAsync()
+        {
+            try
+            {
+                //var start = DateTime.Now;
+                //Output = "Submitting to IPFS please wait, this can take a while...";
+                //var ipfs = new IpfsClient(IPFS_API_URL);
+                ////hack our own HttpClient
+                //var field = typeof(IpfsClient).GetField("api", BindingFlags.NonPublic | BindingFlags.Static);
+                //var httpClient = new HttpClient();
+                //httpClient.DefaultRequestHeaders.Add("User-Agent", ipfs.UserAgent);
+                //field.SetValue(null, httpClient);
+
+                //editorModel = await Interop.EditorGetAsync(JSRuntime, editorModel);
+                //Output += "Duration Milliseconds: " + (DateTime.Now - start).TotalMilliseconds;
+                //Output += "Completed setup, starting the push";
+                //var fileSystemNode = await ipfs.FileSystem.AddTextAsync(editorModel.Script);
+                //await ipfs.Pin.AddAsync(fileSystemNode.Id);
+                //Output += "Published to IPFS with Hash: " + fileSystemNode.Id.Hash;
+                //Output += Environment.NewLine;
+                //Output += "Duration Milliseconds: " + (DateTime.Now - start).TotalMilliseconds;
+                //Output += Environment.NewLine;
+                //Output += "Url: " + "https://ipfs.infura.io/ipfs/" + fileSystemNode.Id.Hash;
+            }
+            catch (Exception ex)
+            {
+                Output = "IPFS Submission Failed: " + ex.ToString();
+            }
+        }
+        
+       
+
 
         protected Task CompileAndRun()
         {
