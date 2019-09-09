@@ -640,12 +640,6 @@ using Nethereum.ABI.FunctionEncoding.Attributes;
 
 // Nethereum.Web3 wraps this functionality by using a ManagedAccount, having the managed account storing the account address and the password information.
 
-// An instance ManagedAccount object can simply be declared using the ""sender"" account public address as well as its password:
-
-var senderAddress = ""0x12890d2cce102216644c59daE5baed380d84830c"";
-var password = ""password"";
-var account = new ManagedAccount(senderAddress, password);
-var web3 = new Nethereum.Web3.Web3(account);
 
 // When used in conjuction with Web3, you can use an ""Account"" to deploy a contract
 
@@ -698,6 +692,13 @@ public class TransferFunction : FunctionMessage
 }
 
 //**** END CONTRACT DEFINITIONS ***** ///
+
+// An instance ManagedAccount object can simply be declared using the ""sender"" account public address as well as its password:
+
+var senderAddress = ""0x12890d2cce102216644c59daE5baed380d84830c"";
+var password = ""password"";
+var account = new ManagedAccount(senderAddress, password);
+var web3 = new Nethereum.Web3.Web3(account);
 
 var deploymentMessage = new StandardTokenDeployment
 {
