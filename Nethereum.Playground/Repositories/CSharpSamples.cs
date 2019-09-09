@@ -633,6 +633,8 @@ using Nethereum.Hex.HexConvertors;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 
+public class SmartContracts_ManagedAccounts
+{
 // The use for Managed accounts:
 // Clients retrieve the private key for an account (if stored on their keystore folder) using a password provided to decrypt the file. This is done when unlocking an account, or just at the time of sending a transaction if using `personal_sendTransaction` with a password.
 
@@ -740,7 +742,7 @@ var transfer = new TransferFunction()
 };
 var transactionReceipt2 = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress1, transfer);
 var transactionHash = transactionReceipt2.TransactionHash;
-
+}
 
 "
                 },
