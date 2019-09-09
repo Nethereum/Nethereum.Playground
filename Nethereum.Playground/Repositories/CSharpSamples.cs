@@ -632,6 +632,7 @@ using Nethereum.Hex.HexTypes;
 using Nethereum.Hex.HexConvertors;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.ABI.FunctionEncoding.Attributes;
+using System.Threading.Tasks;
 
 public class SmartContracts_ManagedAccounts
 {
