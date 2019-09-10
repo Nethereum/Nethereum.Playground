@@ -14,6 +14,8 @@ using Microsoft.JSInterop;
 using Nethereum.Playground.Components.FileUtils;
 using Nethereum.Playground.Components.Modal;
 using Nethereum.Playground.Components.Monaco;
+using Nethereum.Playground.Components.Monaco.MonacoDTOs;
+using Nethereum.Playground.Components.Monaco.Services;
 using Nethereum.Playground.Repositories;
 //using Ipfs;
 //using Ipfs.Api;
@@ -21,7 +23,8 @@ using Nethereum.Playground.Repositories;
 
 namespace Nethereum.Playground.Components.PlaygroundEditor
 {
-    // Based on https://github.com/Suchiman/Runny all credit to him
+    // Compiler based on https://github.com/Suchiman/Runny all credit to him for the idea
+
 
     public class PlaygroundEditorViewModel : ComponentBase
     {
@@ -69,6 +72,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             await CodeSampleRepository.AddCodeSampleAsync(codeSample);
 
             SelectedCodeSample = CodeSamples.Count - 1;
+            
             StateHasChanged();
         }
 
@@ -82,7 +86,8 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
             savesAsFileModel = new SaveAsFileModel();
             savesAsFileModel.SaveFileAs += SaveAsAsyncCallBack;
-         
+            
+
         }
         
         protected override async Task OnParametersSetAsync()
@@ -108,7 +113,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
         /// <returns></returns>
         protected override async Task OnAfterRenderAsync()
         {
-          
+            ProjectEditorInitialiser.InitialiseProject(GetEditorLanguage());
             if (!CodeSampleRepository.LoadedUserSamples)
             {
                 await LoadSavedAsync();
@@ -160,11 +165,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             Compiler.WhenReady(RunInternal);
         }
 
-       
-        public void GetCompletion()
-        {
-            Compiler.WhenReady(GetCompletionInternal);
-        }
+        
 
         public async Task LoadSavedAsync()
         {
@@ -217,9 +218,10 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
         public async Task CodeSampleChanged(UIChangeEventArgs evt)
         {
-            SelectedCodeSample = Int32.Parse(evt.Value.ToString());
+            SelectedCodeSample = int.Parse(evt.Value.ToString());
             editorModel.Script = CodeSamples[SelectedCodeSample].Code;
             await Interop.EditorSetAsync(JSRuntime, editorModel);
+           
         }
 
         public string GetDisplayTitle(CodeSample codeSample)
@@ -232,167 +234,6 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             return value.Length <= maxChars ? value : value.Substring(0, maxChars) + "...";
         }
 
-        public class CompletionItemMonaco
-        {
-            public string Label { get; set; }
-            public int Kind { get; set; }
-            public string Documentation { get; set;}
-            public string InsertText { get; set; }
-            public string FilterText { get; set; }
-            public string SortText { get; set; }
-        }
-
-        public class HoverItemMonaco
-        {
-            public string Value { get; set; }
-        }
-
-        [JSInvokable()]
-        public static async Task<CompletionItemMonaco[]> GetCompletionItems(EditorModel editorModel, int position)
-        {
-            var results = await Compiler.Current.GetCompletion(editorModel.Script, editorModel.Language, position);
-            if (results.Item1 != null)
-            {
-                return results.Item1.Items.Select(x => new CompletionItemMonaco
-                {
-                    Label = x.DisplayText,
-                    Documentation = results.Item2, //only we get one info 
-                    Kind = TryGetMonacoItemType(x),
-                    InsertText = TryGetPropertyValue(x, "InsertionText"),
-                    FilterText = x.FilterText,
-                    SortText = x.SortText
-                }).ToArray();
-            }
-
-            return null;
-        }
-
-
-        [JSInvokable()]
-        public static async Task<HoverItemMonaco[]> GetQuickInfo(EditorModel editorModel, int position)
-        {
-            var items =  await Compiler.Current.GetQuickInfo(editorModel.Script, editorModel.Language, position);
-            return items?.Select(x => new HoverItemMonaco() {Value = x}).ToArray();
-        }
-
-        public static int TryGetMonacoItemType(CompletionItem completionItem)
-        {
-            try
-            {
-                var type = completionItem.Properties["SymbolKind"];
-                switch (type)
-                {
-                    case "15":
-                        return 9; ///Property
-                    case "9":
-                        return 1; //Method / Function
-                    case "12":
-                        return 8; //monaco.languages.CompletionItemKind.Module "Namespace"
-                    case "11":
-                        return 5; //monaco.languages.CompletionItemKind.Class
-                    default:
-                        return 1;
-                }
-            }
-            catch
-            {
-                return 1;
-            }
-
-            /*
-             Method = 0,
-            Function = 1,
-            Constructor = 2,
-            Field = 3,
-            Variable = 4,
-            Class = 5,
-            Struct = 6,
-            Interface = 7,
-            Module = 8,
-            Property = 9,
-            Event = 10,
-            Operator = 11,
-            Unit = 12,
-            Value = 13,
-            Constant = 14,
-            Enum = 15,
-            EnumMember = 16,
-            Keyword = 17,
-            Text = 18,
-            Color = 19,
-            File = 20,
-            Reference = 21,
-            Customcolor = 22,
-            Folder = 23,
-            TypeParameter = 24,
-            Snippet = 25
-             */
-        }
-
-        public static string TryGetPropertyValue(CompletionItem completionItem, string key)
-        {
-            try
-            {
-                return completionItem.Properties[key];
-                
-            }
-            catch
-            {
-                return "";
-            }
-        }
-
-        public async Task GetCompletionInternal()
-        {
-            Output = "Hi";
-            editorModel = await Interop.EditorGetAsync(JSRuntime, editorModel);
-
-
-            var currentOut = Console.Out;
-            var writer = new StringWriter();
-            Console.SetOut(writer);
-
-            Exception exception = null;
-            try
-            {
-                var index = editorModel.Script.IndexOf(". ") + 1;
-                Output += index;
-                var results = await Compiler.GetCompletion(editorModel.Script, editorModel.Language, index);
-                //Output += results.Items.Length;
-                foreach (var i in results.Item1.Items)
-                {
-                    Output += "\r\n" + i.DisplayText;
-
-                    foreach (var prop in i.Properties)
-                    {
-                        Output += "\r\n" + $"{prop.Key}:{prop.Value}  ";
-                    }
-
-                    Output += "\r\n";
-                    foreach (var tag in i.Tags)
-                    {
-                        Output += "\r\n" + $"{tag}  ";
-                    }
-
-                    Output += "\r\n";
-                    Output += "\r\n";
-                }
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
-            }
-
-            Output += writer.ToString();
-            Console.SetOut(currentOut);
-
-            if (exception != null)
-            {
-                Output += "\r\n" + exception.ToString();
-            }
-           
-            StateHasChanged();
-        }
 
         public async Task RunInternal()
         {
@@ -455,8 +296,6 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             }
         }
         
-       
-
 
         protected Task CompileAndRun()
         {

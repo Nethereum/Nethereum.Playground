@@ -22,14 +22,24 @@ function getQuickInfo(model, position, language) {
 
 }
 
+function getSignatureHelp(model, position, language) {
+    let editorModel = {
+        script: model.getValue(),
+        language: language
+    };
+    return DotNet.invokeMethodAsync('Nethereum.Playground', 'GetSignatureCollection', editorModel, model.getOffsetAt(position));
+}
+
+
+
 function registerCompletionProvider() {
     if (!hasRegisteredCompletionProviders) {
         monaco.languages.register({ id: 'csharp' });
- 
+
         monaco.languages.registerCompletionItemProvider('csharp',
             {
                 triggerCharacters: ['.'],
-                provideCompletionItems: function (model, position) {
+                provideCompletionItems: function(model, position) {
                     return getSuggestions(model, position, 'csharp').then(x => {
                         console.log(x);
                         return {
@@ -40,18 +50,31 @@ function registerCompletionProvider() {
                 },
             });
 
-        monaco.languages.registerHoverProvider('csharp', {
-            provideHover: function (model, position) {
-                return getQuickInfo(model, position, 'csharp').then(function (res) {
-                    return {
-                        contents: res
-                    }
-                });
-            }
-        });
-    }
+        monaco.languages.registerHoverProvider('csharp',
+            {
+                provideHover: function(model, position) {
+                    return getQuickInfo(model, position, 'csharp').then(function(res) {
+                        return {
+                            contents: res
+                        }
+                    });
+                }
+            });
 
-    hasRegisteredCompletionProviders = true;
+        monaco.languages.registerSignatureHelpProvider('csharp',
+            {
+                signatureHelpTriggerCharacters: ['(',','],
+                provideSignatureHelp: function(model, position) {
+                    return getSignatureHelp(model, position, 'csharp').then(function (res) {
+                        console.log(res);
+                        return res;
+
+                    });
+                }
+            });
+
+        hasRegisteredCompletionProviders = true;
+    }
 }
 
 

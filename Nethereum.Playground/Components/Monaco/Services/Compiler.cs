@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.Scripting.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.CommandLine.Invocation;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -17,21 +18,23 @@ using System.Threading;
 using Microsoft.VisualBasic.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Completion;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.QuickInfo;
+using Microsoft.CodeAnalysis.Recommendations;
 using Microsoft.CodeAnalysis.Text;
 using NetDapps.Assemblies;
+using Nethereum.Playground.Components.Monaco.MonacoDTOs;
+using Nethereum.Playground.Components.Monaco.Services;
+using Newtonsoft.Json;
 
 namespace Nethereum.Playground
 {
     //// Based on https://github.com/Suchiman/Runny all credit to him
     public class Compiler
-
     {
         public static Compiler Current { get; private set; }
-        private readonly AssemblyCache _assemblyCache;
         private static Task InitializationTask;
-
 
 
         public Compiler(HttpClient client)
@@ -50,9 +53,9 @@ namespace Nethereum.Playground
                     //await Task.WhenAll(GetLocalAssembliesLoadInfo().Select(x => AssemblyCache.Current.LoadAssembly(client, x)));
 
                     await AssemblyCache.Current.LoadAssembly(client,
-                        new AssemblyLoadInfo(null, "Microsoft.CodeAnalysis.CSharp.Features.dll"));
+                       new AssemblyLoadInfo(null, "Microsoft.CodeAnalysis.CSharp.Features.dll"));
 
-                    InitialiseCSharpProject();
+                    ProjectEditorInitialiser.InitialiseProjectsFirstInit();
                 }
                 catch (Exception ex)
                 {
@@ -76,116 +79,27 @@ namespace Nethereum.Playground
             }
         }
 
-        private Document csharpDocumentForCompletion;
-        private AdhocWorkspace csharpWorkspaceForCompletion;
-        private Project csharpProjectForCompletion;
-
-        public void InitialiseCSharpProject()
-        {
-            var host = MefHostServices.Create(MefHostServices.DefaultAssemblies);
-
-            csharpWorkspaceForCompletion = new AdhocWorkspace(host);
-            var projectInfo = ProjectInfo.Create(ProjectId.CreateNewId(), VersionStamp.Create(), "MyProject",
-                    "MyProject",
-                    LanguageNames.CSharp)
-                //isSubmission: true)
-                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
-                .WithMetadataReferences(AssemblyCache.Current.GetAllMetadataReferences());
-
-
-            csharpProjectForCompletion = csharpWorkspaceForCompletion.AddProject(projectInfo);
-        }
-
-        public Document GetCSharpDocumentForCompletion(string source)
-        {
-            if (csharpDocumentForCompletion == null)
-            {
-                csharpDocumentForCompletion = csharpWorkspaceForCompletion.AddDocument(csharpProjectForCompletion.Id, "MyFile.cs", SourceText.From(source));
-            }
-            else
-            {
-                csharpDocumentForCompletion = csharpDocumentForCompletion.WithText(SourceText.From(source));
-            }
-
-            return csharpDocumentForCompletion;
-        }
-
-
-        public async Task<string[]> GetQuickInfo(string source, string language, int position)
-        {
-            if (language == "csharp")
-            {
-                if (csharpProjectForCompletion == null) return null;
-                var document = GetCSharpDocumentForCompletion(source);
-                
-                    var result = new List<string>();
-                    var quickInfoService = QuickInfoService.GetService(document);
-                    var info = await quickInfoService.GetQuickInfoAsync(document, position);
-                    if (info != null)
-                    {
-
-                        foreach (var section in info.Sections)
-                        {
-                            result.Add("**" + section.Kind + "**");
-                            result.Add(section.Text);
-                        }
-                    }
-
-                    return result.ToArray();
-            }
-            
-            else if (language == "vb")
-            {
-
-            }
-
-            return null;
-        }
-
-        public async Task<(CompletionList, string)> GetCompletion(string source, string language, int position)
-        {
-            var description = string.Empty;
-            if (language == "csharp")
-            {
-                if (csharpProjectForCompletion == null) return (null, null);
-                var document = GetCSharpDocumentForCompletion(source);
-                var completionService = CompletionService.GetService(document);
-                var items = await completionService.GetCompletionsAsync(document, position);
-                if (items != null && items.Items.Length == 1)
-                {
-                    var documentDescription = await completionService.GetDescriptionAsync(document, items.Items[0]);
-                    description = documentDescription.Text;
-                }
-
-                return (items, description);
-
-            }
-            else if (language == "vb")
-            {
-  
-            }
-
-            return (null, null);
-        }
-
 
         public (bool success, Assembly asm, Byte[] rawAssembly) LoadSource(string source, string language)
         {
             dynamic compilation = new object();
-            if(language=="csharp")
+            if (language == "csharp")
             {
                 compilation = CSharpCompilation.Create("DynamicCode")
-                .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
-                .AddReferences(AssemblyCache.Current.GetAllMetadataReferences())
-                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(source));
-            } else if(language=="vb") {
+                    .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
+                    .AddReferences(AssemblyCache.Current.GetAllMetadataReferences())
+                    .AddSyntaxTrees(CSharpSyntaxTree.ParseText(source));
+            }
+            else if (language == "vb")
+            {
                 compilation = VisualBasicCompilation.Create("DynamicCode")
-                .WithOptions(new VisualBasicCompilationOptions(OutputKind.WindowsApplication, embedVbCoreRuntime: true))
-                .AddReferences(AssemblyCache.Current.GetAllMetadataReferences())
-                .AddSyntaxTrees(VisualBasicSyntaxTree.ParseText(source));
+                    .WithOptions(new VisualBasicCompilationOptions(OutputKind.WindowsApplication,
+                        embedVbCoreRuntime: true))
+                    .AddReferences(AssemblyCache.Current.GetAllMetadataReferences())
+                    .AddSyntaxTrees(VisualBasicSyntaxTree.ParseText(source));
             }
 
-            ImmutableArray<Diagnostic> diagnostics  = compilation.GetDiagnostics();
+            ImmutableArray<Diagnostic> diagnostics = compilation.GetDiagnostics();
             var error = false;
 
             foreach (var diagnostic in diagnostics)
@@ -353,4 +267,6 @@ namespace Nethereum.Playground
 
     }
 
+
+   
 }
