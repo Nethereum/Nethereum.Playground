@@ -77,9 +77,7 @@ public class Address_Utilities
         var address1 = ""0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
         var address2 = ""0x5aaeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
         var address3 = ""IamNotAValidAddress"";
-        Console.WriteLine(address1.IsTheSameAddress(address2));
 
-        var address3 = ""0x5aaeb6053F3E94C9b9A09f33669435E7Ef1BeAex"";
         Console.WriteLine(address1.IsTheSameAddress(address2));
 
     //  2/ Ensuring the address has the `0x` prefix:
@@ -90,13 +88,21 @@ public class Address_Utilities
 
         Console.WriteLine(address1.EnsureHexPrefix());
         
-    //  3/ Ensuring the address has the right format:
+    //  3/ Ensuring the address encoding is valid Ethereum Hex format:
 
     //  This method verifies if the address starts with `0x`
     //  if yes, returns the address, if no, adds `0x` to the address
     //  and returns it.
 
+        Console.WriteLine(address2.IsValidEthereumAddressHexFormat());
         Console.WriteLine(address3.IsValidEthereumAddressHexFormat());
+
+    //  4/ Ensuring the address is Checksum:
+
+        var addressUtil = new AddressUtil();
+
+        Console.WriteLine(addressUtil.IsChecksumAddress(address1));
+        Console.WriteLine(addressUtil.IsChecksumAddress(address3));
 
     }
 
