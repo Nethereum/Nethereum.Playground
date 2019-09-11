@@ -50,6 +50,40 @@ public class Program
 
                 new CodeSample()
                 {
+                    Name = "Utilities: Address Utilities",
+                    Code = @"
+using System;
+using System.Text;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+using Nethereum.Contracts.CQS;
+using Nethereum.Contracts.Extensions;
+
+public class Address_Utilities
+{
+
+    static async Task Main(string[] args)
+    {
+
+		// This sample shows how to connect to Ethereum mainnet using Infura
+		// and check an account balance:
+
+
+        var address1 = "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed";
+        var address2 = "0x5aaeb6053F3E94C9b9A09f33669435E7Ef1BeAed";
+
+Console.log(address1.IsTheSameAddress(address2));
+
+    }
+
+}
+                "
+                },
+                new CodeSample()
+                {
                     Name = "Chain information: Get Block number, Block, Transaction and Receipt using Infura",
                     Code = @"
 
@@ -608,148 +642,9 @@ public class GetStartedSmartContracts
 
 }
 
-
-
-
-
-
-"
-
-                },
-
-                new CodeSample()
-                {
-                    Name = "Smart Contracts: Deployment and interaction using a managed account",
-                    Code = @"
-using System.Numerics;
-using Nethereum.Contracts;
-using Nethereum.Contracts.CQS;
-using Nethereum.Contracts.Extensions;
-using Nethereum.Util;
-using Nethereum.Web3.Accounts;
-using Nethereum.Web3.Accounts.Managed;
-using Nethereum.Hex.HexTypes;
-using Nethereum.Hex.HexConvertors;
-using Nethereum.Hex.HexConvertors.Extensions;
-using Nethereum.ABI.FunctionEncoding.Attributes;
-using System.Threading.Tasks;
-
-public class SmartContracts_ManagedAccounts
-{
-// The use for Managed accounts:
-// Clients retrieve the private key for an account (if stored on their keystore folder) using a password provided to decrypt the file. This is done when unlocking an account, or just at the time of sending a transaction if using `personal_sendTransaction` with a password.
-
-// Having an account unlocked for a certain period of time might be a security issue, so the prefered option in this scenario, is to use the rpc method `personal_sendTransaction`.
-
-// Nethereum.Web3 wraps this functionality by using a ManagedAccount, having the managed account storing the account address and the password information.
-
-
-// When used in conjuction with Web3, you can use an ""Account"" to deploy a contract
-
-// In the context of this post, the contract to deploy is `StandardTokenDeployment`: 
-
-// To deploy a contract we will create a class inheriting from the ContractDeploymentMessage, here we can include our compiled byte code and other constructor parameters.
-
-// As we can see below the StandardToken deployment message includes the compiled bytecode of the ERC20 smart contract and the constructor parameter with the “totalSupply” of tokens.
-
-// Each parameter is described with an attribute Parameter, including its name ""totalSupply"", type ""uint256"" and order.
-
-//********* CONTRACT DEFINITION  *******
-
-//*** Deployment message**** //
-public class StandardTokenDeployment : ContractDeploymentMessage
-{
-
-            public static string BYTECODE = ""0x60606040526040516020806106f5833981016040528080519060200190919050505b80600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005081905550806000600050819055505b506106868061006f6000396000f360606040523615610074576000357c010000000000000000000000000000000000000000000000000000000090048063095ea7b31461008157806318160ddd146100b657806323b872dd146100d957806370a0823114610117578063a9059cbb14610143578063dd62ed3e1461017857610074565b61007f5b610002565b565b005b6100a060048080359060200190919080359060200190919050506101ad565b6040518082815260200191505060405180910390f35b6100c36004805050610674565b6040518082815260200191505060405180910390f35b6101016004808035906020019091908035906020019091908035906020019091905050610281565b6040518082815260200191505060405180910390f35b61012d600480803590602001909190505061048d565b6040518082815260200191505060405180910390f35b61016260048080359060200190919080359060200190919050506104cb565b6040518082815260200191505060405180910390f35b610197600480803590602001909190803590602001909190505061060b565b6040518082815260200191505060405180910390f35b600081600260005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008573ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905061027b565b92915050565b600081600160005060008673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561031b575081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505410155b80156103275750600082115b1561047c5781600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a381600160005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600260005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505403925050819055506001905061048656610485565b60009050610486565b5b9392505050565b6000600160005060008373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505490506104c6565b919050565b600081600160005060003373ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015801561050c5750600082115b156105fb5781600160005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600160005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905061060556610604565b60009050610605565b5b92915050565b6000600260005060008473ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060008373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005054905061066e565b92915050565b60006000600050549050610683565b9056"";
-
-    public StandardTokenDeployment() : base(BYTECODE){}
-
-    [Parameter(""uint256"", ""totalSupply"")]
-    public BigInteger TotalSupply { get; set; }
-}
-
-// We can call the functions of smart contract to query the state of a smart contract or do any computation, which will not affect the state of the blockchain.
-
-// To do so,  we will need to create a class which inherits from ""FunctionMessage"". First we will decorate the class with a ""Function"" attribute, including the name and return type.
-
-// Each parameter of the function will be a property of the class, each of them decorated with the ""Parameter"" attribute, including the smart contract’s parameter name, type and parameter order.
-
-// For the ERC20 smart contract, the ""balanceOf"" function definition, provides the query interface to get the token balance of a given address. As we can see this function includes only one parameter ""\_owner"", of the type ""address"".
-
-//*** FUNCTION MESSAGES **** ///
-[Function(""balanceOf"", ""uint256"")]
-public class BalanceOfFunction : FunctionMessage
-{
-    [Parameter(""address"", ""_owner"", 1)]
-    public string Owner { get; set; }
-}
-
-[Function(""transfer"", ""bool"")]
-public class TransferFunction : FunctionMessage
-{
-    [Parameter(""address"", ""_to"", 1)]
-    public string To { get; set; }
-
-    [Parameter(""uint256"", ""_value"", 2)]
-    public BigInteger TokenAmount { get; set; }
-}
-
-//**** END CONTRACT DEFINITIONS ***** ///
-
-public static async Task Main()
-{
-// An instance ManagedAccount object can simply be declared using the ""sender"" account public address as well as its password:
-
-var senderAddress = ""0x12890d2cce102216644c59daE5baed380d84830c"";
-var password = ""password"";
-var account = new ManagedAccount(senderAddress, password);
-var web3 = new Nethereum.Web3.Web3(account);
-
-var deploymentMessage = new StandardTokenDeployment
-{
-    TotalSupply = 100000
-};
-
-var deploymentHandler = web3.Eth.GetContractDeploymentHandler<StandardTokenDeployment>();
-var transactionReceipt1 = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
-var contractAddress1 = transactionReceipt1.ContractAddress;
-
-// Once we have deployed the contract, we can start interacting with it.
-
-// Querying the balance of an account
-
-// To retrieve the balance of an address we can create an instance of the BalanceFunction message and set the parameter as our account ""Address"", since we are the ""owner"" of the Token, the full balance has been assigned to us.
-
-var balanceOfFunctionMessage = new BalanceOfFunction()
-{
-    Owner = account.Address,
-};
-
-var balanceHandler = web3.Eth.GetContractQueryHandler<BalanceOfFunction>();
-var balance = await balanceHandler.QueryAsync<BigInteger>(contractAddress1, balanceOfFunctionMessage);
-
-// Transfer
-
-// Lastly let's perform a token transfer. In this scenario we will need to create a TransactionHandler using the TransferFunction definition.
-
-// In the transfer message, we will include the receiver address ""To"", and the ""TokenAmount"" to transfer.
-
-// The final step is to Send the request, wait for the receipt to be “mined” and get the contract address:
-
-var receiverAddress = ""0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"";
-var transferHandler = web3.Eth.GetContractTransactionHandler<TransferFunction>();
-var transfer = new TransferFunction()
-{
-    To = receiverAddress,
-    TokenAmount = 100
-};
-var transactionReceipt2 = await transferHandler.SendRequestAndWaitForReceiptAsync(contractAddress1, transfer);
-var transactionHash = transactionReceipt2.TransactionHash;
-}
-}
-
 "
                 },
+
                  new CodeSample()
                 {
                     Name = "Smart Contracts: Events (End to End Introduction)",
