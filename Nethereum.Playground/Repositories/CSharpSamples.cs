@@ -76,9 +76,10 @@ public class Address_Utilities
 
         var address1 = ""0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
         var address2 = ""0x5aaeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
-        var address3 = ""IamNotAValidAddress"";
+        var address3 = ""IamNotAValidAddress""				
+        var address4 = ""0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"";;
 
-        Console.WriteLine(""Is address1 the same at address2?"" + address1.IsTheSameAddress(address2));
+        Console.WriteLine(""Is address1 the same at address2? "" + address1.IsTheSameAddress(address2));
 
     //  2/ Ensuring the address has the `0x` prefix:
 
@@ -86,7 +87,7 @@ public class Address_Utilities
     //  if yes, returns the address, if no, adds `0x` to the address
     //  and returns it.
 
-        Console.WriteLine(""Address1 with prefix:"" + address1.EnsureHexPrefix());
+        Console.WriteLine(""Address1 with prefix: "" + address1.EnsureHexPrefix());
         
     //  3/ Ensuring the address encoding is valid Ethereum Hex format:
 
@@ -94,14 +95,14 @@ public class Address_Utilities
     //  if yes, returns the address, if no, adds `0x` to the address
     //  and returns it.
 
-        Console.WriteLine(""Is address2 encoding valid Hex format?"" + address2.IsValidEthereumAddressHexFormat());
-        Console.WriteLine(""Is address3 encoding valid Hex format?"" + address3.IsValidEthereumAddressHexFormat());
+        Console.WriteLine(""Is address2 encoding valid Hex format? "" + address2.IsValidEthereumAddressHexFormat());
+        Console.WriteLine(""Is address3 encoding valid Hex format? "" + address3.IsValidEthereumAddressHexFormat());
 
     //  4/ Ensuring the address is Checksum:
 
         var addressUtil = new AddressUtil();
 
-        Console.WriteLine(""Is address2 Checksum?"" + addressUtil.IsChecksumAddress(address2));
+        Console.WriteLine(""Is address2 Checksum? "" + addressUtil.IsChecksumAddress(address2));
 
     //  5/ Converting an address to a Checksum address (upper case letters):
 
@@ -110,7 +111,7 @@ public class Address_Utilities
             return new AddressUtil().ConvertToChecksumAddress(address);
         }
 
-        Console.WriteLine(ToChecksumAddress(""Checksum format of address2"" + address2.ToUpper()));
+        Console.WriteLine(""Checksum format of address4: "" + ToChecksumAddress( address4.ToUpper()));
 
     }
 
