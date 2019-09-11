@@ -15,7 +15,7 @@
         <div class="input-group-prepend">
             <div class="input-group-text" id="selectCodeSample">Select module:</div>
         </div>
-        <select id="selectCodeSample" class="form-control col-sm-7" onchange="@UIComponentChanged">
+        <select id="selectCodeSample" class="form-control col-sm-7" @onchange="@UIComponentChanged">
             @for (int i = 0; i < UIComponentsInfo.Count; i++)
                     {
                         if (i == @SelectedUIComponentInfo)
@@ -29,7 +29,7 @@
                         }
                     }
         </select>
-        <button class="btn btn-secondary ml-1" onclick="@LoadSelected">Load</button>
+        <button class="btn btn-secondary ml-1" @onclick="@LoadSelected">Load</button>
     </div>
     </div>
 

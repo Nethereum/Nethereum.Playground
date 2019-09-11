@@ -1,14 +1,14 @@
 ﻿@inherits ModalBase;
 
     <div class="bm-container @(IsVisible ? "bm-active" : string.Empty)">
-        <div class="bm-overlay" onclick="@CloseModal"></div>
+        <div class="bm-overlay" @onclick="@CloseModal"></div>
 
         <div class="blazor-modal">
             <div class="modal-header">
                 <h3 class="modal-title">
                     @Title
                 </h3>
-                <button type="button" class="close" onclick="@CloseModal">
+                <button type="button" class="close" @onclick="@CloseModal">
                     <span>&times;</span>
                 </button>
             </div>

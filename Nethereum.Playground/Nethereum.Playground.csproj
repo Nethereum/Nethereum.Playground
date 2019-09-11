@@ -20,11 +20,13 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Blazor.Extensions.Storage" Version="0.2.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="3.0.0-preview7.19365.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="3.0.0-preview7.19365.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.DevServer" Version="3.0.0-preview7.19365.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Mono" Version="0.10.0-preview7.19351.1" />
+    <PackageReference Include="Blazor-Auth0-ClientSide" Version="1.0.0-Preview1" />
+    <PackageReference Include="Blazor.Extensions.Storage" Version="0.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="3.0.0-preview8.19405.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="3.0.0-preview8.19405.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.DevServer" Version="3.0.0-preview8.19405.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.0.0-preview8.19405.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Mono" Version="3.0.0-preview8.19380.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.0-beta2-final" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="3.3.0-beta2-final" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.3.0-beta2-final" />
@@ -34,7 +36,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="SQLitePCLRaw.core" Version="1.1.14" />
     <PackageReference Include="System.CommandLine.Experimental" Version="0.3.0-alpha.19317.1" />
-    <PackageReference Include="Tewr.Blazor.FileReader" Version="0.13.19206" />
+    <PackageReference Include="Tewr.Blazor.FileReader" Version="0.14.19242" />
   </ItemGroup>
 
 

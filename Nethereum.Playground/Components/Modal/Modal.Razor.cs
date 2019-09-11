@@ -10,7 +10,7 @@ namespace Nethereum.Playground.Components.Modal
         protected string Title { get; set; }
         protected RenderFragment Content { get; set; }
 
-        protected override void OnInit()
+        protected override void OnInitialized()
         {
             ModalService.OnShow += ShowModal;
             ModalService.OnClose += CloseModal;

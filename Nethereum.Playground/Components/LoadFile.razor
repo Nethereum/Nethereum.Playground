@@ -2,7 +2,7 @@
 
     <div class="simple-form">
         <div class="form-group">
-            <input type="file" accept="@Model.AllowedExtension" @ref="@FileUpload" onchange="@OnChange" />
+            <input type="file" accept="@Model.AllowedExtension" @ref="@FileUpload" @ref:suppressField @onchange="@OnChange" />
             
             @if (string.IsNullOrEmpty(Model.FileName))
             {
@@ -10,7 +10,7 @@
             }
             else
             {
-                <button onclick="@ReadFile" class="btn btn-secondary">Load file</button>
+                <button @onclick="@ReadFile" class="btn btn-secondary">Load file</button>
             }
        
         </div>

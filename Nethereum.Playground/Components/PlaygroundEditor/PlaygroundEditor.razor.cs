@@ -78,7 +78,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
         private Timer _timer;
 
-        protected override async Task OnInitAsync()
+        protected override async Task OnInitializedAsync()
         {
             loadFileModel = new LoadFileModel();
             loadFileModel.AllowedExtension = GetAllowedExtension();

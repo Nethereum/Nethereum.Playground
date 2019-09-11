@@ -21,7 +21,7 @@ namespace Nethereum.Playground.Pages
 
         public string LoadedTitle { get; set; }
 
-        protected override async Task OnInitAsync()
+        protected override async Task OnInitializedAsync()
         {
             UIComponentsInfo = new List<UIAssemblyLoadInfo>();
             var loaded = await Client.GetJsonAsync<UIAssemblyLoadInfo[]>("uiAssemblies.json");

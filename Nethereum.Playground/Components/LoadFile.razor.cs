@@ -14,7 +14,7 @@ namespace Nethereum.Playground.Components
 
         [Inject] public IFileReaderService FileReaderService { get; set; }
 
-        public ElementRef FileUpload { get; set; }
+        public ElementReference FileUpload { get; set; }
 
         [Parameter]
         public LoadFileModel Model { get; set; } = new LoadFileModel(){AllowedExtension = ".cs"};
