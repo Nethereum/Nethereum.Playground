@@ -104,15 +104,14 @@ public class Address_Utilities
         Console.WriteLine(addressUtil.IsChecksumAddress(address1));
         Console.WriteLine(addressUtil.IsChecksumAddress(address3));
 
-    //  5/ Converting an address to a Checksum address:
+    //  5/ Converting an address to a Checksum address (upper case letters):
 
-        public string ToChecksumAddress(string address)
+				string ToChecksumAddress(string address)
         {
             return new AddressUtil().ConvertToChecksumAddress(address);
         }
 
-        Console.WriteLine(address1, ToChecksumAddress(address1.ToUpper()));
-        Console.WriteLine(address3, ToChecksumAddress(address3.ToUpper()));
+        Console.WriteLine(ToChecksumAddress(address2.ToUpper()));
     }
 
 }
