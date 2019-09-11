@@ -75,9 +75,8 @@ public class Address_Utilities
     //  1/ Comparing Two Addresses:
 
         var address1 = ""0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
-        var address2 = ""0x5aaeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
+        var address2 = ""0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"";
         var address3 = ""IamNotAValidAddress"";				
-        var address4 = ""0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"";;
 
         Console.WriteLine(""Is address1 the same at address2? "" + address1.IsTheSameAddress(address2));
 
@@ -102,6 +101,7 @@ public class Address_Utilities
 
         var addressUtil = new AddressUtil();
 
+        Console.WriteLine(""Is address1 Checksum? "" + addressUtil.IsChecksumAddress(address1));
         Console.WriteLine(""Is address2 Checksum? "" + addressUtil.IsChecksumAddress(address2));
 
     //  5/ Converting an address to a Checksum address (upper case letters):
@@ -111,7 +111,7 @@ public class Address_Utilities
             return new AddressUtil().ConvertToChecksumAddress(address);
         }
 
-        Console.WriteLine(""Checksum format of address4: "" + ToChecksumAddress( address4.ToUpper()));
+        Console.WriteLine(""Checksum format of address2: "" + ToChecksumAddress( address2.ToUpper()));
 
     }
 
