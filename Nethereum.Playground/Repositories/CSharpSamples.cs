@@ -111,8 +111,8 @@ public class Address_Utilities
             return new AddressUtil().ConvertToChecksumAddress(address);
         }
 
-        Console.WriteLine(addressUtil.IsChecksumAddress(address1, ToChecksumAddress(address1.ToUpper())));
-        Console.WriteLine(addressUtil.IsChecksumAddress(address3, ToChecksumAddress(address3.ToUpper())));
+        Console.WriteLine(address1, ToChecksumAddress(address1.ToUpper()));
+        Console.WriteLine(address3, ToChecksumAddress(address3.ToUpper()));
     }
 
 }
