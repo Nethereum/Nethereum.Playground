@@ -58,6 +58,7 @@ using System.Threading.Tasks;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.Contracts;
 using Nethereum.Contracts.CQS;
 using Nethereum.Contracts.Extensions;
