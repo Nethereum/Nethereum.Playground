@@ -77,12 +77,12 @@ public class Address_Utilities
         var address2 = ""0x5aaeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
         Console.WriteLine(address1.IsTheSameAddress(address2));
 
-        var address3 = "0x5aaeb6053F3E94C9b9A09f33669435E7Ef1BeAex";
+        var address3 = ""0x5aaeb6053F3E94C9b9A09f33669435E7Ef1BeAex"";
         Console.WriteLine(address1.IsTheSameAddress(address2));
 
     //  2/ Comparing Two Addresses:
-        var address4 = "0xc25aeeacaa3f110612086febfb423fb34cb9952c";
-        var address5 = "0xc25AEEaCaA3f110612086fEbfb423fb34cB9952C";
+        var address4 = ""0xc25aeeacaa3f110612086febfb423fb34cb9952c"";
+        var address5 = ""0xc25AEEaCaA3f110612086fEbfb423fb34cB9952C"";
 
         Console.WriteLine(address4.EnsureHexPrefix());
         // Assert.True(address4.IsTheSameAddress(address5));
