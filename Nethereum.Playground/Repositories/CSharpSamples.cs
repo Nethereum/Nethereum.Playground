@@ -75,7 +75,7 @@ public class Address_Utilities
         var address1 = ""0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
         var address2 = ""0x5aaeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
 
-Console.log(address1.IsTheSameAddress(address2));
+Console.WriteLine(address1.IsTheSameAddress(address2));
 
     }
 
