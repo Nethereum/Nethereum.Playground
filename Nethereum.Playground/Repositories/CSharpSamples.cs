@@ -69,15 +69,31 @@ public class Address_Utilities
     static async Task Main(string[] args)
     {
 
-		// This sample shows how to connect to Ethereum mainnet using Infura
-		// and check an account balance:
+		// This sample shows demos Nethereum's address checking utilities
 
+    //  1/ Comparing Two Addresses:
 
         var address1 = ""0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
         var address2 = ""0x5aaeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
-var isTheSameAddress = address1.IsTheSameAddress(address2);
-Console.WriteLine(isTheSameAddress);
+        Console.WriteLine(address1.IsTheSameAddress(address2));
 
+        var address3 = "0x5aaeb6053F3E94C9b9A09f33669435E7Ef1BeAex";
+        Console.WriteLine(address1.IsTheSameAddress(address2));
+
+    //  2/ Comparing Two Addresses:
+        var address4 = "0xc25aeeacaa3f110612086febfb423fb34cb9952c";
+        var address5 = "0xc25AEEaCaA3f110612086fEbfb423fb34cB9952C";
+
+        Console.WriteLine(address4.EnsureHexPrefix());
+        // Assert.True(address4.IsTheSameAddress(address5));
+
+        // Assert.False(string.Equals(address4.EnsureHexPrefix(), address5.EnsureHexPrefix(), StringComparison.CurrentCultureIgnoreCase));
+
+        //Assert.False(address4.IsTheSameAddress(null));
+        //string address6 = null;
+
+        //strange behaviour, but still permitted.
+        // Assert.True(address6.IsTheSameAddress(null));
     }
 
 }
