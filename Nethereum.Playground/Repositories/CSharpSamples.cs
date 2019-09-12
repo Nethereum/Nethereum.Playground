@@ -50,6 +50,77 @@ public class Program
 
                 new CodeSample()
                 {
+                    Name = "Utilities: Address Utilities",
+                    Code = @"
+using System;
+using System.Text;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Contracts;
+using Nethereum.Contracts.CQS;
+using Nethereum.Contracts.Extensions;
+using Nethereum.Util;
+
+public class Address_Utilities
+{
+
+    static async Task Main(string[] args)
+    {
+
+		// This sample shows demos Nethereum's address checking utilities
+
+    //  1/ Comparing Two Addresses:
+
+        var address1 = ""0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
+        var address2 = ""0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"";
+        var address3 = ""IamNotAValidAddress"";				
+
+        Console.WriteLine(""Is address1 the same at address2? "" + address1.IsTheSameAddress(address2));
+
+    //  2/ Ensuring the address has the `0x` prefix:
+
+    //  This method verifies if the address starts with `0x`
+    //  if yes, returns the address, if no, adds `0x` to the address
+    //  and returns it.
+
+        Console.WriteLine(""Address1 with prefix: "" + address1.EnsureHexPrefix());
+        
+    //  3/ Ensuring the address encoding is valid Ethereum Hex format:
+
+    //  This method verifies if the address starts with `0x`
+    //  if yes, returns the address, if no, adds `0x` to the address
+    //  and returns it.
+
+        Console.WriteLine(""Is address2 encoding valid Hex format? "" + address2.IsValidEthereumAddressHexFormat());
+        Console.WriteLine(""Is address3 encoding valid Hex format? "" + address3.IsValidEthereumAddressHexFormat());
+
+    //  4/ Ensuring the address is Checksum:
+
+        var addressUtil = new AddressUtil();
+
+        Console.WriteLine(""Is address1 Checksum? "" + addressUtil.IsChecksumAddress(address1));
+        Console.WriteLine(""Is address2 Checksum? "" + addressUtil.IsChecksumAddress(address2));
+
+    //  5/ Converting an address to a Checksum address (upper case letters):
+
+				string ToChecksumAddress(string address)
+        {
+            return new AddressUtil().ConvertToChecksumAddress(address);
+        }
+
+        Console.WriteLine(""Checksum format of address2: "" + ToChecksumAddress( address2.ToUpper()));
+
+    }
+
+}
+                "
+                },
+
+                new CodeSample()
+                {
                     Name = "Chain information: Get Block number, Block, Transaction and Receipt using Infura",
                     Code = @"
 
@@ -608,13 +679,7 @@ public class GetStartedSmartContracts
 
 }
 
-
-
-
-
-
 "
-
                 },
 
                  new CodeSample()
