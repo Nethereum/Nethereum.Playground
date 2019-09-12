@@ -1408,6 +1408,16 @@ public class FunctionMessage_Signing
 
 				Console.WriteLine(""Signed transaction Fully offline (no need for node, providing manually the nonce, gas and gas price) is: "" + signedTransaction2);
 
+// ### Calculating a Transaction Hash
+
+// The transaction hash that will be used then the transaction is sent can be calculated from the signed transaction
+// Notice we use transaction1 from above so that the nonce will get correctly incremented each time this sample is run
+
+				var transactionIdPredicted = Sha3Keccack.Current.CalculateHashFromHex(signedTransaction1);
+				var transactionIdActual = await web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(""0x"" + signedTransaction1);
+
+				Console.WriteLine($""Predicted transaction hash: {transactionIdPredicted}"");
+				Console.WriteLine($""Actual transaction hash: {transactionIdActual}"");
     }
 
 }
