@@ -2600,7 +2600,7 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;		
 
-public class LogProcessing_AnyContractManyEventAsync
+public class LogProcessing_AnyContractManyEvent
 {
     [Event(""Transfer"")]
     public class TransferEvent: IEventDTO
@@ -2680,7 +2680,7 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;				
 					
-public class LogProcessing_OneContractManyEventsAsync
+public class LogProcessing_OneContractManyEvents
 {
     [Event(""Transfer"")]
     public class TransferEvent: IEventDTO
@@ -2967,7 +2967,7 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class LogProcessing_OneContractOneEventAsync
+public class LogProcessing_ProcessResultAsync
 {
     [Event(""Transfer"")]
     public class TransferEvent: IEventDTO
