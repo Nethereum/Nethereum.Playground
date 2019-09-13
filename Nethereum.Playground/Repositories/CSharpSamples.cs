@@ -2619,7 +2619,7 @@ using System.Threading.Tasks;
 
 public class LogProcessing_WithProgressRepo
 {
-    public static async Task MainAsync(string[] args)
+    public static async Task Main(string[] args)
     {
         var logs = new List<FilterLog>();
 
