@@ -48,6 +48,9 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
         private SaveAsFileModel savesAsFileModel;
         [Parameter] CodeLanguage CodeLanguage { get; set; }
 
+        [CascadingParameter]
+        public Task<AuthenticationState> authenticationStateTask { get; set; }
+
         private const string IPFS_API_URL = "https://ipfs.infura.io:5001/7238211010344719ad14a89db874158c/api/";
 
         public async Task FileLoaded(string content, string fileName)
@@ -222,6 +225,22 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             editorModel.Script = CodeSamples[SelectedCodeSample].Code;
             await Interop.EditorSetAsync(JSRuntime, editorModel);
            
+        }
+
+        public async Task PublishGistAsync()
+        {
+            var authState = await authenticationStateTask;
+            var user = authState.User;
+            if (user.Identity.IsAuthenticated)
+            {
+                // Since the user is a ClaimsPrincipal, you can also enumerate claims,
+                // evaluate membership in roles, etc.
+                Console.WriteLine($"Hello, {user.Identity.Name}");
+            }
+            else
+            {
+                Console.WriteLine("You're not logged in.");
+            }
         }
 
         public string GetDisplayTitle(CodeSample codeSample)

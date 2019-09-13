@@ -18,7 +18,14 @@ namespace Nethereum.Playground
             services.AddCodeRepository();
             services.AddCompiler();
             services.AddFileReaderService();
+            services.AddGitterAuth();
             SQLitePCL.raw.SetProvider(new SQLite3Provider_WebAssembly());
+
+            services.AddAuthorizationCore();
+            //options =>
+            //{
+            //    options.AddPolicy("read:weather_forecast", policy => policy.RequireClaim("read:weather_forecast"));
+            //});
 
         }
 

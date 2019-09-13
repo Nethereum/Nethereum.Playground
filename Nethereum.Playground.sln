@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nethereum.Components.BuildH
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetDapps.ERC20Token", "ModulesDapps\NetDapps.TokenTransfer\NetDapps.ERC20Token.csproj", "{979E5190-1411-443F-BE30-C41EF250EB6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDapps.MessageSigning", "ModulesDapps\NetDapps.MessageSigning\NetDapps.MessageSigning.csproj", "{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetDapps.MessageSigning", "ModulesDapps\NetDapps.MessageSigning\NetDapps.MessageSigning.csproj", "{2AD8DB65-ADA1-4713-A791-94C4FC31ED9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDapps.Maker", "ModulesDapps\NetDapps.Maker\NetDapps.Maker.csproj", "{F3FE7534-81E4-4C26-B9C5-270882BB9244}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetDapps.Maker", "ModulesDapps\NetDapps.Maker\NetDapps.Maker.csproj", "{F3FE7534-81E4-4C26-B9C5-270882BB9244}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
