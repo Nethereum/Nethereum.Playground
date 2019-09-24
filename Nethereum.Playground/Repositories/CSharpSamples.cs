@@ -2456,6 +2456,70 @@ public class BlockProcessing_StartHere
 
                 new CodeSample()
                 {
+                    Name = "Block Crawl Processing: With Block Progress Repository",
+                    Code = @"
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.BlockchainProcessing.ProgressRepositories;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class BlockProcessing_WithProgressRepo
+{
+    /// <summary>
+    /// Crawl the chain using the progress repo for state persistence and injest the data
+    /// </summary>
+    public static async Task Main(string[] args)
+    {
+        var blocks = new List<BlockWithTransactions>();
+        var transactions = new List<TransactionReceiptVO>();
+        var contractCreations = new List<ContractCreationVO>();
+        var filterLogs = new List<FilterLogVO>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        // create a block progress repository
+        // this is a simple in-memory implementation
+        // several other persistent implementations are available
+        // see the docs https://docs.nethereum.com/en/latest/
+        var blockProgressRepo = new InMemoryBlockchainProgressRepository(2830143);
+
+        //create our processor
+        var processor = web3.Processing.Blocks.CreateBlockProcessor(stepsConfiguration: steps =>
+        {
+            // inject handler for each step
+            steps.BlockStep.AddSynchronousProcessorHandler(b => blocks.Add(b));
+            steps.TransactionReceiptStep.AddSynchronousProcessorHandler(tx => transactions.Add(tx));
+            steps.ContractCreationStep.AddSynchronousProcessorHandler(cc => contractCreations.Add(cc));
+            steps.FilterLogStep.AddSynchronousProcessorHandler(l => filterLogs.Add(l));
+        },
+        blockProgressRepository: blockProgressRepo);
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(2830145),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(2830144));
+
+        Console.WriteLine($""Blocks.  Expected: 2, Found: {blocks.Count}"");
+        Console.WriteLine($""Transactions.  Expected: 25, Found: {transactions.Count}"");
+        Console.WriteLine($""Contract Creations.  Expected: 5, Found: {contractCreations.Count}"");
+        Console.WriteLine($""Last block processed: { blockProgressRepo.LastBlockProcessed}"");
+    }
+}
+"
+                },
+
+                new CodeSample()
+                {
                     Name = "Block Crawl Processing: Transaction criteria",
                     Code = @"
 using Nethereum.BlockchainProcessing.Processor;
@@ -2538,7 +2602,54 @@ public class LogProcessing_AnyContractAnyLog
     }
 
 }"
+                },
 
+                new CodeSample()
+                {
+                    Name = "Log Processing: With Block Progress Repository",
+                    Code = @"
+using Nethereum.BlockchainProcessing.ProgressRepositories;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class LogProcessing_WithProgressRepo
+{
+    public static async Task Main(string[] args)
+    {
+        var logs = new List<FilterLog>();
+
+        var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
+
+        // create a block progress repository
+        // this is a simple in-memory implementation
+        // several other persistent implementations are available
+        // see the docs https://docs.nethereum.com/en/latest/
+        var blockProgressRepo = new InMemoryBlockchainProgressRepository(3146683);
+
+        // create our processor and pass in the progress repo
+        var processor = web3.Processing.Logs.CreateProcessor(
+            action: log => logs.Add(log),
+            blockProgressRepository: blockProgressRepo);
+
+        // if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        // crawl the required block range
+        // the progress repository will dictate the starting point
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken);
+
+        Console.WriteLine($""Expected 65 logs. Logs found: {logs.Count}."");
+        Console.WriteLine($""Last block processed: {blockProgressRepo.LastBlockProcessed}"");
+    }
+}
+"
                 },
 
 
@@ -3074,7 +3185,7 @@ public class LogProcessing_OneContractOneEventWithCriteria
 
             };
 
-            foreach(var sample in samples)
+            foreach (var sample in samples)
             {
                 sample.Language = CodeLanguage.CSharp;
             }
