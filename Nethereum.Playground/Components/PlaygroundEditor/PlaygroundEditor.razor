@@ -57,7 +57,7 @@
         <h5>@CodeSamples[SelectedCodeSample].Name</h5>
 
         <div class="row">
-            <MonacoEditor EditorModel="@editorModel" Width="1200" Height="600" />
+            <MonacoEditor EditorModel="@editorModel" Width="1200" Height="550" />
         </div>
 
 
@@ -66,9 +66,11 @@
 
         <div class="row form-group">
             <label for="txtOutput">Output</label>
-            <textarea @bind="@Output" class="form-control" id="txtOutput" rows="10"></textarea>
+            <textarea @bind="@Output" class="form-control terminal" id="txtOutput" rows="10" ></textarea>
         </div>
     </div>
 </div>
+
+@Id
 
 

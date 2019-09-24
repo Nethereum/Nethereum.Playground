@@ -55,6 +55,27 @@ namespace Nethereum.Playground
                     await AssemblyCache.Current.LoadAssembly(client,
                        new AssemblyLoadInfo(null, "Microsoft.CodeAnalysis.CSharp.Features.dll"));
 
+                    await AssemblyCache.Current.LoadAssembly(client,
+                        new AssemblyLoadInfo(null, "wonka/WonkaBre.dll"));
+
+                    await AssemblyCache.Current.LoadAssembly(client,
+                        new AssemblyLoadInfo(null, "wonka/WonkaEth.dll"));
+
+                    await AssemblyCache.Current.LoadAssembly(client,
+                        new AssemblyLoadInfo(null, "wonka/WonkaPrd.dll"));
+
+                    await AssemblyCache.Current.LoadAssembly(client,
+                        new AssemblyLoadInfo(null, "wonka/WonkaRef.dll"));
+
+                    await AssemblyCache.Current.LoadAssembly(client,
+                        new AssemblyLoadInfo(null, "wonka/Nethereum.StandardTokenEIP20.dll"));
+
+                    //await AssemblyCache.Current.LoadAssembly(client,
+                    //    new AssemblyLoadInfo(null, "Microsoft.AspNetCore.Components.dll"));
+
+                    //await AssemblyCache.Current.LoadAssembly(client,
+                    //    new AssemblyLoadInfo(null, "Microsoft.AspNetCore.Components.Web.dll"));
+
                     ProjectEditorInitialiser.InitialiseProjectsFirstInit();
                 }
                 catch (Exception ex)

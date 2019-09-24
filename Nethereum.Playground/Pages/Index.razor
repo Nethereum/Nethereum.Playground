@@ -1,3 +1,32 @@
 ﻿@page "/"
+@page "/csharp/url/{url}"
+@page "/csharp/id/{id}"
 @using Nethereum.Playground.Repositories;
-<PlaygroundEditor CodeLanguage="@CodeLanguage.CSharp" />
+
+
+    <PlaygroundEditor CodeLanguage="@CodeLanguage.CSharp" Id="@Id" Url="@Url"/>
+
+
+    @code {
+
+        [Parameter]
+        public string Url { get; set; }
+
+        [Parameter]
+        public string Id { get; set; }
+
+        private string Test;
+
+        protected override void OnInitialized()
+        {
+            if (Url != null)
+            {
+                Test = Url;
+            }
+
+            if (Id != null)
+            {
+                Test = Id.ToString();
+            }
+        }
+    }

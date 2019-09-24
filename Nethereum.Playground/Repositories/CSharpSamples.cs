@@ -48,76 +48,7 @@ public class Program
                 "
                 },
 
-                new CodeSample()
-                {
-                    Name = "Utilities: Address Utilities",
-                    Code = @"
-using System;
-using System.Text;
-using System.Threading.Tasks;
-using Nethereum.Web3;
-using Nethereum.Web3.Accounts;
-using Nethereum.ABI.FunctionEncoding.Attributes;
-using Nethereum.Hex.HexConvertors.Extensions;
-using Nethereum.Contracts;
-using Nethereum.Contracts.CQS;
-using Nethereum.Contracts.Extensions;
-using Nethereum.Util;
-
-public class Address_Utilities
-{
-
-    static async Task Main(string[] args)
-    {
-
-		// This sample shows demos Nethereum's address checking utilities
-
-    //  1/ Comparing Two Addresses:
-
-        var address1 = ""0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
-        var address2 = ""0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"";
-        var address3 = ""IamNotAValidAddress"";				
-
-        Console.WriteLine(""Is address1 the same at address2? "" + address1.IsTheSameAddress(address2));
-
-    //  2/ Ensuring the address has the `0x` prefix:
-
-    //  This method verifies if the address starts with `0x`
-    //  if yes, returns the address, if no, adds `0x` to the address
-    //  and returns it.
-
-        Console.WriteLine(""Address1 with prefix: "" + address1.EnsureHexPrefix());
-        
-    //  3/ Ensuring the address encoding is valid Ethereum Hex format:
-
-    //  This method verifies if the address starts with `0x`
-    //  if yes, returns the address, if no, adds `0x` to the address
-    //  and returns it.
-
-        Console.WriteLine(""Is address2 encoding valid Hex format? "" + address2.IsValidEthereumAddressHexFormat());
-        Console.WriteLine(""Is address3 encoding valid Hex format? "" + address3.IsValidEthereumAddressHexFormat());
-
-    //  4/ Ensuring the address is Checksum:
-
-        var addressUtil = new AddressUtil();
-
-        Console.WriteLine(""Is address1 Checksum? "" + addressUtil.IsChecksumAddress(address1));
-        Console.WriteLine(""Is address2 Checksum? "" + addressUtil.IsChecksumAddress(address2));
-
-    //  5/ Converting an address to a Checksum address (upper case letters):
-
-				string ToChecksumAddress(string address)
-        {
-            return new AddressUtil().ConvertToChecksumAddress(address);
-        }
-
-        Console.WriteLine(""Checksum format of address2: "" + ToChecksumAddress( address2.ToUpper()));
-
-    }
-
-}
-                "
-                },
+               
 
                 new CodeSample()
                 {
@@ -189,7 +120,7 @@ public class Program
     static async Task Main(string[] args)
     {
 			//First let's create an account with our private key for the account address 
-			var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+			var privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0"";
 			var account = new Account(privateKey);
 			Console.WriteLine(""Our account: "" + account.Address);
 			//Now let's create an instance of Web3 using our account pointing to our nethereum testchain
@@ -309,7 +240,7 @@ public class SmartContracts_DeployingContract
 
 					var url = ""http://testchain.nethereum.com:8545"";
 
-					var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+					var privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0"";
 
 					var account = new Account(privateKey);
 
@@ -521,7 +452,7 @@ public class GetStartedSmartContracts
 // When providing an Account instantiated with a  private key, all our transactions will be signed by Nethereum.
 
 				var url = ""http://testchain.nethereum.com:8545"";
-				var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+				var privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0"";
 				var account = new Account(privateKey);
 				var web3 = new Web3(account, url);
 
@@ -841,7 +772,7 @@ public class GettingStarted_Events
 
 
 						var url = ""http://testchain.nethereum.com:8545"";
-						var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+						var privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0"";
 						var account = new Account(privateKey);
 						var web3 = new Web3(account, url);
 
@@ -1244,7 +1175,7 @@ public class GettingStarted_EstimatingGas
         //Let's declare our private key and address as variables (we'll use the address to send the transaction) and 
         //use them to create a new account:
 
-        var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+        var privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0"";
         var account = new Nethereum.Web3.Accounts.Account(privateKey);
 
 
@@ -1374,7 +1305,7 @@ public class FunctionMessage_Signing
 // When providing an Account instantiated with a  private key, all our transactions will be signed by Nethereum.
 
 				var url = ""http://testchain.nethereum.com:8545"";
-				var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+				var privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0"";
 				var account = new Account(privateKey);
 				var web3 = new Web3(account, url);
 
@@ -1623,7 +1554,7 @@ contract StructsSamplePO
 // When providing an Account instantiated with a  private key, all our transactions will be signed by Nethereum.
 
 				var url = ""http://testchain.nethereum.com:8545"";
-				var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+				var privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0"";
 				var account = new Account(privateKey);
 				var web3 = new Web3(account, url);
 
@@ -1721,10 +1652,10 @@ public class Program
     public static void Main()
     {
 
-        var address = ""0x12890d2cce102216644c59dae5baed380d84830c"";
+        var address = ""0x94618601FE6cb8912b274E5a00453949A57f8C1e"";
         Console.WriteLine(address);
         var msg1 = ""wee test message 18/09/2017 02:55PM"";
-        var privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+        var privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0"";
         var signer1 = new EthereumMessageSigner();
         var signature1 = signer1.EncodeUTF8AndSign(msg1, new EthECKey(privateKey));
         Console.WriteLine(signature1);
@@ -2120,7 +2051,7 @@ public class Program
 
 		// First, we need to declare our private key:
 
-		var privatekey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"";
+		var privatekey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0"";
 
 		// Then we can create an Account instance as follows, using the chainId 
 		// from the MainNet:
@@ -3070,6 +3001,77 @@ public class LogProcessing_OneContractOneEventWithCriteria
 
 }
 "
+                },
+
+                 new CodeSample()
+                {
+                    Name = "Utilities: Address Utilities",
+                    Code = @"
+using System;
+using System.Text;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Contracts;
+using Nethereum.Contracts.CQS;
+using Nethereum.Contracts.Extensions;
+using Nethereum.Util;
+
+public class Address_Utilities
+{
+
+    static async Task Main(string[] args)
+    {
+
+		// This sample shows demos Nethereum's address checking utilities
+
+    //  1/ Comparing Two Addresses:
+
+        var address1 = ""0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"";
+        var address2 = ""0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"";
+        var address3 = ""IamNotAValidAddress"";				
+
+        Console.WriteLine(""Is address1 the same at address2? "" + address1.IsTheSameAddress(address2));
+
+    //  2/ Ensuring the address has the `0x` prefix:
+
+    //  This method verifies if the address starts with `0x`
+    //  if yes, returns the address, if no, adds `0x` to the address
+    //  and returns it.
+
+        Console.WriteLine(""Address1 with prefix: "" + address1.EnsureHexPrefix());
+        
+    //  3/ Ensuring the address encoding is valid Ethereum Hex format:
+
+    //  This method verifies if the address starts with `0x`
+    //  if yes, returns the address, if no, adds `0x` to the address
+    //  and returns it.
+
+        Console.WriteLine(""Is address2 encoding valid Hex format? "" + address2.IsValidEthereumAddressHexFormat());
+        Console.WriteLine(""Is address3 encoding valid Hex format? "" + address3.IsValidEthereumAddressHexFormat());
+
+    //  4/ Ensuring the address is Checksum:
+
+        var addressUtil = new AddressUtil();
+
+        Console.WriteLine(""Is address1 Checksum? "" + addressUtil.IsChecksumAddress(address1));
+        Console.WriteLine(""Is address2 Checksum? "" + addressUtil.IsChecksumAddress(address2));
+
+    //  5/ Converting an address to a Checksum address (upper case letters):
+
+				string ToChecksumAddress(string address)
+        {
+            return new AddressUtil().ConvertToChecksumAddress(address);
+        }
+
+        Console.WriteLine(""Checksum format of address2: "" + ToChecksumAddress( address2.ToUpper()));
+
+    }
+
+}
+                "
                 },
 
             };

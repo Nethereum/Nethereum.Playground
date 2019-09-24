@@ -54,10 +54,6 @@ namespace NetDapps.Maker.Components
             public string Owner { get; set; }
         }
 
-        protected override void OnInit()
-        {
-            base.OnInit();
-        }
 
         protected async Task GetTokensBalance()
         {

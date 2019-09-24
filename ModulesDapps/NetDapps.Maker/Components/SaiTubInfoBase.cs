@@ -27,13 +27,9 @@ namespace NetDapps.Maker.Components
         [Inject]
         public HttpClient Client { get; set; }
 
-        protected override void OnInit()
-        {
-            base.OnInit();
-        }
 
-        protected override Task OnInitAsync()
-        {
+        protected override Task OnInitializedAsync() { 
+
             return GetInfo();
         }
 

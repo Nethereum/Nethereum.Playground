@@ -110,7 +110,7 @@ Module Program
 
     Public Async Function RunAsync() As Task
         ' First let's create an account with our private key for the account address 
-        Dim privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7""
+        Dim privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0""
         Dim account = New Account(privateKey)
         Console.WriteLine(""Our account: "" & account.Address)
 		
@@ -226,7 +226,7 @@ Module SmartContracts_DeployingContract
         ' To create an instance of web3 we first provide the url of our testchain and the private key of our account. 
         ' When providing an Account instantiated with a  private key all our transactions will be signed “offline” by Nethereum.
         Dim url = ""http://testchain.nethereum.com:8545""
-        Dim privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7""
+        Dim privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0""
         Dim account = New Account(privateKey)
         Dim web3 = New Web3(account, url)
 
@@ -414,7 +414,7 @@ Module GetStartedSmartContracts
         ' When providing an Account instantiated with a  private key, all our transactions will be signed by Nethereum.
 
         Dim url = ""http://testchain.nethereum.com:8545""
-        Dim privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7""
+        Dim privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0""
         Dim account = New Account(privateKey)
         Dim web3 = New Web3(account, url)
 
@@ -682,7 +682,7 @@ Module GettingStarted_Events
         ' ""offline"" by Nethereum.
 
         Dim url = ""http://testchain.nethereum.com:8545""
-        Dim privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7""
+        Dim privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0""
         Dim account = New Account(privateKey)
         Dim web3 = New Web3(account, url)
 
@@ -866,10 +866,10 @@ Imports Nethereum.Signer
 
 Module Program
     Sub Main()
-        Dim address = ""0x12890d2cce102216644c59dae5baed380d84830c""
+        Dim address = ""0x94618601FE6cb8912b274E5a00453949A57f8C1e""
         Console.WriteLine(address)
         Dim msg1 = ""wee test message 18/09/2017 02:55PM""
-        Dim privateKey = ""0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7""
+        Dim privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0""
         Dim signer1 = New EthereumMessageSigner()
         Dim signature1 = signer1.EncodeUTF8AndSign(msg1, New EthECKey(privateKey))
         Console.WriteLine(signature1)

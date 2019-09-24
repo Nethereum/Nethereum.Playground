@@ -52,7 +52,10 @@ namespace Nethereum.Playground.Pages
             CurrentComponent = builder =>
             {
                 var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith(selected.FullName));
+
+                Console.WriteLine("Component selected");
                 builder.OpenComponent(0, assembly.GetType(selected.UIComponents.First()));
+                Console.WriteLine("Component selected");
                 builder.CloseComponent();
             };
 

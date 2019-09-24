@@ -4,34 +4,36 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-app {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
+    app {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
 
-.top-row {
-    height: 3.5rem;
-    display: flex;
-    align-items: center;
-}
+    .top-row {
+        height: 3.5rem;
+        display: flex;
+        align-items: center;
+    }
 
-.main {
-    flex: 1;
-}
+    .main {
+        flex: 1;
+    }
 
+/*
     .main .top-row {
         background-color: #e6e6e6;
         border-bottom: 1px solid #d6d5d5;
     }
 
-.sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
-}
+    .sidebar {
+        background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    }
 
     .sidebar .top-row {
         background-color: rgba(0,0,0,0.4);
     }
+    */
 
     .sidebar .navbar-brand {
         font-size: 1.1rem;
@@ -108,7 +110,7 @@ app {
     }
 
     .sidebar {
-        width: 250px;
+        width: 264px;
         height: 100vh;
         position: sticky;
         top: 0;
@@ -128,8 +130,23 @@ app {
         display: none;
     }
 
+    .navbar {
+        border: none;
+    }
+
+    .navbar-brand {
+        border: none;
+    }
     .sidebar .collapse {
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
+}
+
+textarea .terminal {
+    background-color: #000;
+    border: 1px solid #000;
+    color: #00ff00;
+    padding: 8px;
+    font-family: courier new;
 }

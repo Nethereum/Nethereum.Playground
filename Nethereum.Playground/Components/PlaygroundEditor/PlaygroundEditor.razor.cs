@@ -41,6 +41,10 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
         [Inject] public Compiler Compiler { get;set;}
 
         public List<CodeSample> CodeSamples { get; protected set; }
+
+        [Parameter] public string Url { get; set; }
+        [Parameter] public string Id { get; set; }
+
         public int SelectedCodeSample { get; protected set; }
 
         private LoadFileModel loadFileModel;
@@ -86,14 +90,17 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
             savesAsFileModel = new SaveAsFileModel();
             savesAsFileModel.SaveFileAs += SaveAsAsyncCallBack;
-            
+            SelectedCodeSample = 0;
 
         }
         
         protected override async Task OnParametersSetAsync()
         {
             await LoadCodeSamplesAsync();
-
+            if (Id != null)
+            {
+                SelectedCodeSample = 3;
+            }
             editorModel = new EditorModel
             {
                 Language = GetEditorLanguage(),
@@ -114,9 +121,13 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
         protected override async Task OnAfterRenderAsync()
         {
             ProjectEditorInitialiser.InitialiseProject(GetEditorLanguage());
+          
+
             if (!CodeSampleRepository.LoadedUserSamples)
             {
+                
                 await LoadSavedAsync();
+                
                 //waiting a second to do a state has changed to display the items
                 // and avoid confusion with the editor.
                 _timer = new Timer(new TimerCallback(_ => {
@@ -207,7 +218,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             CodeSamples = new List<CodeSample>();
             var codeSamples = await CodeSampleRepository.GetCodeSamplesAsync(CodeLanguage);
             CodeSamples.AddRange(codeSamples);
-            SelectedCodeSample = 0;
+            
         }
 
         public async Task LoadFromFileAsync()
@@ -219,9 +230,13 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
         public async Task CodeSampleChanged(UIChangeEventArgs evt)
         {
             SelectedCodeSample = int.Parse(evt.Value.ToString());
-            editorModel.Script = CodeSamples[SelectedCodeSample].Code;
+            await ChangeCodeSampleAsync(SelectedCodeSample);
+        }
+
+        public async Task ChangeCodeSampleAsync(int index)
+        {
+            editorModel.Script = CodeSamples[index].Code;
             await Interop.EditorSetAsync(JSRuntime, editorModel);
-           
         }
 
         public string GetDisplayTitle(CodeSample codeSample)
