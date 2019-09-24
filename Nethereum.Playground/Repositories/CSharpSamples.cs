@@ -2522,7 +2522,7 @@ public class LogProcessing_AnyContractAnyLog
 
         var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
 
-        //create our processor to retrieve transfers
+        //create our processor to retrieve the logs
         var processor = web3.Processing.Logs.CreateProcessor(log => logs.Add(log));
 
         //if we need to stop the processor mid execution - call cancel on the token
@@ -2879,7 +2879,7 @@ public class LogProcessing_OneContractAnyLog
 
         var web3 = new Web3(""https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c"");
 
-        //create our processor to retrieve transfers
+        //create our processor to retrieve the logs
         var processor = web3.Processing.Logs.CreateProcessorForContract(
             ""0x109424946d5aa4425b2dc1934031d634cdad3f90"", log => logs.Add(log));
 
