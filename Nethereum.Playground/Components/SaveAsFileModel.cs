@@ -9,7 +9,6 @@ namespace Nethereum.Playground.Components
         {
             OriginalName = originalName;
             Content = content;
-            
         }
 
         public void Clear()

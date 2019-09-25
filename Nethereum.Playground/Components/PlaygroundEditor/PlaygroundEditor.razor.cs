@@ -11,6 +11,10 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.JSInterop;
+using Nethereum.Generators;
+using Nethereum.Generators.Console;
+using Nethereum.Generators.Core;
+using Nethereum.Generators.Service;
 using Nethereum.Playground.Components.FileUtils;
 using Nethereum.Playground.Components.Modal;
 using Nethereum.Playground.Components.Monaco;
@@ -50,6 +54,9 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
         private LoadFileModel loadFileModel;
 
         private SaveAsFileModel savesAsFileModel;
+
+        private AbiCodeGenerateModel abiCodeGenerateModel;
+
         [Parameter] CodeLanguage CodeLanguage { get; set; }
 
         private const string IPFS_API_URL = "https://ipfs.infura.io:5001/7238211010344719ad14a89db874158c/api/";
@@ -92,8 +99,40 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             savesAsFileModel.SaveFileAs += SaveAsAsyncCallBack;
             SelectedCodeSample = 0;
 
+            abiCodeGenerateModel = new AbiCodeGenerateModel();
+            abiCodeGenerateModel.CodeGenerate += AbiCodeGenerateCallBack;
+
         }
-        
+
+        private async Task AbiCodeGenerateCallBack(string contractName, string abi, string contractByteCode)
+        {
+            var serviceNamespace = contractName;
+            var codeGenLanguage = CodeGenLanguage.CSharp;
+            if (CodeLanguage == CodeLanguage.VbNet)
+            {
+                codeGenLanguage = CodeGenLanguage.Vb;
+            }
+            var contractAbi = new Nethereum.Generators.Net.GeneratorModelABIDeserialiser().DeserialiseABI(abi);
+            var generator = new ContractProjectGenerator(contractAbi, contractName, contractByteCode, serviceNamespace, serviceNamespace, serviceNamespace, serviceNamespace, "", "/", codeGenLanguage);
+            generator.AddRootNamespaceOnVbProjectsToImportStatements = false;
+
+            var generators = new List<IClassGenerator>();
+            generators.Add(new ConsoleGenerator(contractAbi, contractName, contractByteCode, serviceNamespace, serviceNamespace, serviceNamespace, codeGenLanguage));
+            generators.Add(generator.GetCQSMessageDeploymentGenerator());
+            generators.AddRange(generator.GetAllCQSFunctionMessageGenerators());
+            generators.AddRange(generator.GetllEventDTOGenerators());
+            generators.AddRange(generator.GetAllFunctionDTOsGenerators());
+            generators.AddRange(generator.GetAllStructTypeGenerators());
+
+            var mainGenerator = new AllMessagesGenerator(generators, contractName, serviceNamespace, codeGenLanguage);
+            var content = mainGenerator.GenerateFileContent();
+
+            editorModel.Script = content;
+            await Interop.EditorSetAsync(JSRuntime, editorModel);
+
+            await AddNewCodeSample(content, contractName);
+        }
+
         protected override async Task OnParametersSetAsync()
         {
             await LoadCodeSamplesAsync();
@@ -139,6 +178,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
         }
 
 
+
         public string GetEditorLanguage()
         {
             switch (CodeLanguage)
@@ -176,7 +216,11 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             Compiler.WhenReady(RunInternal);
         }
 
-        
+        public async Task GenerateFromABIAsync()
+        {
+            ModalServices.ShowModal<AbiCodeGenerate, AbiCodeGenerateModel>("ABI Code generator", abiCodeGenerateModel, "Model");
+            StateHasChanged();
+        }
 
         public async Task LoadSavedAsync()
         {

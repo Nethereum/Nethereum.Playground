@@ -8,6 +8,7 @@
                 <div class="btn-group mr-3" role="group">
                     <button class="btn btn-secondary" @onclick="@LoadFromFileAsync">Open File</button>
                     <button class="btn btn-secondary" @onclick="@SaveToFileAsync">Save File</button>
+                    <button class="btn btn-secondary" @onclick="@GenerateFromABIAsync">Abi</button>
                     @if (@CodeSamples[SelectedCodeSample].Custom)
                     {
                         <button class="btn btn-secondary" @onclick="@SaveAsync">Save</button>
@@ -15,20 +16,20 @@
                     else
                     {
                         <button class="btn btn-secondary" disabled>Save</button>
-                        }
-                        <button class="btn btn-secondary" @onclick="@SaveAsAsync">Save As</button>
-                        <!-- <button class="btn btn-secondary" onclick="@PublishToIPFSAsync">Publish</button> -->
+                    }
+                    <button class="btn btn-secondary" @onclick="@SaveAsAsync">Save As</button>
+                    <!-- <button class="btn btn-secondary" onclick="@PublishToIPFSAsync">Publish</button> -->
 
-                        @if (@CodeSamples[SelectedCodeSample].Custom)
-                        {
-                            <button class="btn btn-secondary" @onclick="@RemoveAsync">Remove</button>
-                        }
-                        else
-                        {
-                            <button class="btn btn-secondary" disabled>Remove</button>
-                        }
+                    @if (@CodeSamples[SelectedCodeSample].Custom)
+                    {
+                        <button class="btn btn-secondary" @onclick="@RemoveAsync">Remove</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary" disabled>Remove</button>
+                    }
 
-                    </div>
+                </div>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <div class="input-group-text" id="selectCodeSampleP">Select sample:</div>
