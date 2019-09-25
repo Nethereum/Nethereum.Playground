@@ -53,22 +53,25 @@ namespace Nethereum.Playground
                     //await Task.WhenAll(GetLocalAssembliesLoadInfo().Select(x => AssemblyCache.Current.LoadAssembly(client, x)));
 
                     await AssemblyCache.Current.LoadAssembly(client,
-                       new AssemblyLoadInfo(null, "Microsoft.CodeAnalysis.CSharp.Features.dll"));
+                       new AssemblyLoadInfo(null, "remlib/Microsoft.CodeAnalysis.CSharp.Features.dll"));
 
                     await AssemblyCache.Current.LoadAssembly(client,
-                        new AssemblyLoadInfo(null, "wonka/WonkaBre.dll"));
+                        new AssemblyLoadInfo(null, "remlib/WonkaBre.dll"));
 
                     await AssemblyCache.Current.LoadAssembly(client,
-                        new AssemblyLoadInfo(null, "wonka/WonkaEth.dll"));
+                        new AssemblyLoadInfo(null, "remlib/WonkaEth.dll"));
 
                     await AssemblyCache.Current.LoadAssembly(client,
-                        new AssemblyLoadInfo(null, "wonka/WonkaPrd.dll"));
+                        new AssemblyLoadInfo(null, "remlib/WonkaPrd.dll"));
 
                     await AssemblyCache.Current.LoadAssembly(client,
-                        new AssemblyLoadInfo(null, "wonka/WonkaRef.dll"));
+                        new AssemblyLoadInfo(null, "remlib/WonkaRef.dll"));
 
                     await AssemblyCache.Current.LoadAssembly(client,
-                        new AssemblyLoadInfo(null, "wonka/Nethereum.StandardTokenEIP20.dll"));
+                        new AssemblyLoadInfo(null, "remlib/Nethereum.StandardTokenEIP20.dll"));
+
+                    await AssemblyCache.Current.LoadAssembly(client,
+                        new AssemblyLoadInfo(null, "remlib/Nethereum.Quorum.dll"));
 
                     //await AssemblyCache.Current.LoadAssembly(client,
                     //    new AssemblyLoadInfo(null, "Microsoft.AspNetCore.Components.dll"));

@@ -26,6 +26,7 @@ namespace Nethereum.Generators.Console.CSharp
 {SpaceUtils.ThreeTabs}var privateKey = ""0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0"";
 {SpaceUtils.ThreeTabs}var account = new Nethereum.Web3.Accounts.Account(privateKey);
 {SpaceUtils.ThreeTabs}var web3 = new Web3(account, url);
+{SpaceUtils.ThreeTabs}
 {_deploymentMockUpMethodCSharpTemplate.GenerateMethods()}
 {SpaceUtils.ThreeTabs}var contractHandler = web3.Eth.GetContractHandler(contractAddress);
 {_functionMockupMethodCSharp.GenerateMethods()}

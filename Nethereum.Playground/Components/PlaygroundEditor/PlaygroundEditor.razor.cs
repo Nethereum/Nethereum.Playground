@@ -131,6 +131,8 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             await Interop.EditorSetAsync(JSRuntime, editorModel);
 
             await AddNewCodeSample(content, contractName);
+
+            ModalServices.Close();
         }
 
         protected override async Task OnParametersSetAsync()

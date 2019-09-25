@@ -8,7 +8,7 @@
                 <div class="btn-group mr-3" role="group">
                     <button class="btn btn-secondary" @onclick="@LoadFromFileAsync">Open File</button>
                     <button class="btn btn-secondary" @onclick="@SaveToFileAsync">Save File</button>
-                    <button class="btn btn-secondary" @onclick="@GenerateFromABIAsync">Abi</button>
+                    <button class="btn btn-secondary" @onclick="@GenerateFromABIAsync">Abi Code Gen</button>
                     @if (@CodeSamples[SelectedCodeSample].Custom)
                     {
                         <button class="btn btn-secondary" @onclick="@SaveAsync">Save</button>
