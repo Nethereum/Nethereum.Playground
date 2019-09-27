@@ -11,6 +11,7 @@ namespace Nethereum.Playground.Repositories
                 new CodeSample()
                 {
                     Name="Chain information: Query ether account balance using Infura",
+                    Id = "2001",
                     Code=
 @"Imports System
 Imports System.Text
@@ -45,6 +46,7 @@ End Module"
                 new CodeSample()
                 {
                     Name="Chain information: Get block number, block, transaction and receipt using Infura",
+                    Id = "2002",
                     Code=
 @"Imports System
 Imports System.Text
@@ -95,6 +97,7 @@ End Module"
                 new CodeSample()
                 {
                     Name="Ether: Transfer Ether to an account",
+                    Id = "2003",
                     Code=
 @"Imports System
 Imports System.Text
@@ -135,6 +138,7 @@ End Module"
                 new CodeSample()
                 {
                     Name="Smart Contracts: Query ERC20 Smart contract balance",
+                    Id = "2004",
                     Code=
 @"Imports System
 Imports System.Numerics
@@ -182,6 +186,7 @@ End Class"
                 new CodeSample()
                 {
                     Name="Smart Contracts: Smart contract deployment",
+                    Id = "2005",
                     Code=
 @"Imports Nethereum.Web3
 Imports Nethereum.ABI.FunctionEncoding.Attributes
@@ -251,6 +256,7 @@ End Module"
                 new CodeSample()
                 {
                     Name="Smart Contracts: Smart Contracts Deployment, Querying, Transactions, Nonces, Estimating Gas, Gas Price",
+                    Id = "2006",
                     Code=
 @"Imports Nethereum.Web3
 Imports Nethereum.ABI.FunctionEncoding.Attributes
@@ -534,6 +540,7 @@ End Module"
                 new CodeSample()
                 {
                     Name="Smart Contracts: Events",
+                    Id = "2007",
                     Code=
 @"Imports System
 Imports System.Text
@@ -860,6 +867,7 @@ End Module
                 new CodeSample()
                 {
                     Name = "Message signing",
+                    Id = "2008",
                     Code = 
 @"Imports System
 Imports Nethereum.Signer
@@ -883,6 +891,7 @@ End Module
                 new CodeSample()
                 {
                     Name = "Create new private key / account",
+                    Id = "2009",
                     Code = @"
 Imports System
 Imports System.Text

@@ -29,7 +29,6 @@ namespace Nethereum.Playground.Components
         {
             //var fileReaderService = new Blazor.FileReader.FileReaderService(JSRuntime);
             var files = await FileReaderService.CreateReference(FileUpload).EnumerateFilesAsync();
-            Console.WriteLine(files.Count());
             var stream = await files.First().CreateMemoryStreamAsync(); //assuming it's only one file (?)
             var streamReader = new System.IO.StreamReader(stream);
             var fileContent = streamReader.ReadToEnd();

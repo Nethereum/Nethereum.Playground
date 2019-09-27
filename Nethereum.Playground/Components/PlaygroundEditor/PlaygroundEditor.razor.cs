@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Blazor.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -102,6 +103,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             abiCodeGenerateModel = new AbiCodeGenerateModel();
             abiCodeGenerateModel.CodeGenerate += AbiCodeGenerateCallBack;
 
+            Task.Run(() => ProjectEditorInitialiser.InitialiseProject(GetEditorLanguage()));
         }
 
         private async Task AbiCodeGenerateCallBack(string contractName, string abi, string contractByteCode)
@@ -137,16 +139,32 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
         protected override async Task OnParametersSetAsync()
         {
-            await LoadCodeSamplesAsync();
+            if (!CodeSampleRepository.LoadedUserSamples || CodeSamples == null)
+            {
+                await LoadCodeSamplesAsync();
+            }
+
+            if (editorModel == null)
+            {
+                editorModel = new EditorModel
+                {
+                    Language = GetEditorLanguage(),
+                    Script = CodeSamples[SelectedCodeSample].Code
+                };
+            }
+
             if (Id != null)
             {
-                SelectedCodeSample = 3;
+                
+                var codeSampleParameter = CodeSamples.FirstOrDefault(x => x.Id == Id);
+                if (codeSampleParameter != null)
+                {
+                    SelectedCodeSample = CodeSamples.IndexOf(codeSampleParameter);
+                }
+                await ChangeCodeSampleAsync(SelectedCodeSample);
             }
-            editorModel = new EditorModel
-            {
-                Language = GetEditorLanguage(),
-                Script = CodeSamples[SelectedCodeSample].Code
-            };
+
+           
             await base.OnParametersSetAsync();
         }
 
@@ -155,14 +173,13 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
         /// Storage is not available until we have rendered,
         /// We can then load User code samples stored in storage
         /// But if we call StateHasChanged then the Editor is duplicated
-        /// So to avoid this a timer is set to run only one which will call StateHasChanged after
+        /// So to avoid this a timer is set to run only once which will call StateHasChanged after
         /// 1 second
         /// </summary>
         /// <returns></returns>
         protected override async Task OnAfterRenderAsync()
         {
-            ProjectEditorInitialiser.InitialiseProject(GetEditorLanguage());
-          
+           
 
             if (!CodeSampleRepository.LoadedUserSamples)
             {
@@ -275,12 +292,29 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
         public async Task CodeSampleChanged(UIChangeEventArgs evt)
         {
-            SelectedCodeSample = int.Parse(evt.Value.ToString());
-            await ChangeCodeSampleAsync(SelectedCodeSample);
+
+            //Console.WriteLine(selectedId);
+            //we may not have an id, so we only "navigate" if we have one to allow users copy and paste
+            var selectedCodeSample = int.Parse(evt.Value.ToString());
+            var selectedId = CodeSamples[selectedCodeSample].Id;
+            if (selectedId != null)
+            {
+                Console.WriteLine(selectedId);
+                WebAssemblyUriHelper.Instance.NavigateTo($"/{GetEditorLanguage()}/id/" + selectedId);
+                //Id = selectedId;
+            }
+            else
+            {
+                await ChangeCodeSampleAsync(selectedCodeSample);
+                SelectedCodeSample = selectedCodeSample;
+            }
+
         }
 
         public async Task ChangeCodeSampleAsync(int index)
         {
+            var codeSample = CodeSamples[index];
+            CodeSamples[index] = await CodeSampleRepository.LoadSourceCodeAsync(codeSample);
             editorModel.Script = CodeSamples[index].Code;
             await Interop.EditorSetAsync(JSRuntime, editorModel);
         }

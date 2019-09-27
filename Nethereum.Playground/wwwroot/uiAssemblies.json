@@ -1,1 +1,23 @@
-[{"UIComponents":["NetDapps.ERC20Token.TokenBalance"],"FullName":"NetDapps.ERC20Token, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null","PublishedRemotePath":"ipfs:QmcEqHHTb2QwdT6bRMGE1pMYBm3B5CVVCoCN49xAPtWoFR"},{"UIComponents":["NetDapps.Maker.Maker"],"FullName":"NetDapps.Maker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null","PublishedRemotePath":"ipfs:Qmbv44XSmFahnnNHSAZVQYmPyFpNPTt84ansV9kWj7myax"},{"UIComponents":["NetDapps.MessageSigning.SignMessage"],"FullName":"NetDapps.MessageSigning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null","PublishedRemotePath":"ipfs:QmXuLCSWHR73YutDuquRZAi6fDijjghqWtcf64bjJoj5YT"}]
+[
+   {
+      "UIComponents":[
+         "NetDapps.ERC20Token.TokenBalance"
+      ],
+      "FullName":"NetDapps.ERC20Token, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "PublishedRemotePath":"ipfs:QmcEqHHTb2QwdT6bRMGE1pMYBm3B5CVVCoCN49xAPtWoFR"
+   },
+   {
+      "UIComponents":[
+         "NetDapps.Maker.Maker"
+      ],
+      "FullName":"NetDapps.Maker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "PublishedRemotePath":"ipfs:Qmbv44XSmFahnnNHSAZVQYmPyFpNPTt84ansV9kWj7myax"
+   },
+   {
+      "UIComponents":[
+         "NetDapps.MessageSigning.SignMessage"
+      ],
+      "FullName":"NetDapps.MessageSigning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "PublishedRemotePath":"ipfs:QmXuLCSWHR73YutDuquRZAi6fDijjghqWtcf64bjJoj5YT"
+   }
+]

@@ -1,0 +1,30 @@
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Util;
+using Nethereum.ABI;
+
+public class AbiEncodePacked_UsingParams
+{
+    public class TestParamsInput
+    {
+        [Parameter("string", 1)]
+        public string First { get; set; }
+
+        [Parameter("int8", 2)]
+        public int Second { get; set; }
+
+        [Parameter("address", 3)]
+        public string Third { get; set; }
+    }
+
+    private static void Main(string[] args)
+    {
+        var abiEncode = new ABIEncode();
+        var result = abiEncode.GetSha3ABIParamsEncodedPacked(new TestParamsInput()
+            {First = "Hello!%", Second = -23, Third = "0x85F43D8a49eeB85d32Cf465507DD71d507100C1d"});
+        Console.WriteLine("Result: " + result.ToHex(true));
+    }
+}

@@ -1,0 +1,79 @@
+using System;
+using System.Numerics;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using Nethereum.Util;
+using System.Threading.Tasks;
+using NBitcoin;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.HdWallet;
+
+public class Program
+{
+    private static async Task Main(string[] args)
+    {
+        // This samples shows how to create a Hd Wallet and recover an address
+        // From it.
+
+        // Initiating a HD Wallet requires a list of words and a password as arguments, 
+        // in this first case, we will use an arbitrary sequence of words.
+
+        var Words = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
+        var Password1 = "password";
+        var wallet1 = new Wallet(Words, Password1);
+        for (var i = 0; i < 10; i++)
+        {
+            var account = wallet1.GetAccount(i);
+            Console.WriteLine("Account index : " + i + " - Address : " + account.Address + " - Private key : " +
+                              account.PrivateKey);
+        }
+
+        // An HD Wallet is deterministic, it will derive the same unlimited number of addresses 
+        // given the same seed (password+wordlist).
+        // All the created accounts can be loaded in a Web3 instance and used as any other account, 
+        // we can for instance check the balance of one of them:
+
+        var account1 = new Wallet(Words, Password1).GetAccount(0);
+        Console.WriteLine("account1 address is: " + account1.Address);
+        var web3 = new Web3(account1, "http://testchain.nethereum.com:8545");
+        var balance = await web3.Eth.GetBalance.SendRequestAsync(account1.Address);
+        Console.WriteLine("account1 balance is: " + balance.Value);
+        // Transfering ether using an HD Wallet
+
+        // The process of transferring Ether using a HD Wallet is the same as 
+        // using a standalone account
+
+        var toAddress = "0x13f022d72158410433cbd66f5dd8bf6d2d129924";
+        var transaction = await web3.Eth.GetEtherTransferService()
+            .TransferEtherAndWaitForReceiptAsync(toAddress, 2.11m, 2);
+        // Generating mnemonics
+
+        // Our friends at NBitcoin offer a very convenient way to generate a backup seed sentence:
+
+        Mnemonic mnemo = new Mnemonic(Wordlist.English, WordCount.Twelve);
+
+        var Password2 = "password2";
+        var wallet2 = new Wallet(mnemo.ToString(), Password2);
+        var account2 = wallet2.GetAccount(0);
+
+        // Retrieving the account using the mnemonic backup seed words
+
+        // A backup seed sentence is a human friendly way to recover all the generated addresses, 
+        // since Hd Wallets generate addresses deterministically, we can now regenerate them at 
+        // anytime using our seed sentence and retrieve them using an index number.
+
+        // In the below example, we will use our backup seed words to retrieve an account. 
+        // The first step will be to declare our word list:
+
+        var backupSeed = mnemo.ToString();
+
+        // Now using the backup seed, the password and the address index (\`0\`) 
+        // we can create the HD wallet and retrieve our account. The account contains 
+        // the private key to sign our transactions. We can generate and re-generate addresses 
+        // based on an index number from the same seed.
+
+        var wallet3 = new Wallet(backupSeed, Password2);
+        var recoveredAccount = wallet3.GetAccount(0);
+        Console.WriteLine("recoveredAccount address is: " + recoveredAccount.Address);
+    }
+}

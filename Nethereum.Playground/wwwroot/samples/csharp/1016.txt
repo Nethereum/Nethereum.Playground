@@ -1,0 +1,40 @@
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Util;
+using Nethereum.ABI;
+
+public class AbiEncodePacked_UsingABIValue
+{
+    private static void Main(string[] args)
+    {
+        var abiEncode = new ABIEncode();
+
+        var result = abiEncode
+            .GetSha3ABIEncodedPacked(new ABIValue("address", "0x407D73d8a49eeb85D32Cf465507dd71d507100c1"))
+            .ToHex();
+
+        Console.WriteLine("Encoded address: " + result);
+
+        result = abiEncode.GetSha3ABIEncodedPacked(new ABIValue("bytes",
+            "0x407D73d8a49eeb85D32Cf465507dd71d507100c1".HexToByteArray())).ToHex();
+
+        Console.WriteLine("Encoded bytes: " + result);
+        //bytes32 it is a 32 bytes array so it will be padded with 00 values
+        result =
+            abiEncode.GetSha3ABIEncodedPacked(new ABIValue("bytes32",
+                "0x407D73d8a49eeb85D32Cf465507dd71d507100c1".HexToByteArray())).ToHex();
+
+        Console.WriteLine("Encoded bytes32: " + result);
+
+
+        //web3.utils.soliditySha3({t: 'string', v: 'Hello!%'}, {t: 'int8', v:-23}, {t: 'address', v: '0x85F43D8a49eeB85d32Cf465507DD71d507100C1d'});
+        result =
+            abiEncode.GetSha3ABIEncodedPacked(
+                new ABIValue("string", "Hello!%"), new ABIValue("int8", -23),
+                new ABIValue("address", "0x85F43D8a49eeB85d32Cf465507DD71d507100C1d")).ToHex();
+        Console.WriteLine("Encoded Hello!%, -23 and address 0x85F43D8a49eeB85d32Cf465507DD71d507100C1d: " + result);
+    }
+}

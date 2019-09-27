@@ -1,3 +1,15 @@
-﻿@page "/VBIndex"
+﻿@page "/vb"
+@page "/vb/url/{url}"
+@page "/vb/id/{id}"
 @using Nethereum.Playground.Repositories
-<PlaygroundEditor CodeLanguage="@CodeLanguage.VbNet" />
+<PlaygroundEditor CodeLanguage="@CodeLanguage.VbNet" Id="@Id" Url="@Url"/>
+
+@code {
+
+[Parameter]
+public string Url { get; set; }
+
+[Parameter]
+public string Id { get; set; }
+
+}

@@ -45,6 +45,19 @@ namespace Nethereum.Playground.Repositories
             }
         }
 
+        public async Task<CodeSample> LoadSourceCodeAsync(CodeSample codeSample)
+        {
+            if (string.IsNullOrEmpty(codeSample.Code) && !codeSample.Custom && !string.IsNullOrEmpty(codeSample.Id))
+            {
+
+                var code = await _httpClient.GetStringAsync(codeSample.GetLocalPath());
+                codeSample.Code = code;
+                return codeSample;
+            }
+
+            return codeSample;
+        }
+
         public Task AddCodeSampleAsync(CodeSample codeSample)
         {
             _codeSamples.Add(codeSample);

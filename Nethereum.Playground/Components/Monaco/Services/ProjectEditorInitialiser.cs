@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Nethereum.Playground.Components.Monaco.Services
 {
     public class ProjectEditorInitialiser
     {
-        public static void InitialiseProject(string language)
+        public static async Task InitialiseProject(string language)
         {
             //Console.WriteLine("Init project");
             if (language == "csharp")
@@ -13,7 +14,7 @@ namespace Nethereum.Playground.Components.Monaco.Services
                 if (CSharpEditorProject.Current.IsInitialised())
                 {   
                   //  Console.WriteLine("Init again project csharp");
-                    CSharpEditorProject.Current.InitialiseProject();
+                    await Task.Run(() => CSharpEditorProject.Current.InitialiseProject());
                 }
             }
 
