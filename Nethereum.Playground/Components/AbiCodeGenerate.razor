@@ -5,17 +5,27 @@
             <label for="contractName">Contract Name:</label>
             <input type="contractName" class="form-control" @bind="@Model.ContractName" aria-describedby="contractNameHelp" />
             <small id="contractNameHelp" class="form-text text-muted">The smart contract name</small>
+        </div>
 
+        <div class="form-group">
             <label for="abi">ABI:</label>
             <input type="abi" class="form-control" @bind="@Model.Abi" aria-describedby="abiHelp" />
+            <input type="file" class="btn btn-primary" @ref="@ABIFileUpload" @ref:suppressField @onchange="@ReadFileABI" />
             <small id="abiHelp" class="form-text text-muted">The smart contract ABI</small>
+        </div>
 
+        <div class="form-group">
             <label for="byteCode">ByteCode:</label>
             <input type="byteCode" class="form-control" @bind="@Model.ByteCode" aria-describedby="byteCodeHelp" />
+            <input type="file" class="btn btn-primary" @ref="@ByteCodeFileUpload" @ref:suppressField @onchange="@ReadFileByteCode" />
             <small id="byteCodeHelp" class="form-text text-muted">The smart contract deployment compiled ByteCode</small>
-
-            <button @onclick="@Model.CodeGenerateAsync" class="btn btn-secondary">Generate code</button>
-
         </div>
-        <p><small>*Note the file generated will be saved on the browser local storage</small></p>
+
+        <div class="form-group">
+            <button @onclick="@Model.CodeGenerateAsync" class="btn btn-secondary">Generate code</button>
+        </div>
+
+        <div class="form-group">
+            <p><small>*Note the file generated will be saved on the browser local storage</small></p>
+        </div>
     </div>
