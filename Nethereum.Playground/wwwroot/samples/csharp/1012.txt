@@ -13,6 +13,10 @@ using Nethereum.Hex.HexConvertors.Extensions;
 public class SmartContracts_Structs
 {
 //This sample demonstrates how to interact with solidity Structs in Nethereum
+//The following solidity smart contract contains complex types for PurchaserOrder containing LineItems (an struct array)
+//It also has functionality to Add a new PurchaseOrder, Get a purchase order, add a LineItem to a purchase order and
+//raise events when a purchase order is changed.
+
 
 /*
 
@@ -74,8 +78,6 @@ contract StructsSamplePO
 }
 */
 
-//********* CONTRACT DEFINITION  *******
-
 //***Structs just contain the Parameter attributes, same as Function Messages, Events or Deployment messages***//
     public class PurchaseOrder
     {
@@ -104,7 +106,96 @@ contract StructsSamplePO
         public virtual string Description { get; set; }
     }
 
-//*** Deployment message**** //
+
+    ///*** THE MAIN PROGRAM ***
+    /// Contract definitions are at the bottom of the file.
+    public static async Task Main()
+    {
+// ### Instantiating Web3 and the Account
+// To create an instance of web3 we first provide the url of our testchain and the private key of our account. 
+// Here we are using http://testchain.nethereum.com:8545 which is our simple single node Nethereum testchain.
+// When providing an Account instantiated with a  private key, all our transactions will be signed by Nethereum.
+
+        var url = "http://testchain.nethereum.com:8545";
+        var privateKey = "0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0";
+        var account = new Account(privateKey);
+        var web3 = new Web3(account, url);
+
+// **** DEPLOYING THE SMART CONTRACT
+        var deploymentReceipt = await web3.Eth.GetContractDeploymentHandler<StructsSamplePODeployment>()
+            .SendRequestAndWaitForReceiptAsync();
+
+// *** Creating new Purchase Order 
+        var purchaseOrder = new PurchaseOrder();
+        purchaseOrder.CustomerId = 1000;
+        purchaseOrder.Id = 1;
+        purchaseOrder.LineItem = new List<LineItem>();
+        purchaseOrder.LineItem.Add(new LineItem() {Id = 1, ProductId = 100, Quantity = 2, Description = "hello1"});
+        purchaseOrder.LineItem.Add(new LineItem() {Id = 2, ProductId = 200, Quantity = 3, Description = "hello2"});
+
+        var contractHandler = web3.Eth.GetContractHandler(deploymentReceipt.ContractAddress);
+
+        var receiptSending = await contractHandler.SendRequestAndWaitForReceiptAsync(new SetPurchaseOrderFunction()
+            {PurchaseOrder = purchaseOrder});
+
+
+        var eventPurchaseOrder = contractHandler.GetEvent<PurchaseOrderChangedEventDTO>();
+        var eventOutputs = eventPurchaseOrder.DecodeAllEventsForEvent(receiptSending.Logs);
+        var purchaseOrderResult = eventOutputs[0].Event.PurchaseOrder;
+
+        Console.WriteLine("Getting PO from Transaction Receipt Event Log:");
+        Console.WriteLine("PO Id: " + purchaseOrderResult.Id);
+        Console.WriteLine("Customer Id: " + purchaseOrderResult.CustomerId);
+        Console.WriteLine("Line item Id: " + purchaseOrderResult.LineItem[0].Id);
+        Console.WriteLine("Line item ProductId: " + purchaseOrderResult.LineItem[0].ProductId);
+        Console.WriteLine("Line item Quantity: " + purchaseOrderResult.LineItem[0].Quantity);
+        Console.WriteLine("Line item Description: " + purchaseOrderResult.LineItem[0].Description);
+
+        var query = await contractHandler
+            .QueryDeserializingToObjectAsync<GetPurchaseOrderFunction, GetPurchaseOrderOutputDTO>(
+                new GetPurchaseOrderFunction() {Id = 1});
+
+        purchaseOrderResult = query.PurchaseOrder;
+        Console.WriteLine("Getting PO from Get Purchase Order Function:");
+        Console.WriteLine("PO Id: " + purchaseOrderResult.Id);
+        Console.WriteLine("Customer Id: " + purchaseOrderResult.CustomerId);
+        Console.WriteLine("Line item Id: " + purchaseOrderResult.LineItem[0].Id);
+        Console.WriteLine("Line item ProductId: " + purchaseOrderResult.LineItem[0].ProductId);
+        Console.WriteLine("Line item Quantity: " + purchaseOrderResult.LineItem[0].Quantity);
+        Console.WriteLine("Line item Description: " + purchaseOrderResult.LineItem[0].Description);
+
+
+        var lineItems = new List<LineItem>();
+        lineItems.Add(new LineItem() {Id = 3, ProductId = 300, Quantity = 2, Description = "hello3"});
+        lineItems.Add(new LineItem() {Id = 4, ProductId = 400, Quantity = 3, Description = "hello4"});
+
+        var lineItemsFunction = new AddLineItemsFunction() {Id = 1, LineItem = lineItems};
+
+        receiptSending =
+            await contractHandler.SendRequestAndWaitForReceiptAsync(new AddLineItemsFunction()
+                {Id = 1, LineItem = lineItems});
+
+        //Getting line items added from the receipt
+        var lineItemsEvent = contractHandler.GetEvent<LineItemsAddedEventDTO>();
+        var lineItemsLogs = lineItemsEvent.DecodeAllEventsForEvent(receiptSending.Logs);
+        Console.WriteLine("Line items added:" + lineItemsLogs.Count);
+        //
+        query = await contractHandler
+            .QueryDeserializingToObjectAsync<GetPurchaseOrderFunction, GetPurchaseOrderOutputDTO>(
+                new GetPurchaseOrderFunction() {Id = 1});
+        purchaseOrderResult = query.PurchaseOrder;
+        Console.WriteLine("Getting PO from Get Purchase Order Function new Line Item:");
+        Console.WriteLine("PO Id: " + purchaseOrderResult.Id);
+        Console.WriteLine("Customer Id: " + purchaseOrderResult.CustomerId);
+        Console.WriteLine("Line item Id: " + purchaseOrderResult.LineItem[2].Id);
+        Console.WriteLine("Line item ProductId: " + purchaseOrderResult.LineItem[2].ProductId);
+        Console.WriteLine("Line item Quantity: " + purchaseOrderResult.LineItem[2].Quantity);
+        Console.WriteLine("Line item Description: " + purchaseOrderResult.LineItem[2].Description);
+    }
+
+    //CONTRACT Definitions//
+
+    //*** Deployment message**** //
 
     public class StructsSamplePODeployment : ContractDeploymentMessage
     {
@@ -188,92 +279,5 @@ contract StructsSamplePO
     {
         [Parameter("tuple", "purchaseOrder", 1)]
         public virtual PurchaseOrder PurchaseOrder { get; set; }
-    }
-
-//**** END CONTRACT DEFINITIONS ***** ///
-
-    ///*** THE MAIN PROGRAM ***
-    public static async Task Main()
-    {
-// ### Instantiating Web3 and the Account
-// To create an instance of web3 we first provide the url of our testchain and the private key of our account. 
-// Here we are using http://testchain.nethereum.com:8545 which is our simple single node Nethereum testchain.
-// When providing an Account instantiated with a  private key, all our transactions will be signed by Nethereum.
-
-        var url = "http://testchain.nethereum.com:8545";
-        var privateKey = "0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0";
-        var account = new Account(privateKey);
-        var web3 = new Web3(account, url);
-
-// **** DEPLOYING THE SMART CONTRACT
-        var deploymentReceipt = await web3.Eth.GetContractDeploymentHandler<StructsSamplePODeployment>()
-            .SendRequestAndWaitForReceiptAsync();
-
-// *** Creating new Purchase Order 
-        var purchaseOrder = new PurchaseOrder();
-        purchaseOrder.CustomerId = 1000;
-        purchaseOrder.Id = 1;
-        purchaseOrder.LineItem = new List<LineItem>();
-        purchaseOrder.LineItem.Add(new LineItem() {Id = 1, ProductId = 100, Quantity = 2, Description = "hello1"});
-        purchaseOrder.LineItem.Add(new LineItem() {Id = 2, ProductId = 200, Quantity = 3, Description = "hello2"});
-
-        var contractHandler = web3.Eth.GetContractHandler(deploymentReceipt.ContractAddress);
-
-        var receiptSending = await contractHandler.SendRequestAndWaitForReceiptAsync(new SetPurchaseOrderFunction()
-            {PurchaseOrder = purchaseOrder});
-
-
-        var eventPurchaseOrder = contractHandler.GetEvent<PurchaseOrderChangedEventDTO>();
-        var eventOutputs = eventPurchaseOrder.DecodeAllEventsForEvent(receiptSending.Logs);
-        var purchaseOrderResult = eventOutputs[0].Event.PurchaseOrder;
-
-        Console.WriteLine("Getting PO from Transaction Receipt Event Log:");
-        Console.WriteLine("PO Id: " + purchaseOrderResult.Id);
-        Console.WriteLine("Customer Id: " + purchaseOrderResult.CustomerId);
-        Console.WriteLine("Line item Id: " + purchaseOrderResult.LineItem[0].Id);
-        Console.WriteLine("Line item ProductId: " + purchaseOrderResult.LineItem[0].ProductId);
-        Console.WriteLine("Line item Quantity: " + purchaseOrderResult.LineItem[0].Quantity);
-        Console.WriteLine("Line item Description: " + purchaseOrderResult.LineItem[0].Description);
-
-        var query = await contractHandler
-            .QueryDeserializingToObjectAsync<GetPurchaseOrderFunction, GetPurchaseOrderOutputDTO>(
-                new GetPurchaseOrderFunction() {Id = 1});
-
-        purchaseOrderResult = query.PurchaseOrder;
-        Console.WriteLine("Getting PO from Get Purchase Order Function:");
-        Console.WriteLine("PO Id: " + purchaseOrderResult.Id);
-        Console.WriteLine("Customer Id: " + purchaseOrderResult.CustomerId);
-        Console.WriteLine("Line item Id: " + purchaseOrderResult.LineItem[0].Id);
-        Console.WriteLine("Line item ProductId: " + purchaseOrderResult.LineItem[0].ProductId);
-        Console.WriteLine("Line item Quantity: " + purchaseOrderResult.LineItem[0].Quantity);
-        Console.WriteLine("Line item Description: " + purchaseOrderResult.LineItem[0].Description);
-
-
-        var lineItems = new List<LineItem>();
-        lineItems.Add(new LineItem() {Id = 3, ProductId = 300, Quantity = 2, Description = "hello3"});
-        lineItems.Add(new LineItem() {Id = 4, ProductId = 400, Quantity = 3, Description = "hello4"});
-
-        var lineItemsFunction = new AddLineItemsFunction() {Id = 1, LineItem = lineItems};
-
-        receiptSending =
-            await contractHandler.SendRequestAndWaitForReceiptAsync(new AddLineItemsFunction()
-                {Id = 1, LineItem = lineItems});
-
-        //Getting line items added from the receipt
-        var lineItemsEvent = contractHandler.GetEvent<LineItemsAddedEventDTO>();
-        var lineItemsLogs = lineItemsEvent.DecodeAllEventsForEvent(receiptSending.Logs);
-        Console.WriteLine("Line items added:" + lineItemsLogs.Count);
-        //
-        query = await contractHandler
-            .QueryDeserializingToObjectAsync<GetPurchaseOrderFunction, GetPurchaseOrderOutputDTO>(
-                new GetPurchaseOrderFunction() {Id = 1});
-        purchaseOrderResult = query.PurchaseOrder;
-        Console.WriteLine("Getting PO from Get Purchase Order Function new Line Item:");
-        Console.WriteLine("PO Id: " + purchaseOrderResult.Id);
-        Console.WriteLine("Customer Id: " + purchaseOrderResult.CustomerId);
-        Console.WriteLine("Line item Id: " + purchaseOrderResult.LineItem[2].Id);
-        Console.WriteLine("Line item ProductId: " + purchaseOrderResult.LineItem[2].ProductId);
-        Console.WriteLine("Line item Quantity: " + purchaseOrderResult.LineItem[2].Quantity);
-        Console.WriteLine("Line item Description: " + purchaseOrderResult.LineItem[2].Description);
     }
 }

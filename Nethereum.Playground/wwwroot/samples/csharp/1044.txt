@@ -1,0 +1,330 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using WonkaBre;
+using WonkaEth.Init;
+using WonkaPrd;
+using WonkaRef;
+
+namespace Wonka_Preview_RetrievingRulesFromIPFSAndPrevalidateUsingDotNet
+{
+    //Preview sample of the Wonka Business Rule Engine.
+    //This sample loads the busines rules from an inmutable storage IPFS.
+    //and later on does the pre validation of the rules in .Net before submitting to Ethereum.
+
+    class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            var sampleRunner = new WonkaVatSimpleSample();
+            var result = await sampleRunner.InitVatCalcAsync();
+            sampleRunner.ExecuteVatCalculation();
+
+
+            Console.WriteLine("Done!");
+        }
+    }
+
+    public class WonkaVatSimpleSample
+    {
+        //The IPFS url to retrieve rules already published.
+        public const string CONST_INFURA_IPFS_GATEWAY_URL = "https://ipfs.infura.io/ipfs/";
+        private WonkaEthEngineInitialization _ethEngineInit;
+
+        private IMetadataRetrievable _metadataSource;
+
+        //Our Product object sample
+        private WonkaProduct _productSample;
+
+        //The rules
+        private string _rules;
+
+        public async Task<bool> InitVatCalcAsync()
+        {
+            _ethEngineInit = new WonkaEthEngineInitialization();
+
+            // Create an instance of the class that will provide us with PmdRefAttributes (i.e., the data domain)
+            // that define our data record            
+            _metadataSource = new WonkaMetadataVatCalcSource();
+            WonkaRefEnvironment.CreateInstance(false, _metadataSource);
+
+            Console.WriteLine("Initialising Product Sample");
+            _productSample = GetNewVatProduct();
+
+            using (var client = new HttpClient())
+            {
+                var ipfsUrl = $"{CONST_INFURA_IPFS_GATEWAY_URL}/QmPrZ9959c7SzzqdLkVgX28xM7ZrqLeT3ydvRAHCaL1Hsn";
+                _rules = await client.GetStringAsync(ipfsUrl).ConfigureAwait(false);
+            }
+
+            Console.WriteLine("Rules retrieved from Ipfs:");
+            Console.WriteLine(_rules);
+
+            Console.WriteLine("Initialising engine with rules and metadata");
+            _ethEngineInit.Engine.RulesEngine =
+                new WonkaBreRulesEngine(new StringBuilder(_rules), _metadataSource);
+
+            return true;
+        }
+
+        public bool ExecuteVatCalculation()
+        {
+            var refEnv = WonkaRefEnvironment.GetInstance();
+            var rulesEngine = _ethEngineInit.Engine.RulesEngine;
+
+            var vatAmtForHrmcAttr = refEnv.GetAttributeByAttrName("NewVATAmountForHMRC");
+            var newSellTaxAmtAttr = refEnv.GetAttributeByAttrName("NewSellTaxAmount");
+
+            // Gets a predefined data record that will be our analog for new data coming into the system
+            // We are only using this record to test the .NET implementation
+            var newProduct = _productSample;
+
+            Console.WriteLine("Product tax values before execution engine validation:");
+            var sVatAmtBefore = newProduct.GetAttributeValue(vatAmtForHrmcAttr);
+            Console.WriteLine("VAT amount before:" + sVatAmtBefore);
+            var sSellTaxAmtBefore = newProduct.GetAttributeValue(newSellTaxAmtAttr);
+            Console.WriteLine("Sell tax amount before:" + sSellTaxAmtBefore);
+
+            // Validate that the .NET implementation and the rules markup are both working properly
+            var report = rulesEngine.Validate(newProduct);
+
+            Console.WriteLine("Product tax values after execution engine validation:");
+            var sVatAmtAfter = newProduct.GetAttributeValue(vatAmtForHrmcAttr);
+            Console.WriteLine("VAT amount after:" + sVatAmtAfter);
+            var sSellTaxAmtAfter = newProduct.GetAttributeValue(newSellTaxAmtAttr);
+            Console.WriteLine("Sell tax amount after:" + sSellTaxAmtAfter);
+
+            if (report.OverallRuleTreeResult == ERR_CD.CD_SUCCESS)
+            {
+                // NOTE: This should only be used for further testing
+                // Serialize(NewProduct);
+            }
+            else if (report.GetRuleSetFailureCount() > 0)
+            {
+                Console.WriteLine(".NET Engine says \"Oh heavens to Betsy! Something bad happened!\"");
+            }
+            else
+            {
+                Console.WriteLine(".NET Engine says \"What in the world is happening?\"");
+            }
+
+            return true;
+        }
+
+        public WonkaProduct GetNewVatProduct()
+        {
+            var wkaRefEnv = WonkaRefEnvironment.GetInstance();
+
+            var salesTrxSeqAttr = wkaRefEnv.GetAttributeByAttrName("NewSalesTransSeq");
+            var saleVatRateDenomAttr = wkaRefEnv.GetAttributeByAttrName("NewSaleVATRateDenom");
+            var saleItemTypeAttr = wkaRefEnv.GetAttributeByAttrName("NewSaleItemType");
+            var countryOfSaleAttr = wkaRefEnv.GetAttributeByAttrName("CountryOfSale");
+            var salePriceAttr = wkaRefEnv.GetAttributeByAttrName("NewSalePrice");
+            var prevSellTaxAmtAttr = wkaRefEnv.GetAttributeByAttrName("PrevSellTaxAmount");
+            var newSellTaxAmtAttr = wkaRefEnv.GetAttributeByAttrName("NewSellTaxAmount");
+            var vatAmtForHmrcAttr = wkaRefEnv.GetAttributeByAttrName("NewVATAmountForHMRC");
+            var eanAttr = wkaRefEnv.GetAttributeByAttrName("NewSaleEAN");
+
+            var newProduct = new WonkaProduct();
+
+            newProduct.SetAttribute(salesTrxSeqAttr, "123456789");
+            newProduct.SetAttribute(eanAttr, "9781234567890");
+            newProduct.SetAttribute(saleVatRateDenomAttr, "0");
+            newProduct.SetAttribute(saleItemTypeAttr, "Widget");
+            newProduct.SetAttribute(countryOfSaleAttr, "UK");
+            newProduct.SetAttribute(salePriceAttr, "100");
+            newProduct.SetAttribute(prevSellTaxAmtAttr, "5");
+            newProduct.SetAttribute(vatAmtForHmrcAttr, "0");
+            newProduct.SetAttribute(newSellTaxAmtAttr, "0");
+
+            return newProduct;
+        }
+    }
+
+
+    public class WonkaMetadataVatCalcSource : IMetadataRetrievable
+    {
+        #region Extended Metadata Cache
+
+        public List<WonkaRefAttrCollection> GetAttrCollectionCache()
+        {
+            var attrCollCache = new List<WonkaRefAttrCollection>();
+
+            return attrCollCache;
+        }
+
+        #endregion
+
+        #region Standard Metadata Cache (Minimum Set)
+
+        public List<WonkaRefAttr> GetAttrCache()
+        {
+            var attrCache = new List<WonkaRefAttr>();
+
+            attrCache.Add(new WonkaRefAttr
+            {
+                AttrId = 1,
+                AttrName = "NewSalesTransSeq",
+                FieldId = 101,
+                GroupId = 1,
+                IsAudited = false,
+                IsNumeric = true,
+                IsKey = true
+            });
+            attrCache.Add(new WonkaRefAttr
+            {
+                AttrId = 2,
+                AttrName = "NewSaleVATRateDenom",
+                FieldId = 102,
+                GroupId = 1,
+                IsAudited = true,
+                IsNumeric = true
+            });
+            attrCache.Add(new WonkaRefAttr
+            {
+                AttrId = 3,
+                AttrName = "NewSaleItemType",
+                FieldId = 103,
+                GroupId = 1,
+                IsAudited = false,
+                MaxLength = 1024
+            });
+            attrCache.Add(new WonkaRefAttr
+            { AttrId = 4, AttrName = "CountryOfSale", FieldId = 104, GroupId = 1, IsAudited = true, MaxLength = 3 });
+            attrCache.Add(new WonkaRefAttr
+            {
+                AttrId = 5,
+                AttrName = "NewSalePrice",
+                FieldId = 105,
+                GroupId = 1,
+                IsAudited = true,
+                IsNumeric = true
+            });
+            attrCache.Add(new WonkaRefAttr
+            {
+                AttrId = 6,
+                AttrName = "PrevSellTaxAmount",
+                FieldId = 106,
+                GroupId = 1,
+                IsAudited = true,
+                IsNumeric = true
+            });
+            attrCache.Add(new WonkaRefAttr
+            {
+                AttrId = 7,
+                AttrName = "NewSellTaxAmount",
+                FieldId = 107,
+                GroupId = 1,
+                IsAudited = true,
+                IsNumeric = true
+            });
+            attrCache.Add(new WonkaRefAttr
+            {
+                AttrId = 8,
+                AttrName = "NewVATAmountForHMRC",
+                FieldId = 108,
+                GroupId = 1,
+                IsAudited = true,
+                IsNumeric = true
+            });
+            attrCache.Add(new WonkaRefAttr
+            {
+                AttrId = 9,
+                AttrName = "NewSaleEAN",
+                FieldId = 109,
+                GroupId = 1,
+                IsAudited = false,
+                IsNumeric = true,
+                IsKey = false
+            });
+
+            return attrCache;
+        }
+
+        public List<WonkaRefCurrency> GetCurrencyCache()
+        {
+            var currencyCache = new List<WonkaRefCurrency>();
+
+            currencyCache.Add(new WonkaRefCurrency { CurrencyId = 1, CurrencyCd = "USD", USDCost = 1, USDList = 1 });
+            currencyCache.Add(new WonkaRefCurrency
+            { CurrencyId = 2, CurrencyCd = "EUR", USDCost = 1.24f, USDList = 1.24f });
+            currencyCache.Add(new WonkaRefCurrency
+            { CurrencyId = 3, CurrencyCd = "CNY", USDCost = 0.16f, USDList = 0.16f });
+            currencyCache.Add(new WonkaRefCurrency
+            { CurrencyId = 4, CurrencyCd = "BTC", USDCost = 9722.73f, USDList = 9722.73f });
+            currencyCache.Add(new WonkaRefCurrency
+            { CurrencyId = 5, CurrencyCd = "USD", USDCost = 811.68f, USDList = 811.68f });
+
+            return currencyCache;
+        }
+
+        public List<WonkaRefField> GetFieldCache()
+        {
+            var fieldCache = new List<WonkaRefField>();
+
+            fieldCache.Add(new WonkaRefField
+            { FieldId = 101, FieldName = "NewSalesTransSeq", GroupId = 1, AttrIds = new List<int> { 1 } });
+            fieldCache.Add(new WonkaRefField
+            { FieldId = 102, FieldName = "NewSaleVATRateDenom", GroupId = 1, AttrIds = new List<int> { 2 } });
+            fieldCache.Add(new WonkaRefField
+            { FieldId = 103, FieldName = "NewSaleItemType", GroupId = 1, AttrIds = new List<int> { 3 } });
+            fieldCache.Add(new WonkaRefField
+            { FieldId = 104, FieldName = "CountryOfSale", GroupId = 1, AttrIds = new List<int> { 4 } });
+            fieldCache.Add(new WonkaRefField
+            { FieldId = 105, FieldName = "NewSalePrice", GroupId = 1, AttrIds = new List<int> { 5 } });
+            fieldCache.Add(new WonkaRefField
+            { FieldId = 106, FieldName = "PrevSellTaxAmount", GroupId = 1, AttrIds = new List<int> { 6 } });
+            fieldCache.Add(new WonkaRefField
+            { FieldId = 107, FieldName = "NewSellTaxAmount", GroupId = 1, AttrIds = new List<int> { 7 } });
+            fieldCache.Add(new WonkaRefField
+            { FieldId = 108, FieldName = "NewVATAmountForHMRC", GroupId = 1, AttrIds = new List<int> { 8 } });
+            fieldCache.Add(new WonkaRefField
+            { FieldId = 109, FieldName = "NewSaleEAN", GroupId = 1, AttrIds = new List<int> { 9 } });
+
+            return fieldCache;
+        }
+
+        public List<WonkaRefGroup> GetGroupCache()
+        {
+            var groupCache = new List<WonkaRefGroup>();
+            groupCache.Add(new WonkaRefGroup { GroupId = 1, GroupName = "Main", Description = "Main data" });
+
+            return groupCache;
+        }
+
+        public List<WonkaRefSource> GetSourceCache()
+        {
+            var sourceCache = new List<WonkaRefSource>();
+            sourceCache.Add(new WonkaRefSource { SourceId = 1, SourceName = "TransUnion", Status = "ACT" });
+            sourceCache.Add(new WonkaRefSource { SourceId = 2, SourceName = "Experian", Status = "ACT" });
+
+            return sourceCache;
+        }
+
+        public List<WonkaRefSourceField> GetSourceFieldCache()
+        {
+            var sourceFieldCache = new List<WonkaRefSourceField>();
+
+            sourceFieldCache.Add(new WonkaRefSourceField
+            { SourceFieldId = 1, SourceId = 1, FieldId = 102, SecurityLevel = 3 });
+            sourceFieldCache.Add(new WonkaRefSourceField
+            { SourceFieldId = 2, SourceId = 1, FieldId = 2, SecurityLevel = 1 });
+            sourceFieldCache.Add(new WonkaRefSourceField
+            { SourceFieldId = 3, SourceId = 2, FieldId = 102, SecurityLevel = 3 });
+            sourceFieldCache.Add(new WonkaRefSourceField
+            { SourceFieldId = 4, SourceId = 2, FieldId = 2, SecurityLevel = 1 });
+
+            return sourceFieldCache;
+        }
+
+        public List<WonkaRefStandard> GetStandardCache()
+        {
+            var standardCache = new List<WonkaRefStandard>();
+            return standardCache;
+        }
+
+        #endregion
+    }
+}

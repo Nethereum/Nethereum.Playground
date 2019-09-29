@@ -54,6 +54,11 @@ public class Program
                     Id = "1002"
                 },
 
+                new CodeSample()
+                {
+                    Name = "Ether: Unit conversion between Ether and Wei",
+                    Id = "1014"
+                },
 
                 new CodeSample()
                 {
@@ -115,13 +120,6 @@ public class Program
 					Id = "1013",
                 },
 
-
-                new CodeSample()
-                {
-                    Name = "Ether: Unit conversion between Ether and Wei",
-					Id = "1014"
-                },
-
                 new CodeSample()
                 {
                     Name = "ABI Encoding: Encoding using ABI Values, Parameters and Default values",
@@ -148,13 +146,25 @@ public class Program
 
                 new CodeSample()
                 {
-                    Name = "Accounts: HD Wallets",
-					Id = "1019",
+                    Name = "Accounts: HD Wallets (Introduction)",
+					Id = "1043",
                 },
 
                 new CodeSample()
                 {
-                    Name = "Accounts: Chain-IDs, accounts and web3",
+                    Name = "Accounts: HD Wallets - Deriving accounts using indexes",
+                    Id = "1041",
+                },
+
+                new CodeSample()
+                {
+                    Name = "Accounts: HD Wallets - Generating Mnemonics (seed words)",
+                    Id = "1042",
+                },
+
+                new CodeSample()
+                {
+                    Name = "Accounts: How to use Chain Ids to prevent replay attacks",
 					Id = "1020",
                 },
 
@@ -163,7 +173,6 @@ public class Program
                     Name = "Key Store: Create Scrypt based KeyStore using custom params",
 					Id = "1021",
                 },
-
 
                 new CodeSample()
                 {
@@ -274,13 +283,17 @@ public class Program
                     Id = "1040",
                 },
 
-                 new CodeSample()
+                new CodeSample()
                 {
                     Name = "Utilities: Address Utilities",
 					Id = "1039",
+                },
+
+                new CodeSample()
+                {
+                    Name = "Wonka Rule Engine Preview: Loading external rules and pre validation",
+                    Id = "1044",
                 }
-
-
             };
 
             foreach (var sample in samples)

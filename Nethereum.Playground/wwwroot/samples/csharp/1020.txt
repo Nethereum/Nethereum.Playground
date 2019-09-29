@@ -29,16 +29,6 @@ public class Program
         // improvement it is now possible to force a transaction to only run on a specific 
         //chain by including its ID when signed.
 
-        //   Quick playground setup
-
-        // First, let's download the test chain matching your environment from
-        // <https://github.com/Nethereum/Testchains>
-
-        // Start a Geth chain (geth-clique-linux/, geth-clique-windows/ or geth-clique-mac/) 
-        // using **_startgeth.bat_** (Windows) or **_startgeth.sh_** (Mac/Linux). 
-        // The chain is setup with the Proof of Authority consensus and will start 
-        // the mining process immediately.
-
         // The preconfigured chainIds can be found in Nethereum.Signer.Chain:
 
         //     public enum Chain
@@ -96,6 +86,7 @@ public class Program
         //chainId. Internally the TransactionManager will use this chainId to sign all 
         // transactions.
 
+        //The nethereum testchain has been preconfigured already with the chainId 444444444500
         var web3 = new Web3(account, "http://testchain.nethereum.com:8545");
 
         // Let's use it in a simple example, for example the transfer of Ether. 
