@@ -146,8 +146,6 @@ public class Program
 					Id = "1018",
                  },
 
-
-
                 new CodeSample()
                 {
                     Name = "Accounts: HD Wallets",
@@ -270,11 +268,18 @@ public class Program
 					Id = "1038",
                 },
 
+                new CodeSample()
+                {
+                    Name = "Log Processing: With In-Depth Configuration",
+                    Id = "1040",
+                },
+
                  new CodeSample()
                 {
                     Name = "Utilities: Address Utilities",
 					Id = "1039",
-                },
+                }
+
 
             };
 
