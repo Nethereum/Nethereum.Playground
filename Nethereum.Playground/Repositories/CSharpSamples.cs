@@ -299,6 +299,19 @@ public class Program
                 {
                     Name = "Wonka Rule Engine Preview: Loading external rules and pre validation",
                     Id = "1044",
+                },
+
+                new CodeSample()
+                {
+                    Name = "Azure Blockchain Service: Interacting with a Quorum member node",
+                    Id = "1045"
+                },
+
+                new CodeSample()
+                {
+                Name = "Azure Blockchain Service: Interacting in private with a Quorum member",
+                Id = "1046"
+
                 }
             };
 
