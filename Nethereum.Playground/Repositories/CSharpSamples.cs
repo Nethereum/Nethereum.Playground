@@ -304,13 +304,13 @@ public class Program
                 new CodeSample()
                 {
                     Name = "Azure Blockchain Service: Interacting with a Quorum member node",
-                    Id = "1045"
+                    Id = "1046"
                 },
 
                 new CodeSample()
                 {
                 Name = "Azure Blockchain Service: Interacting in private with a Quorum member",
-                Id = "1046"
+                Id = "1047"
 
                 }
             };
