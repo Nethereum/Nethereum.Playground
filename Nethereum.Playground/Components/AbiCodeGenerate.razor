@@ -1,6 +1,9 @@
 ﻿@inherits AbiCodeGenerateBase;
 
     <div class="simple-form">
+
+        <p>Generates a .Net API for your smart contract.</p>
+
         <div class="form-group">
             <label for="contractName">Contract Name:</label>
             <input type="contractName" class="form-control" @bind="@Model.ContractName" aria-describedby="contractNameHelp" />
@@ -11,10 +14,10 @@
             <label for="abi">ABI:</label>
             <input type="abi" class="form-control" @bind="@Model.Abi" aria-describedby="abiHelp" />
             <input type="file" class="btn btn-primary" @ref="@ABIFileUpload" @ref:suppressField @onchange="@ReadFileABI" />
-            <small id="abiHelp" class="form-text text-muted">The smart contract ABI, providing information of the constructor, funcions and events</small>
+            <small id="abiHelp" class="form-text text-muted">The ABI is JSON which contains the contract metadata including the constructor, functions and events.  Select the ABI file or paste the contents.</small>
             <small id="abiCodeHelp" class="form-text text-muted">
-            Please select the "contractName".abi file in your bin folder after compilation with <a target="_blank" href="https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity">solidity vscode</a>, or just copy it directly after compiling with <a target="_blank" href="https://remix.ethereum.org">Remix</a> 
-                Another option is to copy it from <a target="_blank" href="https://etherscan.io/address/0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2#code">Etherscan</a> to interact with existing contracts
+            [ If you're using <a target="_blank" href="https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity">solidity vscode</a>, after compilation, select the "contractName".abi file in your bin folder.  If you're using <a target="_blank" href="https://remix.ethereum.org">Remix</a>,  copy it directly from there.  
+                You can also use <a target="_blank" href="https://etherscan.io/address/0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2#code">Etherscan</a> to retrieve the ABI for existing contracts. ]
             </small>
         </div>
 
@@ -26,7 +29,7 @@
                 The smart contract deployment compiled ByteCode.
             </small>
             <small id="byteCodeHelp" class="form-text text-muted">
-                Please select the "contractName".bin file in your bin folder after compilation with <a target="_blank" href="https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity">solidity vscode</a>, or just copy it directly after compiling with <a target="_blank" href="https://remix.ethereum.org">Remix</a>  
+                [ If you're using <a target="_blank" href="https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity">solidity vscode</a>, after compilation, select the "contractName".bin file in your bin folder. If you're using <a target="_blank" href="https://remix.ethereum.org">Remix</a>, copy it directly from there. ]
             </small>
         </div>
 
