@@ -309,9 +309,14 @@ public class Program
 
                 new CodeSample()
                 {
-                Name = "Azure Blockchain Service: Interacting in private with a Quorum member",
-                Id = "1047"
-
+                    Name = "Azure Blockchain Service: Interacting in private with a Quorum member",
+                    Id = "1047"
+                },
+                
+                new CodeSample()
+                {
+                    Name = "Smart Contracts: Query ERC721 Smart contract balance and token owner",
+                    Id = "1048"
                 }
             };
 
