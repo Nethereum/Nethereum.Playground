@@ -13,6 +13,7 @@ using Nethereum.Web3;
 using NetDapps.CommerceAdmin.Contracts.WalletBuyer;
 using NetDapps.CommerceAdmin.Contracts.Funding;
 using NetDapps.CommerceAdmin.Contracts.WalletSeller;
+using NetDapps.CommerceAdmin.Contracts.BusinessPartnerStorage;
 
 namespace NetDapps.CommerceAdmin.Components
 {
@@ -20,10 +21,16 @@ namespace NetDapps.CommerceAdmin.Components
     {
         public string WalletBuyerAddress { get; set; }
         public string WalletBuyerBalance { get; set; }
+        public string WalletBuyerDesc { get; set; }
+
         public string WalletSellerAddress { get; set; }
         public string WalletSellerBalance { get; set; }
+        public string WalletSellerDesc { get; set; }
+
         public string FundingAddress { get; set; }
         public string FundingBalance { get; set; }
+        public string FundingDesc { get; set; }
+
         public string TokenAddress { get; set; }
         public string TokenSymbol { get; set; }
         public string RpcUrl { get; set; }
@@ -31,12 +38,7 @@ namespace NetDapps.CommerceAdmin.Components
         [Inject]
         public HttpClient Client { get; set; }
 
-        [Function("balanceOf", "uint256")]
-        public class BalanceOfFunction : FunctionMessage
-        {
-            [Nethereum.ABI.FunctionEncoding.Attributes.Parameter("address", "_owner", 1)]
-            public string Owner { get; set; }
-        }
+        private int _tokenDecimals;
 
         protected override void OnInitialized()
         {
@@ -50,29 +52,53 @@ namespace NetDapps.CommerceAdmin.Components
             WalletSellerBalance = "0";
             FundingBalance = "0";
 
+            WalletBuyerDesc = "";
+            WalletSellerDesc = "";
+            FundingDesc = "";
+
             base.OnInitialized();
         }
 
-        protected async Task GetTokenBalance()
+        protected async Task RefreshAll()
         {
-            //WalletBuyerBalance = "...";
-            //WalletSellerBalance = "...";
-            //FundingBalance = "...";
-
-            var web3 = new Web3(RpcUrl);
-            //var balanceOfMessage = new BalanceOfFunction() { Owner = AccountAddress };
-
-            ////Creating a new query handler
-            //var queryHandler = web3.Eth.GetContractQueryHandler<BalanceOfFunction>();
-
-            ////Querying the Maker smart contract https://etherscan.io/address/0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2
-            //var balance = await queryHandler.QueryAsync<BigInteger>(ContractAddress, balanceOfMessage).ConfigureAwait(false);
-            //Balance = Web3.Convert.FromWei(balance);
-
-            WalletBuyerBalance = "1700.00 DAI";
-            WalletSellerBalance = "15400.00 DAI";
-            FundingBalance = "300.00 DAI";
+            await GetTokenDetails();
+            await GetAllBalances();
+            await GetAllDescs();
         }
 
+        private async Task GetAllBalances() 
+        {
+            var web3 = new Web3(RpcUrl);
+            
+            var wbs = new WalletBuyerService(web3, WalletBuyerAddress);
+            var wbsBal = await wbs.GetTokenBalanceOwnedByThisQueryAsync(TokenAddress);
+            WalletBuyerBalance = wbsBal.ToString();
+
+            var fs = new FundingService(web3, FundingAddress);
+            var fsBal = await fs.GetBalanceOfThisQueryAsync(TokenAddress);
+            FundingBalance = fsBal.ToString();
+
+            var wss = new WalletSellerService(web3, WalletSellerAddress);
+            var wssBal = await wss.GetTokenBalanceOwnedByThisQueryAsync(TokenAddress);
+            WalletSellerBalance = wssBal.ToString();
+
+        }
+
+        private async Task GetAllDescs()
+        {
+            await Task.Delay(1);
+            WalletBuyerDesc = "Omni Consumer Products";
+            WalletSellerDesc = "Solyent Corporation";
+            FundingDesc = "";
+        }
+
+        private async Task GetTokenDetails()
+        {
+            var web3 = new Web3(RpcUrl);
+
+            await Task.Delay(1);
+            TokenSymbol = "DAI";
+            _tokenDecimals = 2;
+        }
     }
 }
