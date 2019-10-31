@@ -19,9 +19,9 @@ namespace Nethereum.Playground.Components
         [Parameter]
         public LoadFileModel Model { get; set; } = new LoadFileModel(){AllowedExtension = ".cs"};
         
-        public void OnChange(UIEventArgs eventArgs)
+        public void OnChange(EventArgs eventArgs)
         {
-            var changeEventArgs = (UIChangeEventArgs)eventArgs;
+            var changeEventArgs = (ChangeEventArgs)eventArgs;
             Model.FileName = changeEventArgs.Value.ToString().Remove(0, changeEventArgs.Value.ToString().LastIndexOf("\\") + 1);
         }
 

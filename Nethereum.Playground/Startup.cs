@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Builder;
 using Nethereum.Playground.ServiceCollectionExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Blazor.FileReader;
+using Microsoft.AspNetCore.Components;
 using Nethereum.Playground.Components.Sqlite;
 using Microsoft.CodeAnalysis.CSharp.AddAccessibilityModifiers;
 
@@ -19,6 +20,7 @@ namespace Nethereum.Playground
             services.AddCompiler();
             services.AddFileReaderService();
             SQLitePCL.raw.SetProvider(new SQLite3Provider_WebAssembly());
+          
 
         }
 

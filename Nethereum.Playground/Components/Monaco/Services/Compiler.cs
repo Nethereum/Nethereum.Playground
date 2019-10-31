@@ -46,7 +46,7 @@ namespace Nethereum.Playground
             {
                 try
                 {
-                    var response = await client.GetJsonAsync<AssemblyLoadInfo[]>("/assemblies.json");
+                    var response = await client.GetJsonAsync<AssemblyLoadInfo[]>("assemblies.json");
                     //await AssemblyCache.Current.LoadAssemblies(client, response);
                     await Task.WhenAll(response.Select(x => AssemblyCache.Current.LoadAssembly(client, x)));
 

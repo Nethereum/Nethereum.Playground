@@ -10,19 +10,17 @@
 @functions {
 
     [Parameter]
-    EditorModel EditorModel { get; set; }
-
-
+    public EditorModel EditorModel { get; set; }
 
     [Parameter]
-    int Width { get; set; } = 800;
+    public int Width { get; set; } = 800;
 
     [Parameter]
-    int Height { get; set; } = 600;
+    public int Height { get; set; } = 600;
 
     bool _alreadyRendered = false;
 
-    protected override async Task OnAfterRenderAsync()
+    protected override async Task OnAfterRenderAsync(bool value)
     {
         if (!_alreadyRendered)
         {

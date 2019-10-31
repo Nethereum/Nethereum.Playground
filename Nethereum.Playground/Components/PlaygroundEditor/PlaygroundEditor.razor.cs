@@ -45,6 +45,8 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
         [Inject] public Compiler Compiler { get;set;}
 
+        [Inject] public NavigationManager NavigationManager { get; set; }
+
         public List<CodeSample> CodeSamples { get; protected set; }
 
         [Parameter] public string Url { get; set; }
@@ -58,7 +60,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
         private AbiCodeGenerateModel abiCodeGenerateModel;
 
-        [Parameter] CodeLanguage CodeLanguage { get; set; }
+        [Parameter] public CodeLanguage CodeLanguage { get; set; }
 
         private const string IPFS_API_URL = "https://ipfs.infura.io:5001/7238211010344719ad14a89db874158c/api/";
 
@@ -177,7 +179,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
         /// 1 second
         /// </summary>
         /// <returns></returns>
-        protected override async Task OnAfterRenderAsync()
+        protected override async Task OnAfterRenderAsync(bool value)
         {
            
 
@@ -290,7 +292,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             StateHasChanged();
         }
 
-        public async Task CodeSampleChanged(UIChangeEventArgs evt)
+        public async Task CodeSampleChanged(ChangeEventArgs evt)
         {
 
             //Console.WriteLine(selectedId);
@@ -300,7 +302,8 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             if (selectedId != null)
             {
                 Console.WriteLine(selectedId);
-                WebAssemblyUriHelper.Instance.NavigateTo($"/{GetEditorLanguage()}/id/" + selectedId);
+                
+                NavigationManager.NavigateTo($"{NavigationManager.BaseUri}{GetEditorLanguage()}/id/" + selectedId);
                 //Id = selectedId;
             }
             else
