@@ -1,78 +1,62 @@
 ﻿@inherits CommerceAdminBase
 @using Microsoft.AspNetCore.Components
 
-<table class="table table-sm">
-    <thead>
-        <tr>
-            <th scope="col"> </th>
-            <th scope="col">Buyer Wallet</th>
-            <th scope="col">Funding Contract</th>
-            <th scope="col">Seller Wallet</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th scope="row">1</th>
-            <td>
-                <label id="walletBuyerBalance">@WalletBuyerBalance</label>
-            </td>
-            <td>
-                <label id="fundingBalance">@FundingBalance</label>
-            </td>
-            <td>
-                <label id="walletSellerBalance">@WalletSellerBalance</label>
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">2</th>
-            <td>
-                <input type="text" class="form-control" id="walletBuyerAddressInput" aria-describedby="walletBuyerAddressHelp" placeholder="Enter the buyer wallet address" @bind="@WalletBuyerAddress" />
-                <small id="walletBuyerAddressHelp" class="form-text text-muted">The contract address of the buyer wallet</small>
-            </td>
-            <td>
-                <input type="text" class="form-control" id="fundingAddressInput" aria-describedby="fundingAddressHelp" placeholder="Enter the funding contract address" @bind="@FundingAddress" />
-                <small id="fundingAddressHelp" class="form-text text-muted">The contract address of the funding contract</small>
-            </td>
-            <td>
-                <input type="text" class="form-control" id="walletSellerAddressInput" aria-describedby="walletSellerAddressHelp" placeholder="Enter the seller wallet address" @bind="@WalletSellerAddress" />
-                <small id="walletSellerAddressHelp" class="form-text text-muted">The contract address of the seller wallet</small>
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">3</th>
-            <td class="table-primary">
-                Ottow
-            </td>
-            <td>Otto</td>
-            <td>mdo</td>
-        </tr>
+    <div class="card">
+        <h5 class="card-header">
+            Commerce Monitor
+        </h5>
+        <div class="card-body">
 
-    </tbody>
-</table>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">Buyer Wallet</th>
+                        <th scope="col">Funding Contract</th>
+                        <th scope="col">Seller Wallet</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <label id="walletBuyerBalance">@WalletBuyerBalance</label>
+                        </td>
+                        <td>
+                            <label id="fundingBalance">@FundingBalance</label>
+                        </td>
+                        <td>
+                            <label id="walletSellerBalance">@WalletSellerBalance</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" class="form-control" id="walletBuyerAddressInput" aria-describedby="walletBuyerAddressHelp" placeholder="Enter the buyer wallet address" @bind="@WalletBuyerAddress" />
+                            <small id="walletBuyerAddressHelp" class="form-text text-muted">The contract address of the buyer wallet</small>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" id="fundingAddressInput" aria-describedby="fundingAddressHelp" placeholder="Enter the funding contract address" @bind="@FundingAddress" />
+                            <small id="fundingAddressHelp" class="form-text text-muted">The contract address of the funding contract</small>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" id="walletSellerAddressInput" aria-describedby="walletSellerAddressHelp" placeholder="Enter the seller wallet address" @bind="@WalletSellerAddress" />
+                            <small id="walletSellerAddressHelp" class="form-text text-muted">The contract address of the seller wallet</small>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" @onclick="@GetTokenBalance">Refresh</button>
+            </div>
 
-<div class="form-group">
-    <label for="url">Blockchain Url</label>
-    <input type="text" class="form-control" id="urlInput" aria-describedby="urlHelp" placeholder="Enter blockchain URL" @bind="@RpcUrl" />
-    <small id="urlHelp" class="form-text text-muted">URL for blockchain</small>
-</div>
+            <div class="form-group">
+                <label for="tokenAddressInput">Token Address</label>
+                <input type="text" class="form-control" id="tokenAddressInput" placeholder="Enter token address" @bind="@TokenAddress" />
+            </div>
 
-<div class="form-group">
-    <label for="contractAddresInput">Token Address</label>
-    <input type="text" class="form-control" id="tokenAddressInput" aria-describedby="tokenAddressHelp" placeholder="Enter the token address" @bind="@TokenAddress" />
-    <small id="tokenAddressHelp" class="form-text text-muted">The token address</small>
-</div>
+            <div class="form-group">
+                <label for="url">Blockchain Url</label>
+                <input type="text" class="form-control" id="urlInput" placeholder="Enter blockchain URL" @bind="@RpcUrl" />
+            </div>
 
-<div class="form-group">
-    <label for="contractAddresInput">Contract Address</label>
-    <input type="text" class="form-control" id="contractAddresInput" aria-describedby="contractAddressHelp" placeholder="Enter the contract address" @bind="@ContractAddress" />
-    <small id="contractAddressHelp" class="form-text text-muted">The contract address</small>
-</div>
-
-<div class="form-group">
-    <label for="accountAddresInput">Account Address</label>
-    <input type="text" class="form-control" id="accountAddresInput" aria-describedby="accountAddressHelp" placeholder="Enter the account address" @bind="@AccountAddress" />
-    <small id="accountAddressHelp" class="form-text text-muted">The account address</small>
-</div>
-
-<button type="submit" class="btn btn-primary" @onclick="@GetTokenBalance">Get Token Balance</button>
+        </div>
+    </div>
