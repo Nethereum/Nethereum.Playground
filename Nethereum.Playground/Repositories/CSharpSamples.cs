@@ -71,6 +71,12 @@ public class Program
                     Name = "Smart Contracts: Query ERC20 Smart contract balance",
                     Id = "1005",
                 },
+                
+                new CodeSample()
+                {
+                    Name = "Smart Contracts: Query ERC721 Smart contract balance and token owner",
+                    Id = "1048"
+                },
 
                 new CodeSample()
                 {
@@ -309,10 +315,9 @@ public class Program
 
                 new CodeSample()
                 {
-                Name = "Azure Blockchain Service: Interacting in private with a Quorum member",
-                Id = "1047"
-
-                }
+                    Name = "Azure Blockchain Service: Interacting in private with a Quorum member",
+                    Id = "1047"
+                }                
             };
 
             foreach (var sample in samples)
