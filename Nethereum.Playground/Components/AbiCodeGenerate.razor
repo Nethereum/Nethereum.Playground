@@ -10,7 +10,7 @@
         <div class="form-group">
             <label for="abi">ABI:</label>
             <input type="abi" class="form-control" @bind="@Model.Abi" aria-describedby="abiHelp" />
-            <input type="file" class="btn btn-primary" @ref="@ABIFileUpload" @ref:suppressField @onchange="@ReadFileABI" />
+            <input type="file" class="btn btn-primary" @ref="@ABIFileUpload" @onchange="@ReadFileABI" />
             <small id="abiHelp" class="form-text text-muted">The smart contract ABI, providing information of the constructor, funcions and events</small>
             <small id="abiCodeHelp" class="form-text text-muted">
             Please select the "contractName".abi file in your bin folder after compilation with <a target="_blank" href="https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity">solidity vscode</a>, or just copy it directly after compiling with <a target="_blank" href="https://remix.ethereum.org">Remix</a> 
@@ -21,7 +21,7 @@
         <div class="form-group">
             <label for="byteCode">ByteCode:</label>
             <input type="byteCode" class="form-control" @bind="@Model.ByteCode" aria-describedby="byteCodeHelp" />
-            <input type="file" class="btn btn-primary" @ref="@ByteCodeFileUpload" @ref:suppressField @onchange="@ReadFileByteCode" />
+            <input type="file" class="btn btn-primary" @ref="@ByteCodeFileUpload" @onchange="@ReadFileByteCode" />
             <small id="byteCodeHelp" class="form-text text-muted">
                 The smart contract deployment compiled ByteCode.
             </small>
