@@ -20,6 +20,7 @@ namespace NetDapps.CommerceAdmin.Components
 {
     public class CommerceAdminBase : ComponentBase
     {
+        public bool IsRefreshing { get; set; }
         public string RpcUrl { get; set; }
         public string WalletBuyerAddress { get; set; }
         public string WalletBuyerBalance { get; private set; }
@@ -66,17 +67,11 @@ namespace NetDapps.CommerceAdmin.Components
 
         protected async Task RefreshAll()
         {
-            string waiting = "...";
-            WalletBuyerBalance = waiting;
-            WalletSellerBalance = waiting;
-            FundingBalance = waiting;
-            WalletBuyerDesc = waiting;
-            WalletSellerDesc = waiting;
-            FundingDesc = waiting;
-
+            IsRefreshing = true;
             await GetTokenDetails();
             await GetAllBalances();
             await GetAllDescs();
+            IsRefreshing = false;
         }
 
         private async Task GetAllBalances()
@@ -106,7 +101,7 @@ namespace NetDapps.CommerceAdmin.Components
             var wbsSysId = await wbs.SystemIdQueryAsync();
             var bpss = new BusinessPartnerStorageService(web3, BusinessPartnersContractAddress);
             WalletBuyerDesc = await bpss.GetSystemDescriptionQueryAsync(wbsSysId);
-            
+
             // Seller
             var wss = new WalletSellerService(web3, WalletSellerAddress);
             var wssSysId = await wss.SystemIdQueryAsync();
@@ -120,9 +115,9 @@ namespace NetDapps.CommerceAdmin.Components
         {
             var web3 = new Web3(RpcUrl);
             var contractHandler = web3.Eth.GetContractHandler(TokenAddress);
-            TokenSymbol = await contractHandler.QueryAsync<SymbolFunction, string>();            
+            TokenSymbol = await contractHandler.QueryAsync<SymbolFunction, string>();
             TokenName = await contractHandler.QueryAsync<NameFunction, string>();
-            TokenDecimals = await contractHandler.QueryAsync<DecimalsFunction, int>();                        
+            TokenDecimals = await contractHandler.QueryAsync<DecimalsFunction, int>();
         }
     }
 }

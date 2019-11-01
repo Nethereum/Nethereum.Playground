@@ -1,60 +1,75 @@
 ﻿@inherits CommerceAdminBase
 @using Microsoft.AspNetCore.Components
 
-    <table class="table table-sm">
-        <thead>
-            <tr>
-                <th scope="col"></th>
-                <th scope="col">Buyer Wallet</th>
-                <th scope="col">Funding Contract</th>
-                <th scope="col">Seller Wallet</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th scope="row">Owner</th>
-                <td>
-                    <label id="walletBuyerDesc">@WalletBuyerDesc</label>
-                </td>
-                <td>
-                    <label id="fundingDesc">@FundingDesc</label>
-                </td>
-                <td>
-                    <label id="walletSellerDesc">@WalletSellerDesc</label>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">Balance</th>
-                <td>
-                    <label id="walletBuyerBalance">@WalletBuyerBalance</label>
-                </td>
-                <td>
-                    <label id="fundingBalance">@FundingBalance</label>
-                </td>
-                <td>
-                    <label id="walletSellerBalance">@WalletSellerBalance</label>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">Address</th>
-                <td>
-                    <input type="text" class="form-control" id="walletBuyerAddressInput" aria-describedby="walletBuyerAddressHelp" placeholder="Enter the buyer wallet address" @bind="@WalletBuyerAddress" />
-                    <small id="walletBuyerAddressHelp" class="form-text text-muted">Contract address of the buyer wallet</small>
-                </td>
-                <td>
-                    <input type="text" class="form-control" id="fundingAddressInput" aria-describedby="fundingAddressHelp" placeholder="Enter the funding contract address" @bind="@FundingAddress" />
-                    <small id="fundingAddressHelp" class="form-text text-muted">Contract address of the funding contract</small>
-                </td>
-                <td>
-                    <input type="text" class="form-control" id="walletSellerAddressInput" aria-describedby="walletSellerAddressHelp" placeholder="Enter the seller wallet address" @bind="@WalletSellerAddress" />
-                    <small id="walletSellerAddressHelp" class="form-text text-muted">Contract address of the seller wallet</small>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Buyer Wallet</th>
+            <th scope="col">Funding Contract</th>
+            <th scope="col">Seller Wallet</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">Owner</th>
+            <td>
+                <label id="walletBuyerDesc">@WalletBuyerDesc</label>
+            </td>
+            <td>
+                <label id="fundingDesc">@FundingDesc</label>
+            </td>
+            <td>
+                <label id="walletSellerDesc">@WalletSellerDesc</label>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Balance</th>
+            <td>
+                <label id="walletBuyerBalance">@WalletBuyerBalance</label>
+            </td>
+            <td>
+                <label id="fundingBalance">@FundingBalance</label>
+            </td>
+            <td>
+                <label id="walletSellerBalance">@WalletSellerBalance</label>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Address</th>
+            <td>
+                <input type="text" class="form-control" id="walletBuyerAddressInput" aria-describedby="walletBuyerAddressHelp" placeholder="Enter the buyer wallet address" @bind="@WalletBuyerAddress" />
+                <small id="walletBuyerAddressHelp" class="form-text text-muted">Contract address of the buyer wallet</small>
+            </td>
+            <td>
+                <input type="text" class="form-control" id="fundingAddressInput" aria-describedby="fundingAddressHelp" placeholder="Enter the funding contract address" @bind="@FundingAddress" />
+                <small id="fundingAddressHelp" class="form-text text-muted">Contract address of the funding contract</small>
+            </td>
+            <td>
+                <input type="text" class="form-control" id="walletSellerAddressInput" aria-describedby="walletSellerAddressHelp" placeholder="Enter the seller wallet address" @bind="@WalletSellerAddress" />
+                <small id="walletSellerAddressHelp" class="form-text text-muted">Contract address of the seller wallet</small>
+            </td>
+        </tr>
+    </tbody>
+</table>
 
 <div class="form-group">
-    <button type="submit" class="btn btn-primary" @onclick="@RefreshAll">Refresh</button>
+    <!--<button type="submit" class="btn btn-primary" @onclick="@RefreshAll">Refresh</button>
+    -->
+    @if (IsRefreshing)
+    {
+        <button class="btn btn-primary" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status"></span>
+            Refresh
+        </button>
+    }
+    else
+    {
+        <button class="btn btn-primary" type="button" @onclick="@RefreshAll">
+            Refresh
+        </button>
+    }
+
 </div>
 
 <div class="form-group">
