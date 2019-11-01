@@ -171,19 +171,33 @@ namespace NetDapps.CommerceAdmin.Contracts.BusinessPartnerStorage
             return ContractHandler.SendRequestAndWaitForReceiptAsync(setSystemDescriptionFunction, cancellationToken);
         }
 
-        public Task<byte[]> GetSystemDescriptionQueryAsync(GetSystemDescriptionFunction getSystemDescriptionFunction, BlockParameter blockParameter = null)
+        public Task<string> GetSystemDescriptionQueryAsync(GetSystemDescriptionFunction getSystemDescriptionFunction, BlockParameter blockParameter = null)
         {
-            return ContractHandler.QueryAsync<GetSystemDescriptionFunction, byte[]>(getSystemDescriptionFunction, blockParameter);
+            return ContractHandler.QueryAsync<GetSystemDescriptionFunction, string>(getSystemDescriptionFunction, blockParameter);
         }
 
 
-        public Task<byte[]> GetSystemDescriptionQueryAsync(byte[] systemId, BlockParameter blockParameter = null)
+        public Task<string> GetSystemDescriptionQueryAsync(byte[] systemId, BlockParameter blockParameter = null)
         {
             var getSystemDescriptionFunction = new GetSystemDescriptionFunction();
             getSystemDescriptionFunction.SystemId = systemId;
 
-            return ContractHandler.QueryAsync<GetSystemDescriptionFunction, byte[]>(getSystemDescriptionFunction, blockParameter);
+            return ContractHandler.QueryAsync<GetSystemDescriptionFunction, string>(getSystemDescriptionFunction, blockParameter);
         }
+
+        //public Task<byte[]> GetSystemDescriptionQueryAsync(GetSystemDescriptionFunction getSystemDescriptionFunction, BlockParameter blockParameter = null)
+        //{
+        //    return ContractHandler.QueryAsync<GetSystemDescriptionFunction, byte[]>(getSystemDescriptionFunction, blockParameter);
+        //}
+
+
+        //public Task<byte[]> GetSystemDescriptionQueryAsync(byte[] systemId, BlockParameter blockParameter = null)
+        //{
+        //    var getSystemDescriptionFunction = new GetSystemDescriptionFunction();
+        //    getSystemDescriptionFunction.SystemId = systemId;
+
+        //    return ContractHandler.QueryAsync<GetSystemDescriptionFunction, byte[]>(getSystemDescriptionFunction, blockParameter);
+        //}
 
         public Task<byte[]> GetSellerViewCustomerIdForBuyerSysIdQueryAsync(GetSellerViewCustomerIdForBuyerSysIdFunction getSellerViewCustomerIdForBuyerSysIdFunction, BlockParameter blockParameter = null)
         {
