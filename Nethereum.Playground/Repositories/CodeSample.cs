@@ -44,14 +44,14 @@ namespace Nethereum.Playground.Repositories
             }
         }
 
-        public string GetLocalPath()
+        public string GetLocalPath(string baseUri)
         {
             switch (Language)
             {
                 case CodeLanguage.CSharp:
-                    return $"/samples/csharp/{Id}{GetLocalExtension()}";
+                    return $"{baseUri}samples/csharp/{Id}{GetLocalExtension()}";
                 case CodeLanguage.VbNet:
-                    return $"/samples/vb/{Id}{GetLocalExtension()}";
+                    return $"{baseUri}samples/vb/{Id}{GetLocalExtension()}";
                 default:
                     throw new ArgumentOutOfRangeException();
             }

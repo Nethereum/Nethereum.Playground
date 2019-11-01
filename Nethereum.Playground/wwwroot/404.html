@@ -1,14 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <base href="/" />
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
     <title>Nethereum Playground</title>
-    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
-    <link href="css/site.css" rel="stylesheet"/>
-    <link href="css/modalform.css" rel="stylesheet"/>
-    <link rel="stylesheet" data-name="vs/editor/editor.main" href="monaco-editor/min/vs/editor/editor.main.css"/>
+    <base href="/" />
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="css/modalform.css" rel="stylesheet" />
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="monaco-editor/min/vs/editor/editor.main.css" />
 </head>
 <body>
     <app>
@@ -37,16 +37,13 @@
             </div>
         </div>
     </app>
-    <script type="blazor-boot"></script>
-	<script src="/js/Blazor.Extensions.Storage.js"></script>
-    <script src="_framework/blazor.webassembly.js"></script>
     <script>var require = { paths: { 'vs': 'monaco-editor/min/vs' } };</script>
     <script src="monaco-editor/min/vs/loader.js"></script>
     <script src="monaco-editor/min/vs/editor/editor.main.nls.js"></script>
     <script src="monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="js/Blazor.Extensions.Storage.js"></script>
     <script src="js/BlazorComponents.js"></script>
     <script src="js/saveAsFile.js"></script>
-
-
 </body>
 </html>

@@ -8,7 +8,7 @@ namespace Nethereum.Playground.Components.FileUtils
     //https://github.com/danroth27/BlazorExcelSpreadsheet
     public static class FileUtil
     {
-        public static Task SaveAs(this IJSRuntime js, string filename, byte[] data)
+        public static ValueTask<object> SaveAs(this IJSRuntime js, string filename, byte[] data)
             => js.InvokeAsync<object>(
                 "saveAsFile",
                 filename,

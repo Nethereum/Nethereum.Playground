@@ -14,15 +14,17 @@ namespace Nethereum.Playground.Repositories
     {
         private const string _storageKey = "User samples";
         private HttpClient _httpClient;
+        private readonly NavigationManager _navigationManager;
 
         private List<CodeSample> _codeSamples = new List<CodeSample>();
 
         public LocalStorage LocalStorage { get; set; }
 
-        public CodeSampleRepository(HttpClient httpClient, IJSRuntime runtime)
+        public CodeSampleRepository(HttpClient httpClient, IJSRuntime runtime, NavigationManager navigationManager)
         {
             LocalStorage = new LocalStorage(runtime);
             _httpClient = httpClient;
+            _navigationManager = navigationManager;
             LoadCSharpSamples();
             LoadVbSamples();
          
@@ -50,7 +52,7 @@ namespace Nethereum.Playground.Repositories
             if (string.IsNullOrEmpty(codeSample.Code) && !codeSample.Custom && !string.IsNullOrEmpty(codeSample.Id))
             {
 
-                var code = await _httpClient.GetStringAsync(codeSample.GetLocalPath());
+                var code = await _httpClient.GetStringAsync(codeSample.GetLocalPath(_navigationManager.BaseUri));
                 codeSample.Code = code;
                 return codeSample;
             }

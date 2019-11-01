@@ -34,7 +34,7 @@ namespace Nethereum.Playground.Pages
             return assembly.UIComponents.First();
         }
 
-        public void UIComponentChanged(UIChangeEventArgs evt)
+        public void UIComponentChanged(ChangeEventArgs evt)
         {
             SelectedUIComponentInfo = int.Parse(evt.Value.ToString());
         }

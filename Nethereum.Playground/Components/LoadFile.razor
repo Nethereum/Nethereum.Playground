@@ -2,7 +2,7 @@
 
     <div class="simple-form">
         <div class="form-group">
-            <input type="file" class="btn btn-primary" accept="@Model.AllowedExtension" @ref="@FileUpload" @ref:suppressField @onchange="@OnChange" />
+            <input type="file" class="btn btn-primary" accept="@Model.AllowedExtension" @ref="@FileUpload" @onchange="@OnChange" />
             
             @if (string.IsNullOrEmpty(Model.FileName))
             {
