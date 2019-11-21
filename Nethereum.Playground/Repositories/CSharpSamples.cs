@@ -102,12 +102,16 @@ public class Program
                     Name = "Smart Contracts: Events (End to End Introduction)",
                     Id = "1008",
                 },
-
-				 new CodeSample()
-				 {
-					 Name = "Smart Contracts: Events (Retrieving Events from Chain)",
-					 Id = "1009",
-				 },
+				new CodeSample()
+				{
+					Name = "Smart Contracts: Events (Retrieving Events from Chain)",
+					Id = "1009",
+				},
+                new CodeSample()
+                {
+                    Name = "Smart Contracts: Events (Retrieving Events by Parameter Value)",
+                    Id = "1049"
+                },
                 new CodeSample()
                 {
                     Name = "Smart Contracts: Estimating Gas",

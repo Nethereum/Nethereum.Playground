@@ -1,0 +1,84 @@
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Numerics;
+using System.Threading.Tasks;
+
+public class SmartContracts_RetrievingEventsByParameterValue
+{
+    public static async Task Main()
+    {
+        // Demonstrates using a FilterInputBuilder to retrieve specific logs by event parameter value
+
+        var web3 = new Web3("https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c");
+
+        var fromAddressFilter = new FilterInputBuilder<TransferEventDTO>()
+            .AddTopic(tfr => tfr.From, "0x0000000000000000000000000000000000000000")
+            .Build("0x109424946d5aa4425b2dc1934031d634cdad3f90");
+
+        var toAddressFilter = new FilterInputBuilder<TransferEventDTO>()
+            .AddTopic(tfr => tfr.To, "0xb456427fcee27c4a8f607c1403927d14063a6698")
+            .Build("0x109424946d5aa4425b2dc1934031d634cdad3f90");
+
+        var toAddressAnyContractFilter = new FilterInputBuilder<TransferEventDTO>()
+            .AddTopic(tfr => tfr.To, "0xb456427fcee27c4a8f607c1403927d14063a6698")
+            .Build();
+
+        // find any transfer matching one of many from addresses
+        // specifying a block range to restrict results
+        var oneOfManyFromAddresses = new FilterInputBuilder<TransferEventDTO>()
+            .AddTopic(tfr => tfr.From, "0x53c475aa2d6ae167fe5229814c6694b3c5f6cf2f")
+            .AddTopic(tfr => tfr.From, "0xcc46e788e063f11e2ccd12b0e031ef24542a8129")
+            .Build(blockRange: new BlockRange(3303153, 3310713));
+
+        var toAddress = await web3.Eth.Filters.GetLogs.SendRequestAsync(toAddressFilter);
+        WriteLogs("By To Address:", toAddress);
+
+        var fromAddress = await web3.Eth.Filters.GetLogs.SendRequestAsync(fromAddressFilter);
+        WriteLogs("By From Address:", fromAddress);
+
+        var toAddressAnyContract = await web3.Eth.Filters.GetLogs.SendRequestAsync(toAddressAnyContractFilter);
+        WriteLogs("By To Address for Any Contract:", toAddressAnyContract);
+
+        var manyFromAddresses = await web3.Eth.Filters.GetLogs.SendRequestAsync(oneOfManyFromAddresses);
+        WriteLogs("From one of many addresses:", manyFromAddresses);
+    }
+
+    private static void WriteLogs(string title, FilterLog[] logs)
+    {
+        Console.WriteLine($"{title} (Logs: {logs.Length})");
+
+        foreach (var log in logs)
+        {
+            Console.WriteLine($"Block Number:{log.BlockNumber.Value}");
+            Console.WriteLine($"Transaction Hash:{log.TransactionHash}");
+            Console.WriteLine($"Transaction Index:{log.TransactionIndex.Value}");
+
+            // Decode the log so that we can see the Transfer event parameters
+            var transferArgs = log.DecodeEvent<TransferEventDTO>();
+
+            Console.WriteLine($"From:{transferArgs.Event.From}");
+            Console.WriteLine($"To:{transferArgs.Event.To}");
+            Console.WriteLine($"Value:{transferArgs.Event.Value}");
+        }
+
+        Console.WriteLine();
+    }
+
+    [Event("Transfer")]
+    public class TransferEventDTO : IEventDTO
+    {
+        [Parameter("address", "_from", 1, true)]
+        public string From { get; set; }
+
+        [Parameter("address", "_to", 2, true)]
+        public string To { get; set; }
+
+        [Parameter("uint256", "_value", 3, false)]
+        public BigInteger Value { get; set; }
+    }
+
+
+}
