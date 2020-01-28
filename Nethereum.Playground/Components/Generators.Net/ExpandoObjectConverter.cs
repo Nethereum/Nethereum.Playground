@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Dynamic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace Nethereum.Generators.Net
+namespace Nethereum.ABI.JsonDeserialisation
 {
     /// <summary>
     ///     This is a replication (copy) of Newtonsoft ExpandoObjectConverter to allow for PCL compilaton
@@ -30,7 +30,7 @@ namespace Nethereum.Generators.Net
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(Dictionary<string, object>);
+            return objectType == typeof(IDictionary<string, object>);
         }
 
         /// <summary>
@@ -141,6 +141,50 @@ namespace Nethereum.Generators.Net
 
                     throw new Exception("Unexpected token when converting ExpandoObject");
             }
+        }
+    }
+
+    // Converting ABI as JArray, JObject into ExpandoObject style
+    // This is only available for ABI, not generic JObject/ExpandoObject conversion
+    public class JObjectToExpandoConverter
+    {
+        public List<IDictionary<string, object>> JObjectArray(JArray array)
+        {
+            var l = new List<IDictionary<string, object>>();
+            foreach (JObject obj in array)
+                l.Add(JObject(obj));
+            return l;
+        }
+        public List<object> JArray(JArray array)
+        {
+            var l = new List<object>();
+            foreach (JToken token in array)
+                l.Add(JToken(token));
+            return l;
+        }
+        public IDictionary<string, object> JObject(JObject obj)
+        {
+            var dic = new Dictionary<string, object>();
+            foreach (var pair in obj)
+            {
+                dic[pair.Key] = JToken(pair.Value);
+            }
+            return dic;
+        }
+        public object JToken(JToken token)
+        {
+            if (token is JObject)
+                return JObject((JObject)token);
+            else if (token is JArray)
+                return JArray((JArray)token);
+            else if (token.Type == JTokenType.String)
+                return token.Value<string>();
+            else if (token.Type == JTokenType.Boolean)
+                return token.Value<bool>();
+            else if (token.Type == JTokenType.Integer)
+                return token.Value<int>();
+            else
+                throw new Exception("unexpected token type " + token.Type);
         }
     }
 }

@@ -117,6 +117,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
                 codeGenLanguage = CodeGenLanguage.Vb;
             }
             var contractAbi = new Nethereum.Generators.Net.GeneratorModelABIDeserialiser().DeserialiseABI(abi);
+            Console.WriteLine(contractAbi.Constructor.InputParameters.Count());
             var generator = new ContractProjectGenerator(contractAbi, contractName, contractByteCode, serviceNamespace, serviceNamespace, serviceNamespace, serviceNamespace, "", "/", codeGenLanguage);
             generator.AddRootNamespaceOnVbProjectsToImportStatements = false;
 

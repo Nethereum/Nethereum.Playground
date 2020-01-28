@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Blazor.Extensions.Storage;
+using Blazor.Extensions.Storage.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -18,11 +19,11 @@ namespace Nethereum.Playground.Repositories
 
         private List<CodeSample> _codeSamples = new List<CodeSample>();
 
-        public LocalStorage LocalStorage { get; set; }
+        public ILocalStorage LocalStorage { get; set; }
 
-        public CodeSampleRepository(HttpClient httpClient, IJSRuntime runtime, NavigationManager navigationManager)
+        public CodeSampleRepository(HttpClient httpClient, IJSRuntime runtime, ILocalStorage localStorage, NavigationManager navigationManager)
         {
-            LocalStorage = new LocalStorage(runtime);
+            LocalStorage = localStorage;
             _httpClient = httpClient;
             _navigationManager = navigationManager;
             LoadCSharpSamples();
