@@ -129,7 +129,7 @@ public class Program
                 new CodeSample()
                 {
                     Name = "Smart contracts: Changing .Net Type on DTO's (e.g. byte[] to string)",
-                    Id = "1049",
+                    Id = "1052",
                 },
 
                 new CodeSample()
