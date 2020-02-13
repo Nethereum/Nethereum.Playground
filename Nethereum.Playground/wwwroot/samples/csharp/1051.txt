@@ -1,0 +1,64 @@
+using Nethereum.ABI.Decoders;
+using Nethereum.ABI.Encoders;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Hex.HexTypes;
+using System;
+using System.Numerics;
+
+namespace NethereumSample
+{
+    public class CommonTypeConversion
+    {
+        public static void Main(string[] args)
+        {
+            Console.WriteLine("[Common Type Conversion]");
+
+            Console.WriteLine(" [byte[] and string]");
+            const string TEXT = "text";
+            byte[] textEncodedAsBytes32 = new Bytes32TypeEncoder().Encode(TEXT);
+            string decodedText = new Bytes32TypeDecoder().Decode<string>(textEncodedAsBytes32);
+
+            Console.WriteLine($"  Initial Value: {TEXT}, ToHex: {textEncodedAsBytes32.ToHex().EnsureHexPrefix()}, Decoded: {decodedText}");
+
+            Console.WriteLine(" [byte[] and integer]");
+            // Note: bytes32 does not support a sign (i.e. postive, negative)
+            const int INT = 99;
+            byte[] intEncodedAsBytes32 = new IntTypeEncoder().Encode(INT);
+            int decodedInt = new IntTypeDecoder().Decode<int>(intEncodedAsBytes32);
+
+            Console.WriteLine($"  Initial Value: {INT}, ToHex: {intEncodedAsBytes32.ToHex().EnsureHexPrefix()},  Decoded: {decodedInt}");
+
+            Console.WriteLine(" [byte[] and bool]");
+            const bool BOOL = true;
+            byte[] boolEncodedAsBytes = new BoolTypeEncoder().Encode(BOOL);
+            bool decodedBool = new BoolTypeDecoder().Decode<bool>(boolEncodedAsBytes);
+
+            Console.WriteLine($"  Initial Value: {BOOL}, ToHex: {boolEncodedAsBytes.ToHex().EnsureHexPrefix()}, Decoded: {decodedBool}");
+
+            Console.WriteLine("[HEX Conversion]");
+
+            // Hex
+            string textAsHex = TEXT.ToHexUTF8();
+            string textFromHex = textAsHex.HexToUTF8String();
+            Console.WriteLine($" Initial Text: {TEXT}, Hex: {textAsHex}, Hex to Text: {textFromHex}");
+
+            Console.WriteLine(" [BigIntegers]");
+            // uint in Solidity is automatically mapped to System.Numeric.BigInteger (it's bigger than int32)
+            // if you know the value is within int32 limits, you can cast
+            BigInteger bigInt = new BigInteger(101);
+            Console.WriteLine($"BigInteger casted to int: {(int)bigInt}");
+            Console.WriteLine($"BigInteger casted to long: {(long)bigInt}");
+            // if the value exceeds a long (imagine an 18 digit ethereum value) you may want to treat it differently
+            Console.WriteLine($"BigInteger as string: {bigInt.ToString()}");
+
+            Console.WriteLine(" [HexBigInteger]");
+            // HexBigInteger is common in Nethereum and is used for transferring large numbers over the wire
+            // it wraps a BigInteger which is available from the "Value" property
+            HexBigInteger hexBigInt = new HexBigInteger(bigInt);
+            Console.WriteLine($"HexBigInteger casted to int: {(int)hexBigInt.Value}");
+            Console.WriteLine($"HexBigInteger casted to long: {(long)hexBigInt.Value}");
+            Console.WriteLine($"HexBigInteger as string: {hexBigInt.Value.ToString()}");
+            Console.WriteLine($"HexBigInteger HexValue: {hexBigInt.HexValue}");
+        }
+    }
+}

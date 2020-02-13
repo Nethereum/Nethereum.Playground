@@ -316,6 +316,12 @@ public class Program
 
                 new CodeSample()
                 {
+                    Name = "Utilities: Common Type Conversion",
+                    Id = "1051",
+                },
+
+                new CodeSample()
+                {
                     Name = "Wonka Rule Engine Preview: Loading external rules and pre validation",
                     Id = "1044",
                 },
