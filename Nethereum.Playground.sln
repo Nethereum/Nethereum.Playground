@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetDapps.Maker", "ModulesDa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetDapps.CommerceAdmin", "ModulesDapps\NetDapps.CommerceAdmin\NetDapps.CommerceAdmin.csproj", "{2F62FDEE-C5F0-4FD2-B2DD-6E483A9F4339}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nethereum.Playground.Desktop", "Nethereum.Playground.Desktop\Nethereum.Playground.Desktop.csproj", "{3CBAFC17-01DD-478C-80A4-13160CD2E708}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,10 +47,6 @@ Global
 		{2F62FDEE-C5F0-4FD2-B2DD-6E483A9F4339}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F62FDEE-C5F0-4FD2-B2DD-6E483A9F4339}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F62FDEE-C5F0-4FD2-B2DD-6E483A9F4339}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3CBAFC17-01DD-478C-80A4-13160CD2E708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3CBAFC17-01DD-478C-80A4-13160CD2E708}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3CBAFC17-01DD-478C-80A4-13160CD2E708}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3CBAFC17-01DD-478C-80A4-13160CD2E708}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

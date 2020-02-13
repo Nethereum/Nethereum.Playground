@@ -68,6 +68,12 @@ public class Program
 
                 new CodeSample()
                 {
+                    Name = "Transactions / Signing: Raw transaction recreation and recovery of accounts",
+                    Id = "1053"
+                },
+
+                new CodeSample()
+                {
                     Name = "Smart Contracts: Query ERC20 Smart contract balance",
                     Id = "1005",
                 },
@@ -137,6 +143,30 @@ public class Program
                 {
                     Name = "Smart contracts: Changing .Net Type on DTO's (e.g. byte[] to string)",
                     Id = "1052",
+                },
+                
+                new CodeSample()
+                {
+                    Name = "ENS: Resolve address",
+                    Id = "1055",
+                },
+
+                new CodeSample()
+                {
+                    Name = "ENS: Resolve url",
+                    Id = "1056",
+                },
+
+                new CodeSample()
+                {
+                    Name = "ENS: Calculate rent price and commitment",
+                    Id = "1054",
+                },
+
+                new CodeSample()
+                {
+                    Name = "ENS: Registration example",
+                    Id = "1057",
                 },
 
                 new CodeSample()

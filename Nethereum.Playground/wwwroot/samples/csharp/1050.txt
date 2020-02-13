@@ -114,11 +114,10 @@ namespace RevertHandling
                 await executeFunctionHandler.EstimateGasAsync(contractAddress, args);
             }
             // conditional catch
-            catch (RpcResponseException rpcResponseException)
-                when (rpcResponseException.RpcError.Message.StartsWith("gas required exceeds allowance"))
+            catch (Exception ex)
             {
                 // a tx hash not been created because the error happened during estimation
-                Console.WriteLine($" [RpcResponseException]. Message: {rpcResponseException.Message}, Code:{rpcResponseException.RpcError.Code}");
+                Console.WriteLine($" [RpcResponseException]. Message: {ex.Message}");
 
                 // let's attempt to get the revert reason by querying with the same args
                 var revertException = await TryGetRevertMessage(web3, contractAddress, args);
@@ -155,11 +154,10 @@ namespace RevertHandling
                 await service.ExecuteRequestAndWaitForReceiptAsync(args);
             }
             // conditional catch
-            catch (RpcResponseException rpcResponseException)
-                when (rpcResponseException.RpcError.Message.StartsWith("gas required exceeds allowance"))
+            catch (Exception ex)
             {
                 // a tx hash not been created because the error happened during estimation
-                Console.WriteLine($" [RpcResponseException]. Message: {rpcResponseException.Message}, Code:{rpcResponseException.RpcError.Code}");
+                Console.WriteLine($"Message: {ex.Message}");
 
                 // let's attempt to get the revert reason by replaying with the same args
                 // this doesn't use the service, as the service doesn't provide a direct means of querying a function

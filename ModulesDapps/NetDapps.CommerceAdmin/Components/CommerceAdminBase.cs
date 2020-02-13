@@ -76,7 +76,8 @@ namespace NetDapps.CommerceAdmin.Components
 
         private async Task GetAllBalances()
         {
-            var web3 = new Web3(RpcUrl);
+            var rpcClient = new RpcClient(new Uri(RpcUrl), new HttpClient());
+            var web3 = new Web3(rpcClient);
 
             var wbs = new WalletBuyerService(web3, WalletBuyerAddress);
             var wbsBal = await wbs.GetTokenBalanceOwnedByThisQueryAsync(TokenAddress);
@@ -93,7 +94,8 @@ namespace NetDapps.CommerceAdmin.Components
 
         private async Task GetAllDescs()
         {
-            var web3 = new Web3(RpcUrl);
+            var rpcClient = new RpcClient(new Uri(RpcUrl), new HttpClient());
+            var web3 = new Web3(rpcClient);
 
             // Buyer 
             // use wallet to get system id, then bp storage to get system desc
@@ -113,7 +115,8 @@ namespace NetDapps.CommerceAdmin.Components
 
         private async Task GetTokenDetails()
         {
-            var web3 = new Web3(RpcUrl);
+            var rpcClient = new RpcClient(new Uri(RpcUrl), new HttpClient());
+            var web3 = new Web3(rpcClient);
             var contractHandler = web3.Eth.GetContractHandler(TokenAddress);
             TokenSymbol = await contractHandler.QueryAsync<SymbolFunction, string>();
             TokenName = await contractHandler.QueryAsync<NameFunction, string>();
