@@ -93,6 +93,13 @@ public class Program
 
                 new CodeSample()
                 {
+                    Name = 
+                        "Smart Contracts: Retrieving Revert Messages",
+                    Id = "1050"
+                },
+
+                new CodeSample()
+                {
                     Name = "Smart Contracts: (Untyped) Deployment, Calls(Querying), Transactions",
                     Id = "1045",
                 },
