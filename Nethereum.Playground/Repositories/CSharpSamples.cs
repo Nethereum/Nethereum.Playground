@@ -135,6 +135,12 @@ public class Program
 
                 new CodeSample()
                 {
+                    Name = "Smart contracts: Changing .Net Type on DTO's (e.g. byte[] to string)",
+                    Id = "1052",
+                },
+
+                new CodeSample()
+                {
                     Name = "Signing: Sign a message and recover the signing address",
 					Id = "1013",
                 },
