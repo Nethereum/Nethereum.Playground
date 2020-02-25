@@ -56,16 +56,16 @@ namespace Nethereum.Playground
                        new AssemblyLoadInfo(null, "remlib/Microsoft.CodeAnalysis.CSharp.Features.dll"));
 
                     await AssemblyCache.Current.LoadAssembly(client,
-                        new AssemblyLoadInfo(null, "remlib/WonkaBre.dll"));
+                        new AssemblyLoadInfo(null, "remlib/Wonka.BizRulesEngine.dll"));
 
                     await AssemblyCache.Current.LoadAssembly(client,
-                        new AssemblyLoadInfo(null, "remlib/WonkaEth.dll"));
+                        new AssemblyLoadInfo(null, "remlib/Wonka.Eth.dll"));
 
                     await AssemblyCache.Current.LoadAssembly(client,
-                        new AssemblyLoadInfo(null, "remlib/WonkaPrd.dll"));
+                        new AssemblyLoadInfo(null, "remlib/Wonka.Product.dll"));
 
                     await AssemblyCache.Current.LoadAssembly(client,
-                        new AssemblyLoadInfo(null, "remlib/WonkaRef.dll"));
+                        new AssemblyLoadInfo(null, "remlib/Wonka.Metadata.dll"));
 
                     await AssemblyCache.Current.LoadAssembly(client,
                         new AssemblyLoadInfo(null, "remlib/Nethereum.StandardTokenEIP20.dll"));
