@@ -77,7 +77,7 @@ public class Program
                     Name = "Smart Contracts: Query ERC20 Smart contract balance",
                     Id = "1005",
                 },
-                
+
                 new CodeSample()
                 {
                     Name = "Smart Contracts: Query ERC721 Smart contract balance and token owner",
@@ -89,7 +89,7 @@ public class Program
                     Name = "Smart Contracts: Smart contract deployment",
                     Id = "1006",
                 },
-				
+
                 new CodeSample()
                 {
                     Name =
@@ -99,7 +99,7 @@ public class Program
 
                 new CodeSample()
                 {
-                    Name = 
+                    Name =
                         "Smart Contracts: Retrieving Revert Messages",
                     Id = "1050"
                 },
@@ -116,27 +116,27 @@ public class Program
                     Id = "1008",
                 },
 
-				 new CodeSample()
-				 {
-					 Name = "Smart Contracts: Events (Retrieving Events from Chain)",
-					 Id = "1009",
-				 },
+                 new CodeSample()
+                 {
+                     Name = "Smart Contracts: Events (Retrieving Events from Chain)",
+                     Id = "1009",
+                 },
                 new CodeSample()
                 {
                     Name = "Smart Contracts: Estimating Gas",
-					Id = "1010",
+                    Id = "1010",
                 },
 
                 new CodeSample()
                 {
                     Name = "Smart contracts: Signing offline Function / Contract Deployment messages",
-					Id = "1011",
+                    Id = "1011",
                 },
 
                 new CodeSample()
                 {
                     Name = "Smart contracts: Working with Structs",
-					Id = "1012",
+                    Id = "1012",
                 },
 
                 new CodeSample()
@@ -144,7 +144,7 @@ public class Program
                     Name = "Smart contracts: Changing .Net Type on DTO's (e.g. byte[] to string)",
                     Id = "1052",
                 },
-                
+
                 new CodeSample()
                 {
                     Name = "ENS: Resolve address",
@@ -172,37 +172,37 @@ public class Program
                 new CodeSample()
                 {
                     Name = "Signing: Sign a message and recover the signing address",
-					Id = "1013",
+                    Id = "1013",
                 },
 
                 new CodeSample()
                 {
                     Name = "ABI Encoding: Encoding using ABI Values, Parameters and Default values",
-					Id = "1015"
+                    Id = "1015"
                 },
 
                 new CodeSample()
                 {
                     Name = "ABI Encoding Packed: Encoding using ABI Values",
-					Id = "1016"
+                    Id = "1016"
                 },
 
                 new CodeSample()
                 {
                     Name = "ABI Encoding Packed: Encoding using parameters",
-					Id = "1017"
+                    Id = "1017"
                 },
 
                 new CodeSample()
                 {
                     Name = "ABI Encoding Packed: Encoding using default values",
-					Id = "1018",
+                    Id = "1018",
                  },
 
                 new CodeSample()
                 {
                     Name = "Accounts: HD Wallets (Introduction)",
-					Id = "1043",
+                    Id = "1043",
                 },
 
                 new CodeSample()
@@ -220,116 +220,116 @@ public class Program
                 new CodeSample()
                 {
                     Name = "Accounts: How to use Chain Ids to prevent replay attacks",
-					Id = "1020",
+                    Id = "1020",
                 },
 
                 new CodeSample()
                 {
                     Name = "Key Store: Create Scrypt based KeyStore using custom params",
-					Id = "1021",
+                    Id = "1021",
                 },
 
                 new CodeSample()
                 {
                     Name = "Block Crawl Processing: Process block and cancel",
-					Id = "1022",
+                    Id = "1022",
                 },
 
                 new CodeSample()
                 {
                     Name = "Block Crawl Processing: Process blocks for a specific contract",
-					Id = "1023",
+                    Id = "1023",
                 },
 
                 new CodeSample()
                 {
                     Name = "Block Crawl Processing: Process blocks for a specific function",
-					Id = "1024",
+                    Id = "1024",
                 },
 
                 new CodeSample()
                 {
                     Name = "Block Crawl Processing: Full sample",
-					Id = "1025",
+                    Id = "1025",
                 },
 
                 new CodeSample()
                 {
                     Name = "Block Crawl Processing: With Block Progress Repository",
-					Id = "1026",
+                    Id = "1026",
                 },
 
                 new CodeSample()
                 {
                     Name = "Block Crawl Processing: Transaction criteria",
-					Id = "1027",
+                    Id = "1027",
                 },
 
                 new CodeSample()
                 {
                     Name = "Log Processing: Any contract any log",
-					Id = "1028",
+                    Id = "1028",
                 },
 
                 new CodeSample()
                 {
                     Name = "Log Processing: With Block Progress Repository",
-					Id = "1029",
+                    Id = "1029",
                 },
 
 
                 new CodeSample()
                 {
                     Name = "Log Processing: Any contract any log with criteria",
-					Id = "1030",
+                    Id = "1030",
                 },
 
                 new CodeSample()
                 {
                     Name = "Log Processing: Any contract many event async",
-					Id = "1031",
+                    Id = "1031",
                 },
 
                 new CodeSample()
                 {
                     Name = "Log Processing: One contract many event async",
-					Id = "1032",
+                    Id = "1032",
                 },
 
                 new CodeSample()
                 {
                     Name = "Log Processing: Any contract one event",
-					Id = "1033",
+                    Id = "1033",
                 },
 
                 new CodeSample()
                 {
                     Name = "Log Processing: Many contracts one event",
-					Id = "1034",
+                    Id = "1034",
                 },
 
                 new CodeSample()
                 {
                     Name = "Log Processing: One contract any log",
-					Id = "1035",
+                    Id = "1035",
                 },
 
                 new CodeSample()
                 {
                     Name = "Log Processing: One contract one event",
-					Id = "1036",
+                    Id = "1036",
                 },
 
                 new CodeSample()
                 {
                     Name = "Log Processing: One contract one event async",
-					Id = "1037",
+                    Id = "1037",
                 },
 
                 new CodeSample()
                 {
                     Name = "Log Processing: One contract one event with criteria",
-					Id = "1038",
+                    Id = "1038",
                 },
 
                 new CodeSample()
@@ -341,7 +341,7 @@ public class Program
                 new CodeSample()
                 {
                     Name = "Utilities: Address Utilities",
-					Id = "1039",
+                    Id = "1039",
                 },
 
                 new CodeSample()
@@ -366,7 +366,13 @@ public class Program
                 {
                     Name = "Azure Blockchain Service: Interacting in private with a Quorum member",
                     Id = "1047"
-                }                
+                },
+
+                new CodeSample()
+                {
+                    Name = "How to calculate the transaction hash ",
+                    Id = "1058"
+                }
             };
 
             foreach (var sample in samples)
