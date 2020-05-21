@@ -1,10 +1,19 @@
 # Nethereum Playground
 
-Compile and run Nethereum snippets or create your own using the Blazor / Monaco / Roslyn code editor and compiler.
+* Interact with Ethereum and learn how to use Nethereum directly in your browser
+* Integrated Monaco editor, supporting rich IDE features like highlighting, code completion, method information<
+* The compilation and execution of code does not leave your browser thanks to Mono Wasm and Roslyn
+* Ever growing collection of samples in both C# and Vb.Net to learn Nethereum and Ethereum
+* Load and save samples to and from the browser local storage or as a file
 
-You can run it here: http://playground.nethereum.com/
+**You can run it here: http://playground.nethereum.com/** 
 
-![Screenshot](screenshots/screenshot.png)
+
+
+![Screenshot](screenshots/playground.png)
+![Screenshot2](screenshots/ensregistration.png)
+![Screenshot2](screenshots/playground-ens-remoteassemblies.PNG)
+
 
 # Credits
 
