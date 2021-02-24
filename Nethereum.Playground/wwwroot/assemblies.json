@@ -145,55 +145,55 @@
   },
   {
     "FullName": "Nethereum.ABI, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.abi.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.abi.nethereum.dotnet.netdapps.eth.link"
   },
   {
     "FullName": "Nethereum.BlockchainProcessing, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.blockchainprocessing.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.blockchainprocessing.nethereum.dotnet.netdapps.eth.link"
   },
   {
     "FullName": "Nethereum.Contracts, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.contracts.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.contracts.nethereum.dotnet.netdapps.eth.link"
   },
   {
     "FullName": "Nethereum.Geth, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.geth.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.geth.nethereum.dotnet.netdapps.eth.link"
   },
   {
     "FullName": "Nethereum.Hex, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.hex.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.hex.nethereum.dotnet.netdapps.eth.link"
   },
   {
     "FullName": "Nethereum.JsonRpc.Client, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.client.jsonrpc.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.client.jsonrpc.nethereum.dotnet.netdapps.eth.link/"
   },
   {
     "FullName": "Nethereum.JsonRpc.RpcClient, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://rpcclient.jsonrpc.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs:bafybeibltauy7z5xbu2syjvupknlslfmgeqc5flxwmukfpj4f27jqdivv4"
   },
   {
     "FullName": "Nethereum.Model, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.model.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.model.nethereum.dotnet.netdapps.eth.link"
   },
   {
     "FullName": "Nethereum.RLP, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.rlp.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.rlp.nethereum.dotnet.netdapps.eth.link"
   },
   {
     "FullName": "Nethereum.RPC, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.rpc.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.rpc.nethereum.dotnet.netdapps.eth.link/"
   },
   {
     "FullName": "Nethereum.Signer, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.signer.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.signer.nethereum.dotnet.netdapps.eth.link"
   },
   {
     "FullName": "Nethereum.Util, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.util.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.util.nethereum.dotnet.netdapps.eth.link"
   },
   {
     "FullName": "Nethereum.Web3, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.web3.nethereum.dotnet.netdapps.eth.link/"
+    "PublishedRemotePath": "ipfs:bafybeibp5o2kpscmqb47pcce4uavbwl22m7cuoqnnagvjzzbdyyo6e7qru"
   },
   {
     "FullName": "System.Dynamic.Runtime, Version=4.0.11.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
@@ -205,14 +205,14 @@
   },
   {
     "FullName": "Nethereum.Accounts, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.accounts.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.accounts.nethereum.dotnet.netdapps.eth.link"
   },
   {
     "FullName": "Nethereum.KeyStore, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.keystore.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.keystore.nethereum.dotnet.netdapps.eth.link"
   },
   {
     "FullName": "Nethereum.ENS, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "http://3-7-0-0.ens.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "https://3-7-0-0.ens.nethereum.dotnet.netdapps.eth.link/"
   }
 ]

@@ -1,0 +1,37 @@
+using Nethereum.Web3;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts.CQS;
+using Nethereum.Util;
+using Nethereum.Web3.Accounts;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Contracts;
+using Nethereum.Contracts.Extensions;
+using System;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class DecodeFunctionFromTransactionInput
+{
+
+	[Function("transfer", "bool")]
+	public class TransferFunction : FunctionMessage
+	{
+		[Parameter("address", "_to", 1)]
+		public string To { get; set; }
+
+		[Parameter("uint256", "_value", 2)]
+		public BigInteger TokenAmount { get; set; }
+	}
+
+	///*** THE MAIN PROGRAM ***
+	public static async Task Main()
+	{
+		var web3 = new Web3("https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c");
+		var txn = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync("0x0404a0517a7443db1787b5461b9d5fc18546809419c0cc6a736599b60677ed71");
+		var transfer = new TransferFunction().DecodeTransaction(txn);
+		Console.WriteLine(Web3.Convert.FromWei(transfer.TokenAmount));
+		Console.WriteLine(transfer.To);
+
+	}
+}

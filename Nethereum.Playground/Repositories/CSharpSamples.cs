@@ -74,6 +74,36 @@ public class Program
 
                 new CodeSample()
                 {
+                    Name = "Transaction: How to send transactions using the transaction manager",
+                    Id = "1058"
+                },
+
+                new CodeSample()
+                {
+                    Name = "Transactions: How to calculate the transaction hash ",
+                    Id = "1058"
+                },
+
+                new CodeSample()
+                {
+                    Name = "Transactions: Transaction replacement",
+                    Id = "1061"
+                },
+
+                new CodeSample()
+                {
+                    Name = "Transactions: Pending transactions from block and filters",
+                    Id = "1062"
+                },
+
+                new CodeSample()
+                {
+                    Name = "Transactions: Decode Function from existing transaction input",
+                    Id = "1063"
+                },
+
+                new CodeSample()
+                {
                     Name = "Smart Contracts: Query ERC20 Smart contract balance",
                     Id = "1005",
                 },
@@ -114,6 +144,12 @@ public class Program
                 {
                     Name = "Smart Contracts: Events (End to End Introduction)",
                     Id = "1008",
+                },
+
+                new CodeSample()
+                {
+                    Name = "Smart Contracts: Events how to decode event from transaction receipt ",
+                    Id = "1060"
                 },
 
                  new CodeSample()
@@ -249,6 +285,12 @@ public class Program
 
                 new CodeSample()
                 {
+                    Name = "Block Crawl Processing: Custom Orchestrator",
+                    Id = "1064",
+                },
+
+                new CodeSample()
+                {
                     Name = "Block Crawl Processing: Full sample",
                     Id = "1025",
                 },
@@ -368,11 +410,11 @@ public class Program
                     Id = "1047"
                 },
 
-                new CodeSample()
-                {
-                    Name = "How to calculate the transaction hash ",
-                    Id = "1058"
-                }
+               
+
+               
+
+               
             };
 
             foreach (var sample in samples)

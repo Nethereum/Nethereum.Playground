@@ -1,0 +1,34 @@
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.Signer;
+using Nethereum.Util;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3.Accounts;
+using Nethereum.Hex;
+using Nethereum.Hex.HexTypes;
+
+public class Program
+{
+	static async Task Main(string[] args)
+	{
+		var url = "http://testchain.nethereum.com:8545";
+
+		var privateKey = "0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0";
+
+		var account = new Account(privateKey);
+
+		var web3 = new Web3(account, url);
+
+		var txnInput = new TransactionInput();
+		txnInput.From = account.Address;
+		txnInput.To = "0x12890d2cce102216644c59daE5baed380d84830c";
+		txnInput.Data = "Hello".ToHexUTF8();
+		txnInput.Gas = new HexBigInteger(900000);
+		var txnReceipt = await web3.Eth.TransactionManager.SendTransactionAndWaitForReceiptAsync(txnInput, null);
+		Console.WriteLine(txnReceipt.HasErrors().Value);
+
+	}
+}

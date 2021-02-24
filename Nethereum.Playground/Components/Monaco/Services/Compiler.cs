@@ -73,6 +73,9 @@ namespace Nethereum.Playground
                     await AssemblyCache.Current.LoadAssembly(client,
                         new AssemblyLoadInfo(null, "remlib/Nethereum.Quorum.dll"));
 
+                    await AssemblyCache.Current.LoadAssembly(client,
+                        new AssemblyLoadInfo(null, "remlib/Nethereum.HdWallet.dll"));
+
                     //await AssemblyCache.Current.LoadAssembly(client,
                     //    new AssemblyLoadInfo(null, "Microsoft.AspNetCore.Components.dll"));
 

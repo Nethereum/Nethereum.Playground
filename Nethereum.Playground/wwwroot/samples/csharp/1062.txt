@@ -1,0 +1,34 @@
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.RPC.Eth.DTOs;
+
+public class PendingTransactionsUsingBlockAndFilters
+{
+
+	static async Task Main(string[] args)
+	{
+
+		var web3 = new Web3("https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c");
+
+		var block = await web3.Eth.Blocks.GetBlockWithTransactionsByNumber.SendRequestAsync(BlockParameter.CreatePending());
+		
+        foreach (var txn in block.Transactions)
+		{
+			Console.WriteLine(
+				$@"Hash:{txn.TransactionHash}, From: {txn.From}, To: {txn.To}, Value: {txn.Value}, Nonce: {txn.Nonce}, Data: {txn.Input}");
+
+		}
+
+        var pendingFilter = await web3.Eth.Filters.NewPendingTransactionFilter.SendRequestAsync();
+
+        var filterChanges = await web3.Eth.Filters.GetFilterChangesForBlockOrTransaction.SendRequestAsync(pendingFilter);
+        foreach (var value in filterChanges)
+        {
+            Console.WriteLine(value);
+        }
+
+	}
+}
