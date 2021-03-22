@@ -1,218 +1,218 @@
 [
   {
     "FullName": "BouncyCastle.Crypto, Version=1.8.2.0, Culture=neutral, PublicKeyToken=0e99375e54769942",
-    "PublishedRemotePath": "ipfs:QmTTSub1qETxwF9h5KeskaLcpUp2zRyXN2mbZF9mDSmLmq"
+    "PublishedRemotePath": "ipfs://QmTTSub1qETxwF9h5KeskaLcpUp2zRyXN2mbZF9mDSmLmq"
   },
   {
     "FullName": "Common.Logging.Core, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e",
-    "PublishedRemotePath": "ipfs:QmWXhrEhFuso2qU8n8kBqxFfnerpW3NGA4UdH6wAf9pnBw"
+    "PublishedRemotePath": "ipfs://QmWXhrEhFuso2qU8n8kBqxFfnerpW3NGA4UdH6wAf9pnBw"
   },
   {
     "FullName": "Microsoft.CSharp, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmcuXVUsXPF45DyWPjm6LtLdAapPdFW2dDqhF6x5eVhE7S"
+    "PublishedRemotePath": "ipfs://QmcuXVUsXPF45DyWPjm6LtLdAapPdFW2dDqhF6x5eVhE7S"
   },
   {
     "FullName": "Microsoft.VisualBasic, Version=10.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmVDy29b8BddcDJETzZXYKS9aU2JzWbkX2aZ35M2fbnz1r"
+    "PublishedRemotePath": "ipfs://QmVDy29b8BddcDJETzZXYKS9aU2JzWbkX2aZ35M2fbnz1r"
   },
   {
     "FullName": "Mono.WebAssembly.Interop, Version=3.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60",
-    "PublishedRemotePath": "ipfs:QmWhD8f3QncQUnp1rS8XC16JeFR1gX5eDiTKRMaYxH7we9"
+    "PublishedRemotePath": "ipfs://QmWhD8f3QncQUnp1rS8XC16JeFR1gX5eDiTKRMaYxH7we9"
   },
   {
     "FullName": "NBitcoin, Version=4.1.2.38, Culture=neutral, PublicKeyToken=null",
-    "PublishedRemotePath": "ipfs:QmeMCYfRyTdkkvcKnaJTDJB3f5Qb6zibbGqDvQZdUpuNs2"
+    "PublishedRemotePath": "ipfs://QmeMCYfRyTdkkvcKnaJTDJB3f5Qb6zibbGqDvQZdUpuNs2"
   },
   {
     "FullName": "Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed",
-    "PublishedRemotePath": "ipfs:QmbgsVZjfpe8BqyCP5DAGMFghaJ7NzDW54KL4z7FKKTPnu"
+    "PublishedRemotePath": "ipfs://QmbgsVZjfpe8BqyCP5DAGMFghaJ7NzDW54KL4z7FKKTPnu"
   },
   {
     "FullName": "System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
-    "PublishedRemotePath": "ipfs:QmSTvfPnksmrsHNkxXzFS1ErT5Dp2a7nUYoAiiX3PVuP8F"
+    "PublishedRemotePath": "ipfs://QmSTvfPnksmrsHNkxXzFS1ErT5Dp2a7nUYoAiiX3PVuP8F"
   },
   {
     "FullName": "System.Collections.Concurrent, Version=4.0.13.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmcK6yAoe1BnBYNSZ6F6LK24UEvSSHGaX2Y95pC6SbeFuJ"
+    "PublishedRemotePath": "ipfs://QmcK6yAoe1BnBYNSZ6F6LK24UEvSSHGaX2Y95pC6SbeFuJ"
   },
   {
     "FullName": "System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmYZw7FSKAbV1E1wQHXS7vUtoCB2hdfiyAtJ2rXU2xEXPQ"
+    "PublishedRemotePath": "ipfs://QmYZw7FSKAbV1E1wQHXS7vUtoCB2hdfiyAtJ2rXU2xEXPQ"
   },
   {
     "FullName": "System.CommandLine, Version=0.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
-    "PublishedRemotePath": "ipfs:QmaFZhArD9nABBfdKreyD28GdXt2mYj3a3BdZrTEVQsmJZ"
+    "PublishedRemotePath": "ipfs://QmaFZhArD9nABBfdKreyD28GdXt2mYj3a3BdZrTEVQsmJZ"
   },
   {
     "FullName": "System.ComponentModel.Annotations, Version=4.2.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmZZVkX2fx8v8RsadjV8MkycVdY6xjP59FePckgG4ta8PJ"
+    "PublishedRemotePath": "ipfs://QmZZVkX2fx8v8RsadjV8MkycVdY6xjP59FePckgG4ta8PJ"
   },
   {
     "FullName": "System.Diagnostics.DiagnosticSource, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
-    "PublishedRemotePath": "ipfs:QmUuXoPdF1iDefjMmBEs7xduqCH7PPy7uaURsfxSosaxas"
+    "PublishedRemotePath": "ipfs://QmUuXoPdF1iDefjMmBEs7xduqCH7PPy7uaURsfxSosaxas"
   },
   {
     "FullName": "System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmSnRMfo3DJF5xAFrUPJzWrCxAVYfqXy7sxo53HyZpnEAx"
+    "PublishedRemotePath": "ipfs://QmSnRMfo3DJF5xAFrUPJzWrCxAVYfqXy7sxo53HyZpnEAx"
   },
   {
     "FullName": "System.Linq, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmQcGDtjYCJEYNMGZueG9rHs6G9aZQL8UFAWsqUUGXX412"
+    "PublishedRemotePath": "ipfs://QmQcGDtjYCJEYNMGZueG9rHs6G9aZQL8UFAWsqUUGXX412"
   },
   {
     "FullName": "System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
-    "PublishedRemotePath": "ipfs:QmaBuEnn59sVy4myFh5CHfmK6Qw5ajVnvZMaLP3hsGH4Yy"
+    "PublishedRemotePath": "ipfs://QmaBuEnn59sVy4myFh5CHfmK6Qw5ajVnvZMaLP3hsGH4Yy"
   },
   {
     "FullName": "System.Net.WebHeaderCollection, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:Qme3ZChqVnytnNY5rUxkL9ATkYHjU8L7R2ZG6czFrP3iNQ"
+    "PublishedRemotePath": "ipfs://Qme3ZChqVnytnNY5rUxkL9ATkYHjU8L7R2ZG6czFrP3iNQ"
   },
   {
     "FullName": "System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmYGpQGDyygZCWXRg4SsGxvgesUsapSokmuneeBdrzj8ck"
+    "PublishedRemotePath": "ipfs://QmYGpQGDyygZCWXRg4SsGxvgesUsapSokmuneeBdrzj8ck"
   },
   {
     "FullName": "System.Reflection.Metadata, Version=1.4.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmSTkkJChzg8xkak3ZfKHj9o4sZyJjWEXQRBzAGbXuJUvj"
+    "PublishedRemotePath": "ipfs://QmSTkkJChzg8xkak3ZfKHj9o4sZyJjWEXQRBzAGbXuJUvj"
   },
   {
     "FullName": "System.Runtime.CompilerServices.Unsafe, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:Qmc3QvrGJEPWEQcvp7AATzNVMASGksqUybENeTLH6MVfw2"
+    "PublishedRemotePath": "ipfs://Qmc3QvrGJEPWEQcvp7AATzNVMASGksqUybENeTLH6MVfw2"
   },
   {
     "FullName": "System.Security.Cryptography.OpenSsl, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmPFFHMbqh5VhsEKYU1hL94sYZvtpvoH1GZPb6DWRwMFTy"
+    "PublishedRemotePath": "ipfs://QmPFFHMbqh5VhsEKYU1hL94sYZvtpvoH1GZPb6DWRwMFTy"
   },
   {
     "FullName": "System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:Qmd7Txg7N2v6VGTaUUBxQJj8KuzyveeWV6e9bfWpknGxPT"
+    "PublishedRemotePath": "ipfs://Qmd7Txg7N2v6VGTaUUBxQJj8KuzyveeWV6e9bfWpknGxPT"
   },
   {
     "FullName": "System.Text.Encoding.CodePages, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmSxZud2ybAcd8TGofw8xkgWns6HiWUrnnTuitqGczbgvz"
+    "PublishedRemotePath": "ipfs://QmSxZud2ybAcd8TGofw8xkgWns6HiWUrnnTuitqGczbgvz"
   },
   {
     "FullName": "System.Text.Json, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
-    "PublishedRemotePath": "ipfs:QmYdEraiQxgkg1SWiVwFdmqnJcqgmbKKGGfqRtLHjuaQPv"
+    "PublishedRemotePath": "ipfs://QmYdEraiQxgkg1SWiVwFdmqnJcqgmbKKGGfqRtLHjuaQPv"
   },
   {
     "FullName": "System.Threading, Version=4.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmbRQBB7ByNz3p5NS7thigYWbGuBAGXALC8ijWACWQyBDK"
+    "PublishedRemotePath": "ipfs://QmbRQBB7ByNz3p5NS7thigYWbGuBAGXALC8ijWACWQyBDK"
   },
   {
     "FullName": "System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
-    "PublishedRemotePath": "ipfs:QmQPndtR9dRLi1WaZyQq3oCSZ1pQAZwtFVB9KqmT2TAoGi"
+    "PublishedRemotePath": "ipfs://QmQPndtR9dRLi1WaZyQq3oCSZ1pQAZwtFVB9KqmT2TAoGi"
   },
   {
     "FullName": "mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-    "PublishedRemotePath": "ipfs:QmeBKng7z341Jau1p4priBodjJNyWCHgZuhHAZcdLufz4f"
+    "PublishedRemotePath": "ipfs://QmeBKng7z341Jau1p4priBodjJNyWCHgZuhHAZcdLufz4f"
   },
   {
     "FullName": "netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
-    "PublishedRemotePath": "ipfs:QmXSeRTzy7DCSoHpcfs2ykGh75mEoBdmZ5feKfiW9QPvnu"
+    "PublishedRemotePath": "ipfs://QmXSeRTzy7DCSoHpcfs2ykGh75mEoBdmZ5feKfiW9QPvnu"
   },
   {
     "FullName": "System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmamtifGdK3ay4m7K9LXbwicsPS3C176WhnNwqXc23dn6Q"
+    "PublishedRemotePath": "ipfs://QmamtifGdK3ay4m7K9LXbwicsPS3C176WhnNwqXc23dn6Q"
   },
   {
     "FullName": "System.Numerics, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
-    "PublishedRemotePath": "ipfs:QmbeyQgSReY7rSUCg8j8Nf1kNf4wt64EyyVPqE8xHrMxyS"
+    "PublishedRemotePath": "ipfs://QmbeyQgSReY7rSUCg8j8Nf1kNf4wt64EyyVPqE8xHrMxyS"
   },
   {
     "FullName": "System.Numerics.Vectors, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmPPgpBQgBQd9Ds6p9VAopQ4upb7WiHthNLF2J1Rh7uvpz"
+    "PublishedRemotePath": "ipfs://QmPPgpBQgBQd9Ds6p9VAopQ4upb7WiHthNLF2J1Rh7uvpz"
   },
   {
     "FullName": "Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed",
-    "PublishedRemotePath": "ipfs:QmdeoQK2VrhAnQKugy8jM68CetNHi1awjSCP1gbb4ohEx1"
+    "PublishedRemotePath": "ipfs://QmdeoQK2VrhAnQKugy8jM68CetNHi1awjSCP1gbb4ohEx1"
   },
   {
     "FullName": "System.Runtime, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmUDafAMQAGDsDfWxPBvi7wFzKSw29e71tQJQprZS31Rez"
+    "PublishedRemotePath": "ipfs://QmUDafAMQAGDsDfWxPBvi7wFzKSw29e71tQJQprZS31Rez"
   },
   {
     "FullName": "System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-    "PublishedRemotePath": "ipfs:QmXeWCM9eNcpyA3zLTWJCVNLh2gqsQhjBRZqzn368au4Vx"
+    "PublishedRemotePath": "ipfs://QmXeWCM9eNcpyA3zLTWJCVNLh2gqsQhjBRZqzn368au4Vx"
   },
   {
     "FullName": "System.Dynamic.Runtime, Version=4.0.11.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmSYhQY5thN2XcbXmvN7A55hcC6yQ1EGRnZqS8Xa5ekirM"
+    "PublishedRemotePath": "ipfs://QmSYhQY5thN2XcbXmvN7A55hcC6yQ1EGRnZqS8Xa5ekirM"
   },
   {
     "FullName": "System.Runtime.Serialization.Primitives, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmZNdF5CURgxio6H3bqAyqU4skQJEHqtgTaVR3q5BX2ZzE"
+    "PublishedRemotePath": "ipfs://QmZNdF5CURgxio6H3bqAyqU4skQJEHqtgTaVR3q5BX2ZzE"
   },
   {
     "FullName": "Nethereum.ABI, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.abi.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs://bafybeiep4kcqwo44i4govuqsyfcrkftocywkfesaejtyvi3omwd7cihe54"
   },
   {
     "FullName": "Nethereum.BlockchainProcessing, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.blockchainprocessing.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs://bafybeidxnmyt4yfqcge7lhj2xyi4sobe5yc35lnuyfyk7zkqujnkyhwpai"
   },
   {
     "FullName": "Nethereum.Contracts, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.contracts.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs://bafybeiaxji756sbzrtp6skpbp4ajcufnrbn32h6gywhx5dy5pnxvpbyy5i"
   },
   {
     "FullName": "Nethereum.Geth, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.geth.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs://bafybeich55tpx67a64y5opqpvp7rougqekdiajbl3l3ktw3tgdczmwla7e"
   },
   {
     "FullName": "Nethereum.Hex, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.hex.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs://bafybeibeoi3vcpiqk4rsa3nkykiyyrsyvyytiv6ebmj3pg4evwsdu7ougq"
   },
   {
     "FullName": "Nethereum.JsonRpc.Client, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.client.jsonrpc.nethereum.dotnet.netdapps.eth.link/"
+    "PublishedRemotePath": "ipfs://bafybeigmkgbiyh77ow2mizvrc3shhnedwon4escbxxzp6lk2hviu5yo7yq"
   },
   {
     "FullName": "Nethereum.JsonRpc.RpcClient, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "ipfs:bafybeibltauy7z5xbu2syjvupknlslfmgeqc5flxwmukfpj4f27jqdivv4"
+    "PublishedRemotePath": "ipfs://bafybeibltauy7z5xbu2syjvupknlslfmgeqc5flxwmukfpj4f27jqdivv4"
   },
   {
     "FullName": "Nethereum.Model, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.model.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs://bafybeibifh7dlcii5nieg4qr7vspsxr7ulrx65g2x5or6nckcrxm367wbe"
   },
   {
     "FullName": "Nethereum.RLP, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.rlp.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs://bafybeidogl34lurnxyvomrheeshliipymd4u6jkdf3mvi4zdftjdfy3fqi"
   },
   {
     "FullName": "Nethereum.RPC, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.rpc.nethereum.dotnet.netdapps.eth.link/"
+    "PublishedRemotePath": "ipfs://bafybeidbbmxlwahjlwi2567nx43uywkywxxjv7ip5gpxejuwevlx2c5kmu"
   },
   {
     "FullName": "Nethereum.Signer, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.signer.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs://bafybeiargt2dcnhytqjbruydtrrf6iglz3chyjr2l3z26ctg57lgztxhru"
   },
   {
     "FullName": "Nethereum.Util, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.util.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs://bafybeihzxtjkvoqfjfhxops4vemxonux7otcey4ezyutowq5k2lkdqy5bm"
   },
   {
     "FullName": "Nethereum.Web3, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "ipfs:bafybeibp5o2kpscmqb47pcce4uavbwl22m7cuoqnnagvjzzbdyyo6e7qru"
+    "PublishedRemotePath": "ipfs://bafybeibp5o2kpscmqb47pcce4uavbwl22m7cuoqnnagvjzzbdyyo6e7qru"
   },
   {
     "FullName": "System.Dynamic.Runtime, Version=4.0.11.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmSYhQY5thN2XcbXmvN7A55hcC6yQ1EGRnZqS8Xa5ekirM"
+    "PublishedRemotePath": "ipfs://QmSYhQY5thN2XcbXmvN7A55hcC6yQ1EGRnZqS8Xa5ekirM"
   },
   {
     "FullName": "System.Runtime.Serialization.Primitives, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-    "PublishedRemotePath": "ipfs:QmZNdF5CURgxio6H3bqAyqU4skQJEHqtgTaVR3q5BX2ZzE"
+    "PublishedRemotePath": "ipfs://QmZNdF5CURgxio6H3bqAyqU4skQJEHqtgTaVR3q5BX2ZzE"
   },
   {
     "FullName": "Nethereum.Accounts, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.accounts.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs://bafybeif7l26xeldhmdd3yksydtixiskblndzirzvhkm6tep26zu45cpibu"
   },
   {
     "FullName": "Nethereum.KeyStore, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.keystore.nethereum.dotnet.netdapps.eth.link"
+    "PublishedRemotePath": "ipfs://bafybeiaompy7j7ep4dc7yulcvbnadmyya5utwejr747776iwyknm2ajkna"
   },
   {
     "FullName": "Nethereum.ENS, Version=3.7.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "PublishedRemotePath": "https://3-7-0-0.ens.nethereum.dotnet.netdapps.eth.link/"
+    "PublishedRemotePath": "ipfs://bafybeifwabkbqrlyka2oicxtsa6xyxcdnh36prykoqd6wf2z6mlvwillqq"
   }
 ]
