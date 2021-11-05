@@ -34,7 +34,7 @@ public class Program
     private static async Task Main(string[] args)
     {         
         // Connect to Ethereum mainnet using Infura
-        var web3 = new Web3("https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c");
+        var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
         
         // The ERC721 contract we will be querying
         var erc721TokenContractAddress = "0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab"; 

@@ -42,7 +42,7 @@ public class LogProcessing_OneContractManyEvents
         var erc20transferEventLogs = new List<EventLog<TransferEvent>>();
         var approvalEventLogs = new List<EventLog<ApprovalEventDTO>>();
 
-        var web3 = new Web3("https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c");
+        var web3 = new Web3("https://rinkeby.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
 
         var erc20TransferHandler = new EventLogProcessorHandler<TransferEvent>(
             eventLog => erc20transferEventLogs.Add(eventLog));

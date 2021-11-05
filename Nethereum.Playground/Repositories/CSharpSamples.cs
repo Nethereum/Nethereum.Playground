@@ -34,9 +34,9 @@ public class Program
 
 		// We first need to generate an instance of web3, using INFURA's mainnet url and 
 		// our API key.
-		// For this sample, we’ll use a special API key `7238211010344719ad14a89db874158c`,
+		// For this sample, we’ll use a special API key `ddd5ed15e8d443e295b696c0d07c8b02`,
 		// but for your own project you’ll need your own key.
-		var web3 = new Web3(""https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c"");
+		var web3 = new Web3(""https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02"");
 
 		// Check the balance of one of the accounts provisioned in our chain, to do that, 
 		// we can execute the GetBalance request asynchronously:

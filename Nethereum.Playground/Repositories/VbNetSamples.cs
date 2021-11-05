@@ -31,9 +31,9 @@ Module Program
 
         ' We first need to generate an instance of web3, using INFURA's mainnet url and 
         ' our API key.
-        ' For this sample, we’ll use a special API key `7238211010344719ad14a89db874158c`,
+        ' For this sample, we’ll use a special API key `ddd5ed15e8d443e295b696c0d07c8b02`,
         ' but for your own project you’ll need your own key.
-        Dim web3 = New Web3(""https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c"")
+        Dim web3 = New Web3(""https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02"")
 
 		' Check the balance of one of the accounts provisioned in our chain, to do that, 
 		' we can execute the GetBalance request asynchronously:
@@ -63,7 +63,7 @@ Module EthRpcCalls_BlockNumber_Block_Transaction_Receipt
 
     Public Async Function RunAsync() As Task
         ' Connecting to Ethereum mainnet using Infura
-        Dim web3 = New Web3(""https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c"")
+        Dim web3 = New Web3(""https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02"")
 
 	    ' Getting current block number  
         Dim blockNumber = Await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync()
@@ -155,7 +155,7 @@ Module Program
     ' async to enable async task methods
     Public Async Function RunAsync() As Task
         ' Connecting to Ethereum mainnet using Infura
-        Dim iweb3 = New Web3(""https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c"")
+        Dim iweb3 = New Web3(""https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02"")
 
         ' Setting the owner https://etherscan.io/tokenholdings?a=0x8ee7d9235e01e6b42345120b5d270bdb763624c7
         Dim balanceOfFunctionMessage As New BalanceOfFunction

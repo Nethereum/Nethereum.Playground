@@ -23,7 +23,7 @@ internal class DecodeEventFromTransactionReceipt
 
 	private static async Task Main(string[] args)
 	{
-		var url = "https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c";
+		var url = "https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02";
 		var web3 = new Web3(url);
 
 		var txnReceipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync("0x654288d8536948f30131a769043754bb9af2f5164c6668414751bcfa75c7f4e0");

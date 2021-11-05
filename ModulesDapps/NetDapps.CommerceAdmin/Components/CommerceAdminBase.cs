@@ -46,7 +46,7 @@ namespace NetDapps.CommerceAdmin.Components
 
         protected override void OnInitialized()
         {
-            RpcUrl = "https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c";
+            RpcUrl = "https://rinkeby.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02";
             WalletBuyerAddress = "0x3a61a411F11444768a6e8CCf9AE242180098bBF7";
             WalletSellerAddress = "0x40e8E2E98908d8E5B32CAF2C9a637d6911b50Ed8";
             FundingAddress = "0x3c474Fc3995AaF851A3d8803A685D358E3BedE35";

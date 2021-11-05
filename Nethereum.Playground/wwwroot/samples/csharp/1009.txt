@@ -27,7 +27,7 @@ internal class Program
 
     private static async Task Main(string[] args)
     {
-        var url = "https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c";
+        var url = "https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02";
         var web3 = new Web3(url);
         // This is the contract address of the DAI Stablecoin v1.0 ERC20 token on mainnet
         // See https://etherscan.io/address/0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359

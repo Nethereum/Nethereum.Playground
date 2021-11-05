@@ -27,7 +27,7 @@ public class LogProcessing_WithInDepthConfiguration
         var logs = new List<FilterLog>();
         // the web3 object dictates the target network
         // it provides the basis for processing
-        var web3 = new Web3("https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c");
+        var web3 = new Web3("https://rinkeby.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
         // only logs matching this filter will be processed
         // in this example we are targetting logs from a specific contract
         var filter = new NewFilterInput() {Address = new[] {"0x9edcb9a9c4d34b5d6a082c86cb4f117a1394f831"}};

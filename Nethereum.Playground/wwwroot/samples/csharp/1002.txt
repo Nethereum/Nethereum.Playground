@@ -11,7 +11,7 @@ public class EthRpcCalls_BlockNumber_Block_Transaction_Receipt
     private static async Task Main(string[] args)
     {
         //Connecting to Ethereum mainnet using Infura
-        var web3 = new Web3("https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c");
+        var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
 
         //Getting current block number  
         var blockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();

@@ -26,7 +26,7 @@ public class LogProcessing_ManyContractsOneEvent
     {
         var transferEventLogs = new List<EventLog<TransferEvent>>();
 
-        var web3 = new Web3("https://rinkeby.infura.io/v3/7238211010344719ad14a89db874158c");
+        var web3 = new Web3("https://rinkeby.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
 
         var contractAddresses = new[]
             {"0x109424946d5aa4425b2dc1934031d634cdad3f90", "0x16c45b25c4817bdedfce770f795790795c9505a6"};

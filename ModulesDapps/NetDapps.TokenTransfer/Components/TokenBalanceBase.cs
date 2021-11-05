@@ -32,7 +32,7 @@ namespace NetDapps.ERC20Token.Components
 
         protected override void OnInitialized()
         {
-            RpcUrl = "https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c";
+            RpcUrl = "https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02";
             ContractAddress = "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2";
             AccountAddress = "0x8ee7d9235e01e6b42345120b5d270bdb763624c7";
             base.OnInitialized();

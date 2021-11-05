@@ -62,7 +62,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
         [Parameter] public CodeLanguage CodeLanguage { get; set; }
 
-        private const string IPFS_API_URL = "https://ipfs.infura.io:5001/7238211010344719ad14a89db874158c/api/";
+        private const string IPFS_API_URL = "https://ipfs.infura.io:5001/ddd5ed15e8d443e295b696c0d07c8b02/api/";
 
         public async Task FileLoaded(string content, string fileName)
         {
