@@ -1,0 +1,32 @@
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+
+public class Program
+{
+    private static async Task Main(string[] args)
+    {
+        // This sample shows how to convert units of Ether.
+
+        // We first need to generate an instance of web3:
+        var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+
+        // Let's now check the balance of the Ethereum Foundation (just because we can).
+        var balance = await web3.Eth.GetBalance.SendRequestAsync("0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae");
+        Console.WriteLine("Balance of Ethereum Foundation's account: " + balance.Value);
+
+        // By default, the returned value is in Wei (the lowest unit of value), 
+        // not necessarily easy to read unless you’re really talented at Maths.
+        // To make the return value more human friendly, we can convert the balance 
+        // to Ether using the conversion utility’s "**FromWei**" method:
+        var balanceInEther = Web3.Convert.FromWei(balance.Value);
+        Console.WriteLine("Balance of Ethereum Foundation's account in Ether: " + balanceInEther);
+
+        // We can even “counter convert” the balance back to wei using the “**ToWei**” 
+        // method (this has no other purpose than demonstrating the method, of course):
+        var backToWei = Web3.Convert.ToWei(balanceInEther);
+        Console.WriteLine("Balance of Ethereum Foundation's account back in Wei: " + backToWei);
+    }
+}

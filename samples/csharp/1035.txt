@@ -1,0 +1,32 @@
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class LogProcessing_OneContractAnyLog
+{
+    public static async Task Main()
+    {
+        var logs = new List<FilterLog>();
+
+        var web3 = new Web3("https://rinkeby.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+
+        //create our processor to retrieve the logs
+        var processor = web3.Processing.Logs.CreateProcessorForContract(
+            "0x109424946d5aa4425b2dc1934031d634cdad3f90", log => logs.Add(log));
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($"Expected 4 logs. Logs found: {logs.Count}.");
+    }
+}

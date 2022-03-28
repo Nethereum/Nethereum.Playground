@@ -1,0 +1,24 @@
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Util;
+using Nethereum.ABI;
+
+public class AbiEncodePacked_UsingDefaultValues
+{
+    private static void Main(string[] args)
+    {
+        var abiEncode = new ABIEncode();
+        var result = abiEncode.GetSha3ABIEncodedPacked(234564535,
+            "0xfff23243".HexToByteArray(), true, -10);
+        Console.WriteLine("Encoded 234564535, 0xfff23243, true and -10:" + result.ToHex());
+
+        var result2 = abiEncode.GetSha3ABIEncodedPacked("Hello!%");
+        Console.WriteLine("Encoded Hello!%:" + result2.ToHex());
+
+        var result3 = abiEncode.GetSha3ABIEncodedPacked(234);
+        Console.WriteLine("Encoded 234:" + result2.ToHex());
+    }
+}

@@ -1,0 +1,37 @@
+﻿using System;
+using System.Numerics;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using Nethereum.Util;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.HdWallet;
+using System.Threading.Tasks;
+using NBitcoin;
+
+public class Program
+{
+    private static async Task Main(string[] args)
+    {
+        // This samples shows how to derive or create accounts from a given word list seed in an hd wallet 
+
+        // For example using the 12 words of Metamask you can generate multiple accounts.
+        // 
+        //Nethereum uses internally NBitcoin to derive the private and public keys, for more information on bip32 please check
+        //https://programmingblockchain.gitbook.io/programmingblockchain/key_generation/bip_32
+
+        //Initiating a HD Wallet requires a list of words and an optional password to add further entropy (randomness)
+
+        var words = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
+        //Note: do not confuse the password with your Metamask password, Metamask password is used to secure the storage
+        var password = "password";
+        var wallet = new Wallet(words, password);
+
+        //Accounts are derived using indexes so the account at 0 will have always the same private key and address.
+        for (var i = 0; i < 5; i++)
+        {
+            var account = wallet.GetAccount(i);
+            Console.WriteLine("Account index : " + i + " - Address : " + account.Address + " - Private key : " +
+                              account.PrivateKey);
+        }
+    }
+}

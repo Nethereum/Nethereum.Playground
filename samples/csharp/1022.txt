@@ -1,0 +1,41 @@
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class BlockProcessing_Cancellation
+{
+    /// <summary>
+    /// Demonstrates how to cancel processing
+    /// </summary>
+    public static async Task Main(string[] args)
+    {
+        var blocks = new List<BlockWithTransactions>();
+
+        var web3 = new Web3("https://rinkeby.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationTokenSource = new CancellationTokenSource();
+
+        //create our processor
+        var processor = web3.Processing.Blocks.CreateBlockProcessor(steps =>
+        {
+            // inject handler
+            // cancel after the first block is processsed
+            steps.BlockStep.AddSynchronousProcessorHandler(b =>
+            {
+                blocks.Add(b);
+                cancellationTokenSource.Cancel();
+            });
+        });
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            cancellationToken: cancellationTokenSource.Token, 2830144);
+
+        Console.WriteLine($"Expected 1 block, actual block count: {blocks.Count}");
+    }
+}

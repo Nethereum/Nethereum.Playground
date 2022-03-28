@@ -1,0 +1,57 @@
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.BlockchainProcessing.ProgressRepositories;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class BlockProcessing_WithProgressRepo
+{
+    /// <summary>
+    /// Crawl the chain using the progress repo for state persistence and injest the data
+    /// </summary>
+    public static async Task Main(string[] args)
+    {
+        var blocks = new List<BlockWithTransactions>();
+        var transactions = new List<TransactionReceiptVO>();
+        var contractCreations = new List<ContractCreationVO>();
+        var filterLogs = new List<FilterLogVO>();
+
+        var web3 = new Web3("https://rinkeby.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+
+        // create a block progress repository
+        // this is a simple in-memory implementation
+        // several other persistent implementations are available
+        // see the docs https://docs.nethereum.com/en/latest/
+        var blockProgressRepo = new InMemoryBlockchainProgressRepository(2830143);
+
+        //create our processor
+        var processor = web3.Processing.Blocks.CreateBlockProcessor(stepsConfiguration: steps =>
+            {
+                // inject handler for each step
+                steps.BlockStep.AddSynchronousProcessorHandler(b => blocks.Add(b));
+                steps.TransactionReceiptStep.AddSynchronousProcessorHandler(tx => transactions.Add(tx));
+                steps.ContractCreationStep.AddSynchronousProcessorHandler(cc => contractCreations.Add(cc));
+                steps.FilterLogStep.AddSynchronousProcessorHandler(l => filterLogs.Add(l));
+            },
+            blockProgressRepository: blockProgressRepo);
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(2830145),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(2830144));
+
+        Console.WriteLine($"Blocks.  Expected: 2, Found: {blocks.Count}");
+        Console.WriteLine($"Transactions.  Expected: 25, Found: {transactions.Count}");
+        Console.WriteLine($"Contract Creations.  Expected: 5, Found: {contractCreations.Count}");
+        Console.WriteLine($"Last block processed: {blockProgressRepo.LastBlockProcessed}");
+    }
+}

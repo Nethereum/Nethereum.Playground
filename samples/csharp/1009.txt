@@ -1,0 +1,48 @@
+using System;
+using System.Numerics;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+
+internal class Program
+{
+    // Define event we want to look for
+    // Note: in a visual studio project outside of this playground, you have the option to install nuget package
+    // Nethereum.StandardTokenEIP20 and add a using Nethereum.StandardTokenEIP20 to provide class TransferEventDTO,
+    // instead of defining it here.
+    [Event("Transfer")]
+    public class TransferEventDTO : IEventDTO
+    {
+        [Parameter("address", "_from", 1, true)]
+        public string From { get; set; }
+
+        [Parameter("address", "_to", 2, true)]
+        public string To { get; set; }
+
+        [Parameter("uint256", "_value", 3, false)]
+        public BigInteger Value { get; set; }
+    }
+
+    private static async Task Main(string[] args)
+    {
+        var url = "https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02";
+        var web3 = new Web3(url);
+        // This is the contract address of the DAI Stablecoin v1.0 ERC20 token on mainnet
+        // See https://etherscan.io/address/0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359
+        var erc20TokenContractAddress = "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359";
+
+        var transferEventHandler = web3.Eth.GetEvent<TransferEventDTO>(erc20TokenContractAddress);
+        // Just examine a few blocks by specifying start and end blocks
+        var filter = transferEventHandler.CreateFilterInput(
+            fromBlock: new BlockParameter(8450678),
+            toBlock: new BlockParameter(8450698));
+        var logs = await transferEventHandler.GetAllChanges(filter);
+
+        Console.WriteLine($"Token Transfer Events for ERC20 Token at Contract Address: {erc20TokenContractAddress}");
+        foreach (var logItem in logs)
+            Console.WriteLine(
+                $"tx:{logItem.Log.TransactionHash} from:{logItem.Event.From} to:{logItem.Event.To} value:{logItem.Event.Value}");
+    }
+}

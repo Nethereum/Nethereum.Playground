@@ -1,0 +1,41 @@
+using Nethereum.BlockchainProcessing.ProgressRepositories;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class LogProcessing_WithProgressRepo
+{
+    public static async Task Main(string[] args)
+    {
+        var logs = new List<FilterLog>();
+
+        var web3 = new Web3("https://rinkeby.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+
+        // create a block progress repository
+        // this is a simple in-memory implementation
+        // several other persistent implementations are available
+        // see the docs https://docs.nethereum.com/en/latest/
+        var blockProgressRepo = new InMemoryBlockchainProgressRepository(3146683);
+
+        // create our processor and pass in the progress repo
+        var processor = web3.Processing.Logs.CreateProcessor(
+            action: log => logs.Add(log),
+            blockProgressRepository: blockProgressRepo);
+
+        // if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+
+        // crawl the required block range
+        // the progress repository will dictate the starting point
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146690),
+            cancellationToken: cancellationToken);
+
+        Console.WriteLine($"Expected 65 logs. Logs found: {logs.Count}.");
+        Console.WriteLine($"Last block processed: {blockProgressRepo.LastBlockProcessed}");
+    }
+}

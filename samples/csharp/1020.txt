@@ -1,0 +1,113 @@
+using System;
+using System.Numerics;
+using Nethereum.Web3;
+using Nethereum.Signer;
+using Nethereum.Web3.Accounts;
+using Nethereum.Util;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Hex.HexTypes;
+using System.Threading.Tasks;
+
+public class Program
+{
+    private static async Task Main(string[] args)
+    {
+        // Chain ID management for replay attack protection
+
+        // This sample explains what a replay attack is and how Nethereum allows you to protect your code against them.
+
+        // Replay Attack: Ethereum makes it possible to send the same transaction across
+        // different chains, hence the term "replay attack". For instance, it is possible
+        // to issue a fund transfer on a testchain and then perform the same transfer over
+        // the MainNet (with real funds). This vulnerability is due to the fact that the
+        // same accounts can exist in any Ethereum chain, protected by the same privateKey.
+
+        // To counteract this issue, an Ethereum fix was implemented (the improvement name 
+        //is [EIP155](https://github.com/Nethereum/Nethereum.Workbooks/issues/10)) allowing 
+        // the insertion of the ChainID data in signed transactions. Thanks to this 
+        // improvement it is now possible to force a transaction to only run on a specific 
+        //chain by including its ID when signed.
+
+        // The preconfigured chainIds can be found in Nethereum.Signer.Chain:
+
+        //     public enum Chain
+        //     {
+        //         MainNet = 1,
+        //         Morden = 2,
+        //         Ropsten = 3,
+        //         Rinkeby = 4,
+        //         RootstockMainNet = 30,
+        //         RootstockTestNet = 31,
+        //         Kovan = 42,
+        //         ClassicMainNet = 61,
+        //         ClassicTestNet = 62,
+        //         Private = 1337
+        //     }
+        // }
+
+        // To configure the chainId in geth, edit the genesis as follows (example configuration):
+
+        //  "config": {
+        //    "chainID": 444444444500,
+        //    "homesteadBlock": 0,
+        //    "eip150Block": 0,
+        //    "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        //    "eip155Block": 0,
+        //    "eip158Block": 0,
+        //	"byzantiumBlock": 0,
+        //	"constantinopleBlock": 0,
+        //	"petersburgBlock": 0,
+        //    "daoForkSupport": true,
+        //    "clique": {
+        //      "period": 1,
+        //      "epoch": 30000
+        //    }
+
+        // To sign a transaction using the ChainID attribute, we need to create an instance 
+        //of the "Account" object using our private key and ChainID as arguments.
+
+        // First, we need to declare our private key:
+
+        var privatekey = "0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0";
+
+        // Then we can create an Account instance as follows, using the chainId 
+        // from the MainNet:
+
+        var account = new Account(privatekey, Chain.MainNet);
+
+        // or just using our custom chainId as such:
+
+        account = new Account(privatekey, 444444444500);
+
+        // For this sample we will use our custom chainId already set in our testnet 444444444500.
+
+        // We now can create a new instance of Web3 using the account configured with the 
+        //chainId. Internally the TransactionManager will use this chainId to sign all 
+        // transactions.
+
+        //The nethereum testchain has been preconfigured already with the chainId 444444444500
+        var web3 = new Web3(account, "http://testchain.nethereum.com:8545");
+
+        // Let's use it in a simple example, for example the transfer of Ether. 
+
+        var toAddress = "0x13f022d72158410433cbd66f5dd8bf6d2d129924";
+
+        // First let's convert 1 Ether to Wei.
+
+        var wei = Web3.Convert.ToWei(1);
+        Console.WriteLine("1 Ether converted in Wei = " + wei);
+
+        // And then use the TransactionManager to make the transfer and wait for the receipt.
+
+        var transactionReceipt =
+            await web3.TransactionManager.TransactionReceiptService.SendRequestAndWaitForReceiptAsync(
+                new TransactionInput() {From = account.Address, To = toAddress, Value = new HexBigInteger(wei)}, null);
+        Console.WriteLine("Transaction Hash = " + transactionReceipt.TransactionHash);
+        // Finally, we can see that the receivers address balance has incresed by 1 Ether
+
+        var balance = await web3.Eth.GetBalance.SendRequestAsync("0x13f022d72158410433cbd66f5dd8bf6d2d129924");
+        var amountInEther = Web3.Convert.FromWei(balance.Value);
+        Console.WriteLine("Balance of recipient account  = " + amountInEther);
+    }
+}

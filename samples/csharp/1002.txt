@@ -1,0 +1,44 @@
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.RPC.Eth.Blocks;
+using Nethereum.Hex.HexTypes;
+
+public class EthRpcCalls_BlockNumber_Block_Transaction_Receipt
+{
+    private static async Task Main(string[] args)
+    {
+        //Connecting to Ethereum mainnet using Infura
+        var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+
+        //Getting current block number  
+        var blockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+        Console.WriteLine("Current BlockNumber is: " + blockNumber.Value);
+
+        //Getting current block with transactions 
+        var block = await web3.Eth.Blocks.GetBlockWithTransactionsByNumber.SendRequestAsync(new HexBigInteger(8257129));
+        Console.WriteLine("Block number: " + block.Number.Value);
+        Console.WriteLine("Block hash: " + block.BlockHash);
+        Console.WriteLine("Block no of transactions:" + block.Transactions.Length);
+        Console.WriteLine("Block transaction 0 From:" + block.Transactions[0].From);
+        Console.WriteLine("Block transaction 0 To:" + block.Transactions[0].To);
+        Console.WriteLine("Block transaction 0 Amount:" + block.Transactions[0].Value);
+        Console.WriteLine("Block transaction 0 Hash:" + block.Transactions[0].TransactionHash);
+
+        var transaction =
+            await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(
+                "0xb4729a0d8dd30e3070d0cb203090f2b792e029f6fa4629e96d2ebc1de13cb5c4");
+        Console.WriteLine("Transaction From:" + transaction.From);
+        Console.WriteLine("Transaction To:" + transaction.To);
+        Console.WriteLine("Transaction Amount:" + transaction.Value);
+        Console.WriteLine("Transaction Hash:" + transaction.TransactionHash);
+
+        var transactionReceipt =
+            await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(
+                "0xb4729a0d8dd30e3070d0cb203090f2b792e029f6fa4629e96d2ebc1de13cb5c4");
+        Console.WriteLine("Transaction Hash:" + transactionReceipt.TransactionHash);
+        Console.WriteLine("TransactionReceipt Logs:" + transactionReceipt.Logs.Count);
+    }
+}

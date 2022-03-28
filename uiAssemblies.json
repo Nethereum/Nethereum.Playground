@@ -1,0 +1,30 @@
+[
+  {
+    "UIComponents": [
+      "NetDapps.CommerceAdmin.CommerceAdmin"
+    ],
+    "FullName": "NetDapps.CommerceAdmin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "PublishedRemotePath": "ipfs://QmT9FaHRoUojYkbkLaeBauTHBgzS8YwkxjRG38FBZTj5Xx"
+  },
+  {
+    "UIComponents": [
+      "NetDapps.ERC20Token.TokenBalance"
+    ],
+    "FullName": "NetDapps.ERC20Token, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "PublishedRemotePath": "ipfs://QmdBBnJBztzLu5JLVDG1GZfTnTLwZ5B4aGv16gSqMrcBnx"
+  },
+  {
+    "UIComponents": [
+      "NetDapps.Maker.Maker"
+    ],
+    "FullName": "NetDapps.Maker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "PublishedRemotePath": "ipfs://QmemgxrETwDmkdpFc2XTP8QCJqJgpW9pJqJpWrfqh4amwy"
+  },
+  {
+    "UIComponents": [
+      "NetDapps.MessageSigning.SignMessage"
+    ],
+    "FullName": "NetDapps.MessageSigning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "PublishedRemotePath": "ipfs://QmX338mSqzbNpKhhHa4YNpRiNuZ1dj7vcbQt5aRfZqEaKo"
+  }
+]

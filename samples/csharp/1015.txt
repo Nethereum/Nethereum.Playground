@@ -1,0 +1,41 @@
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Util;
+using Nethereum.ABI;
+
+public class AbiEncode_AbiValue_Parameters_Default
+{
+    public class TestParamsInput
+    {
+        [Parameter("string", 1)]
+        public string First { get; set; }
+
+        [Parameter("int256", 2)]
+        public int Second { get; set; }
+
+        [Parameter("string", 3)]
+        public string Third { get; set; }
+    }
+
+    private static void Main(string[] args)
+    {
+        var abiEncode = new ABIEncode();
+        var result = abiEncode.GetABIEncoded(new ABIValue("string", "hello"), new ABIValue("int", 69),
+            new ABIValue("string", "world")).ToHex();
+
+        Console.WriteLine("Encoded hello, 69 and world using ABIValue: " + result);
+
+
+        result = abiEncode.GetABIEncoded("1", "2", "3").ToHex();
+
+        Console.WriteLine("Encoded 1, 2, 3 strings using  default convertor: " + result);
+
+        result = abiEncode.GetABIParamsEncoded(new TestParamsInput() {First = "hello", Second = 69, Third = "world"})
+            .ToHex();
+
+        Console.WriteLine("Encoded hello, 69 and world using Parameter attributes: " + result);
+    }
+}

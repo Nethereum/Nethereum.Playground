@@ -1,0 +1,36 @@
+using System;
+using System.Numerics;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+
+internal class DecodeEventFromTransactionReceipt
+{
+    [Event("Transfer")]
+	public class TransferEventDTO : IEventDTO
+	{
+		[Parameter("address", "_from", 1, true)]
+		public string From { get; set; }
+
+		[Parameter("address", "_to", 2, true)]
+		public string To { get; set; }
+
+		[Parameter("uint256", "_value", 3, false)]
+		public BigInteger Value { get; set; }
+	}
+
+	private static async Task Main(string[] args)
+	{
+		var url = "https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02";
+		var web3 = new Web3(url);
+
+		var txnReceipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync("0x654288d8536948f30131a769043754bb9af2f5164c6668414751bcfa75c7f4e0");
+		var events = txnReceipt.DecodeAllEvents<TransferEventDTO>();
+		Console.WriteLine(events[0].Event.From);
+		Console.WriteLine(events[0].Event.To);
+		Console.WriteLine(events[0].Event.Value);
+	}
+
+}

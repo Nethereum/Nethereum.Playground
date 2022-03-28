@@ -1,0 +1,68 @@
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.BlockchainProcessing.BlockProcessing;
+using Nethereum.BlockchainProcessing.BlockProcessing.CrawlerSteps;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Nethereum.Contracts.Services;
+using Nethereum.BlockchainProcessing.ProgressRepositories;
+using Nethereum.BlockchainProcessing;
+using Nethereum.RPC.Eth.Blocks;
+
+public class BlockProcessing_CustomOrchestrator
+{
+
+    /// Demonstrates how to create a custom orchestrator
+    ///
+    public static async Task Main(string[] args)
+    {
+        var blocks = new List<BlockWithTransactions>();
+        var web3 = new Web3("https://rinkeby.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationTokenSource = new CancellationTokenSource();
+
+        var blockProcessingSteps = new BlockProcessingSteps();
+        blockProcessingSteps.BlockStep.AddSynchronousProcessorHandler(b =>
+        {
+             blocks.Add(b);
+            cancellationTokenSource.Cancel();
+        });
+
+        //create our orchestrator
+        var orchestrator = new SimpleBlockCrawlOrchestrator(web3.Eth, blockProcessingSteps);
+
+        // create progress repository
+        var progressRepository = new InMemoryBlockchainProgressRepository();
+
+        // last confirmation strategy / service (using web3.Eth.Blocks.GetBlockNumber) 
+        var lastConfirmedBlockNumberService = new LastConfirmedBlockNumberService(web3.Eth.Blocks.GetBlockNumber, 12);
+
+        var processor = new BlockchainProcessor(orchestrator, progressRepository, lastConfirmedBlockNumberService);
+        //crawl the required block range
+        await processor.ExecuteAsync(
+            cancellationToken: cancellationTokenSource.Token, 2830144);
+
+        Console.WriteLine($"Expected 1 block, actual block count: {blocks.Count}");
+    }
+
+
+    public class SimpleBlockCrawlOrchestrator : BlockCrawlOrchestrator
+    {
+        public SimpleBlockCrawlOrchestrator(IEthApiContractService ethApi, BlockProcessingSteps blockProcessingSteps)
+            : base(ethApi, blockProcessingSteps)
+        {
+
+        }
+
+        protected override async Task CrawlTransactionReceipt(CrawlerStepCompleted<TransactionVO> completedStep)
+        {
+            //Stopping processing on CrawlingTransactionReceipt and out putting the input
+            Console.WriteLine(completedStep.StepData.Transaction.Input);
+        }
+    }
+}

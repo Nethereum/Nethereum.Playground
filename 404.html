@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Nethereum Playground</title>
+    <base href="/" />
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="css/modalform.css" rel="stylesheet" />
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="monaco-editor/min/vs/editor/editor.main.css" />
+</head>
+<body>
+    <app>
+        <div class="container">
+            <div class="content row justify-content-md-center">
+                <div class="card" style="width: 30rem;">
+                    <div class="card-header d-flex align-items-center">
+                        <h5>Loading... </h5>
+                        <div class="spinner-grow spinner-grow-sm ml-auto" role="status" aria-hidden="true"></div>
+                    </div>
+                    <div class="text-center p-1">
+                        <img src="images/logo192x192.png" class="rounded" width="192" alt="...">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-text text-center"><strong>Nethereum Playground will load shortly</strong></h5>
+                        <ul class="list-group">
+                            <li class="list-group-item">Interact with Ethereum and learn how to use Nethereum directly in your browser</li>
+                            <li class="list-group-item">Integrated Monaco editor, supporting rich IDE features like highlighting, code completion, method information</li>
+                            <li class="list-group-item">The compilation and execution of code does not leave your browser thanks to Mono Wasm and Roslyn</li>
+                            <li class="list-group-item">Ever growing collection of samples in both C# and Vb.Net to learn Nethereum and Ethereum</li>
+                            <li class="list-group-item">Load and save samples to and from the browser local storage or as a file</li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </app>
+    <script>var require = { paths: { 'vs': 'monaco-editor/min/vs' } };</script>
+    <script src="monaco-editor/min/vs/loader.js"></script>
+    <script src="monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+    <script src="monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="js/Blazor.Extensions.Storage.js"></script>
+    <script src="js/BlazorComponents.js"></script>
+    <script src="js/saveAsFile.js"></script>
+</body>
+</html>

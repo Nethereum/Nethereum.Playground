@@ -1,0 +1,35 @@
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.ENS;
+
+public class Program
+{
+    private static async Task Main(string[] args)
+    {
+        var durationInDays = 365; // how long we are going to rent the domain for
+        var ourName = "supersillynameformonkeys"; // Our xxxxx.eth domain name
+        var owner = "0x12890d2cce102216644c59dae5baed380d84830c"; // Owner of the domain
+        var secret = "animals in the forest";  //This is the commitment secret, 
+                                               // it should be unique and remember it to be able to finalise your registration
+        var account = new Account("YOURPRIVATE KEY");
+        var web3 = new Web3(account, "https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+        var ethTLSService = new EthTLSService(web3);
+        await ethTLSService.InitialiseAsync(); // Initialising to retrieve the controller
+
+        //How much is going to cost
+        var price = await ethTLSService.CalculateRentPriceInEtherAsync(ourName, durationInDays);
+        Console.WriteLine(price);
+
+        //Calculate the commitment that will be submitted for reservation
+        var commitment = await ethTLSService.CalculateCommitmentAsync(ourName, owner, secret);
+        Console.WriteLine(commitment.ToHex());
+
+        //You can now create your commitment and wait for it to be included on the chain
+        var commitTransactionReceipt = await ethTLSService.CommitRequestAndWaitForReceiptAsync(commitment);
+        // Once is on chain you can complete the registration 
+        var txnHash = await ethTLSService.RegisterRequestAsync(ourName, owner, durationInDays, secret, price);
+    }
+}

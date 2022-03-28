@@ -1,0 +1,51 @@
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.BlockchainProcessing.Processor;
+using Nethereum.Contracts;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class BlockProcessing_ForASpecificFunction
+{
+    [Function("buyApprenticeChest")]
+    public class BuyApprenticeFunction : FunctionMessage
+    {
+        [Parameter("uint256", "_region", 1)]
+        public BigInteger Region { get; set; }
+    }
+
+    public static async Task Main(string[] args)
+    {
+        var transactions = new List<TransactionReceiptVO>();
+        var filterLogs = new List<FilterLogVO>();
+
+        var web3 = new Web3("https://rinkeby.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+
+        //create our processor
+        var processor = web3.Processing.Blocks.CreateBlockProcessor(steps =>
+        {
+            //match the to address and function signature
+            steps.TransactionStep.SetMatchCriteria(t =>
+                t.Transaction.IsTo("0xc03cdd393c89d169bd4877d58f0554f320f21037") &&
+                t.Transaction.IsTransactionForFunctionMessage<BuyApprenticeFunction>());
+
+            steps.TransactionReceiptStep.AddSynchronousProcessorHandler(tx => transactions.Add(tx));
+            steps.FilterLogStep.AddSynchronousProcessorHandler(l => filterLogs.Add(l));
+        });
+
+        //if we need to stop the processor mid execution - call cancel on the token
+        var cancellationToken = new CancellationToken();
+        //crawl the blocks
+        await processor.ExecuteAsync(
+            toBlockNumber: new BigInteger(3146684),
+            cancellationToken: cancellationToken,
+            startAtBlockNumberIfNotProcessed: new BigInteger(3146684));
+
+        Console.WriteLine($"Transactions. Expected: 1, Actual: {transactions.Count}");
+        Console.WriteLine($"Logs. Expected: 1, Actual: {filterLogs.Count}");
+    }
+}

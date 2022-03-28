@@ -1,0 +1,17 @@
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.ENS;
+
+public class Program
+{
+    private static async Task Main(string[] args)
+    {
+        var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+        var ensService = new ENSService(web3);
+        var url = await ensService.ResolveTextAsync("nethereum.eth", TextDataKey.url);
+        Console.WriteLine(url);
+    }
+}
