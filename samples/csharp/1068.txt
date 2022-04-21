@@ -45,3 +45,4 @@ public class ERC721NonTypeSafeHumanReadableABI
 		var tokenOwner = await contract.GetFunction("ownerOf").CallAsync<string>(sampleTokenId);
 		Console.WriteLine($"Address: {tokenOwner} owns token id: {sampleTokenId}");
 	}
+}
