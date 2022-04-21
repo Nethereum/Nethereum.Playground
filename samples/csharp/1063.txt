@@ -13,6 +13,15 @@ using System.Threading.Tasks;
 
 public class DecodeFunctionFromTransactionInput
 {
+	public static async Task Main()
+	{
+		var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+		var txn = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync("0x0404a0517a7443db1787b5461b9d5fc18546809419c0cc6a736599b60677ed71");
+		//Using our TransferFunction we can decode the transaction method using the Extension method DecodeTransaction
+		var transfer = new TransferFunction().DecodeTransaction(txn);
+		Console.WriteLine(Web3.Convert.FromWei(transfer.TokenAmount));
+		Console.WriteLine(transfer.To);
+	}
 
 	[Function("transfer", "bool")]
 	public class TransferFunction : FunctionMessage
@@ -22,16 +31,5 @@ public class DecodeFunctionFromTransactionInput
 
 		[Parameter("uint256", "_value", 2)]
 		public BigInteger TokenAmount { get; set; }
-	}
-
-	///*** THE MAIN PROGRAM ***
-	public static async Task Main()
-	{
-		var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
-		var txn = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync("0x0404a0517a7443db1787b5461b9d5fc18546809419c0cc6a736599b60677ed71");
-		var transfer = new TransferFunction().DecodeTransaction(txn);
-		Console.WriteLine(Web3.Convert.FromWei(transfer.TokenAmount));
-		Console.WriteLine(transfer.To);
-
 	}
 }

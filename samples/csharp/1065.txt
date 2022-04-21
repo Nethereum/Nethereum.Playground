@@ -1,0 +1,21 @@
+﻿using System;
+using System.Numerics;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+
+public class Program
+{
+	//This example uses the preset Nethereum ERC20 contract interface
+	private static async Task Main(string[] args)
+	{
+		//Connecting to Ethereum mainnet using Infura
+		var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+		//Querying the Maker smart contract https://etherscan.io/address/0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2
+		//and owner owner https://etherscan.io/tokenholdings?a=0x8ee7d9235e01e6b42345120b5d270bdb763624c7
+		var balance = await web3.Eth.ERC20.GetERC20ContractService("0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2")
+																.BalanceOfQueryAsync("0x8ee7d9235e01e6b42345120b5d270bdb763624c7");
+		Console.WriteLine(balance.ToString());
+	}
+}

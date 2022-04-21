@@ -1,0 +1,63 @@
+﻿using System;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+using Nethereum.Web3;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts.Standards.ERC721;
+using Nethereum.Contracts;
+
+public class ERC721PresetsAndLogProcessingForOwners
+{
+	// ERC721 (NFT) simple interaction using the ERC721 presets contract services in Nethereum
+	// This example demonstrates how to get the balance for an ERC721 (non-fungible) token.
+	// and also how to find out who the owner is for a given token.
+	// The ERC721 standard is here: https://eips.ethereum.org/EIPS/eip-721
+	// The ERC721 token we use in the example is for the "PatchworkKingdoms (PWKD)" charity https://www.patchwork-kingdoms.com/.
+	// Deployed on mainnet here:
+	// https://etherscan.io/address/0xd24a7c412f2279b1901e591898c1e96c140be8c5
+
+
+	private static async Task Main(string[] args)
+	{
+		// Connect to Ethereum mainnet using Infura
+		var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+
+		// The ERC721 contract we will be querying
+		var erc721TokenContractAddress = "0xd24a7c412f2279b1901e591898c1e96c140be8c5";
+
+		// Example 1. Get balance of an account. This is the count of tokens that an account 
+		var accountWithSomeTokens = "0xCbf94Fcb7CeaF7b61F20560eED8e0DBC4E407F5C";
+		// You can check the token balance of the above account on etherscan:
+		//https://etherscan.io/token/0xd24a7c412f2279b1901e591898c1e96c140be8c5?a=0xcbf94fcb7ceaf7b61f20560eed8e0dbc4e407f5c
+
+		// Send query to contract, to find out how many tokens the owner has
+		var service = web3.Eth.ERC721.GetContractService(erc721TokenContractAddress);
+		var balance = await service.BalanceOfQueryAsync(accountWithSomeTokens);
+		Console.WriteLine($"Address: {accountWithSomeTokens} holds: {balance}");
+
+		// Example 2. Find a token's owner.             
+		var sampleTokenId = 737;
+
+		var tokenOwner = await service.OwnerOfQueryAsync(sampleTokenId);
+		Console.WriteLine($"Address: {tokenOwner} owns token id: {sampleTokenId}");
+
+		//Example 3: Retrieving all tokens owned processing all the token transfer events since the deployment of the contract
+		//this contract does not support the IEnumerable standard so token balance can be retrieved using the transfers
+		var tokensOwned = await web3.Processing.Logs.ERC721
+			.GetErc721OwnedByAccountUsingAllTransfersForContract(erc721TokenContractAddress,
+				accountWithSomeTokens,
+				13991659, //start blocknumber
+				null,
+				new CancellationToken());
+
+		Console.WriteLine("All Tokens owned by: " + accountWithSomeTokens);
+		var tokenIds = tokensOwned.Select(x => (int)x.TokenId).ToArray();
+		foreach (var tokenId in tokenIds)
+		{
+			Console.WriteLine(tokenId);
+		}
+	}
+}

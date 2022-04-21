@@ -88,7 +88,7 @@ public class Program
 
         //The nethereum testchain has been preconfigured already with the chainId 444444444500
         var web3 = new Web3(account, "http://testchain.nethereum.com:8545");
-
+        web3.TransactionManager.UseLegacyAsDefault = true;
         // Let's use it in a simple example, for example the transfer of Ether. 
 
         var toAddress = "0x13f022d72158410433cbd66f5dd8bf6d2d129924";

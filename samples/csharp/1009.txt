@@ -38,7 +38,7 @@ internal class Program
         var filter = transferEventHandler.CreateFilterInput(
             fromBlock: new BlockParameter(8450678),
             toBlock: new BlockParameter(8450698));
-        var logs = await transferEventHandler.GetAllChanges(filter);
+        var logs = await transferEventHandler.GetAllChangesAsync(filter);
 
         Console.WriteLine($"Token Transfer Events for ERC20 Token at Contract Address: {erc20TokenContractAddress}");
         foreach (var logItem in logs)

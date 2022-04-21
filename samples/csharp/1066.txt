@@ -1,0 +1,49 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
+using Nethereum.Contracts.Standards.ERC20;
+using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
+using Nethereum.Contracts.Standards.ERC20.TokenList;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.RPC.Eth.Services;
+using Nethereum.Util;
+
+public class Program
+{
+	/// This example retrieves all the balances of a given owner using the MultiCall smart contract https://github.com/mds1/multicall
+	// and the Uniswap default token list, for more information about token lists check https://tokenlists.org/
+	private static async Task Main(string[] args)
+	{
+		var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+		//using the default uniswap token list with 93 tokens
+		var tokens = await new TokenListService().LoadFromUrl(TokenListSources.UNISWAP);
+		var owner = "0xBA12222222228d8Ba445958a75a0704d566BF2C8";
+
+		var tokensOwned = await web3.Eth.ERC20.GetAllTokenBalancesUsingMultiCallAsync(
+				new string[] { owner }, tokens.Where(x => x.ChainId == 1),
+				BlockParameter.CreateLatest());
+
+		//Filtering only the tokens from the token list that have a positive balance
+		var tokensWithBalance = tokensOwned.Where(x => x.GetTotalBalance() > 0);
+
+
+		foreach (var tokenWithBalance in tokensWithBalance)
+		{
+            Console.WriteLine("-----------------------------");
+			Console.WriteLine("Name:" + tokenWithBalance.Token.Name);
+			Console.WriteLine("Token:" + tokenWithBalance.Token.Address);
+			Console.WriteLine("ChainId:" + tokenWithBalance.Token.ChainId);
+			Console.WriteLine("Decimals:" + tokenWithBalance.Token.Decimals);
+			//Getting the balance of the owner as we could have queried for multiple owners
+			var balance = tokenWithBalance.OwnersBalances.FirstOrDefault(x => x.Owner.IsTheSameAddress(owner)).Balance;
+			//Converting the balance to a whole unit using the decimal places
+			Console.WriteLine("Balance:" + Nethereum.Util.UnitConversion.Convert.FromWei(balance, tokenWithBalance.Token.Decimals));
+			Console.WriteLine("-----------------------------");
+		}
+	}
+}

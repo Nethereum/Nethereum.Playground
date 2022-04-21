@@ -3,7 +3,7 @@ using System.Text;
 using Nethereum.Hex.HexConvertors.Extensions;
 using System.Threading.Tasks;
 using Nethereum.Web3;
-using Nethereum.ENS;
+using Nethereum.Web3.Accounts;
 
 public class Program
 {
@@ -16,7 +16,7 @@ public class Program
                                                // it should be unique and remember it to be able to finalise your registration
         var account = new Account("YOURPRIVATE KEY");
         var web3 = new Web3(account, "https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
-        var ethTLSService = new EthTLSService(web3);
+        var ethTLSService = web3.Eth.GetEnsEthTlsService();
         await ethTLSService.InitialiseAsync(); // Initialising to retrieve the controller
 
         //How much is going to cost
