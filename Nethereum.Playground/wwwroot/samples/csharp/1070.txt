@@ -1,0 +1,162 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.ABI.FunctionEncoding;
+using Nethereum.ABI.Model;
+using Nethereum.Contracts;
+using Nethereum.Web3.Accounts;
+using Nethereum.Web3;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Hex.HexTypes;
+using System.Linq;
+
+
+public class SmartContractsWorkingWithJsonAndComplexObjects
+{
+	//This sample demonstrates how to interact with solidity Structs in Nethereum using JSON for input and output
+	//The input / output it is deserialised from and to default types and converted from / to json
+	//The following solidity smart contract contains complex types for PurchaserOrder containing LineItems (an struct array)
+	//It also has functionality to Add a new PurchaseOrder, Get a purchase order, add a LineItem to a purchase order and
+	//raise events when a purchase order is changed.
+
+
+	/*
+
+	//Struct with dynamic array of structs containing strings (stripped for readability)
+	pragma solidity "0.5.7";
+	pragma experimental ABIEncoderV2;
+
+	contract StructsSample
+	{
+			mapping(uint => PurchaseOrder) purchaseOrders;
+			event PurchaseOrderChanged(address sender, PurchaseOrder purchaseOrder);
+
+			constructor() public {
+
+				po.id = 1 ;
+				po.customerId = 1000;
+				LineItem memory lineItem = LineItem(1,100,2, "hello1");
+				po.lineItem.push(lineItem);
+
+
+				LineItem memory lineItem2 = LineItem(2,200,3, "hello2");
+				po.lineItem.push(lineItem2);
+
+				 LineItem memory lineItem3 = LineItem(3,300,4, "hello3");
+				po.lineItem.push(lineItem3);
+				purchaseOrders2.push(po);
+
+
+			}
+
+			struct PurchaseOrder {
+				uint256 id;
+				LineItem[] lineItem;
+				uint256 customerId;
+			}
+
+			struct LineItem {
+				uint256 id;
+				uint256 productId;
+				uint256 quantity;
+				string description;
+			}
+
+
+			function SetPurchaseOrder(PurchaseOrder memory purchaseOrder) public {
+				PurchaseOrder storage purchaseOrderTemp = purchaseOrders[purchaseOrder.id];
+				purchaseOrderTemp.id = purchaseOrder.id;
+				purchaseOrderTemp.customerId = purchaseOrder.customerId;
+
+
+				for (uint x = 0; x < purchaseOrder.lineItem.length; x++)
+				{
+					purchaseOrderTemp.lineItem.push(purchaseOrder.lineItem[x]);
+				}
+
+				emit PurchaseOrderChanged(msg.sender, purchaseOrder);
+			}
+
+	}
+	*/
+
+	///*** THE MAIN PROGRAM ***
+	/// Contract definitions are at the bottom of the file.
+	public static async Task Main()
+	{
+		// ### Instantiating Web3 and the Account
+		// To create an instance of web3 we first provide the url of our testchain and the private key of our account. 
+		// Here we are using http://testchain.nethereum.com:8545 which is our simple single node Nethereum testchain.
+		// When providing an Account instantiated with a  private key, all our transactions will be signed by Nethereum.
+
+		var url = "http://testchain.nethereum.com:8545";
+		var privateKey = "0x7580e7fb49df1c861f0050fae31c2224c6aba908e116b8da44ee8cd927b990b0";
+		var chainId = 444444444500; //Nethereum test chain, chainId
+		var account = new Account(privateKey, chainId);
+		Console.WriteLine("Our account: " + account.Address);
+		//Now let's create an instance of Web3 using our account pointing to our nethereum testchain
+		var web3 = new Web3(account, "http://testchain.nethereum.com:8545");
+		web3.TransactionManager.UseLegacyAsDefault = true;
+
+		// **** DEPLOYING THE SMART CONTRACT
+		var deploymentReceipt = await web3.Eth.GetContractDeploymentHandler<StructsSamplePODeployment>()
+			.SendRequestAndWaitForReceiptAsync();
+
+		var contract = web3.Eth.GetContract("[{'constant':false,'inputs':[{'components':[{'name':'id','type':'uint256'},{'components':[{'name':'id','type':'uint256'},{'name':'productId','type':'uint256'},{'name':'quantity','type':'uint256'},{'name':'description','type':'string'}],'name':'lineItem','type':'tuple[]'},{'name':'customerId','type':'uint256'}],'name':'purchaseOrder','type':'tuple[]'}],'name':'SetPurchaseOrders','outputs':[],'payable':false,'stateMutability':'nonpayable','type':'function'},{'constant':true,'inputs':[],'name':'GetPurchaseOrder2','outputs':[{'components':[{'name':'id','type':'uint256'},{'components':[{'name':'id','type':'uint256'},{'name':'productId','type':'uint256'},{'name':'quantity','type':'uint256'},{'name':'description','type':'string'}],'name':'lineItem','type':'tuple[]'},{'name':'customerId','type':'uint256'}],'name':'purchaseOrder','type':'tuple'}],'payable':false,'stateMutability':'view','type':'function'},{'constant':true,'inputs':[{'name':'id','type':'uint256'}],'name':'GetPurchaseOrder','outputs':[{'components':[{'name':'id','type':'uint256'},{'components':[{'name':'id','type':'uint256'},{'name':'productId','type':'uint256'},{'name':'quantity','type':'uint256'},{'name':'description','type':'string'}],'name':'lineItem','type':'tuple[]'},{'name':'customerId','type':'uint256'}],'name':'purchaseOrder','type':'tuple'}],'payable':false,'stateMutability':'view','type':'function'},{'constant':true,'inputs':[],'name':'GetPurchaseOrder3','outputs':[{'components':[{'name':'id','type':'uint256'},{'components':[{'name':'id','type':'uint256'},{'name':'productId','type':'uint256'},{'name':'quantity','type':'uint256'},{'name':'description','type':'string'}],'name':'lineItem','type':'tuple[]'},{'name':'customerId','type':'uint256'}],'name':'purchaseOrder','type':'tuple[]'}],'payable':false,'stateMutability':'view','type':'function'},{'constant':false,'inputs':[{'name':'id','type':'uint256'},{'components':[{'name':'id','type':'uint256'},{'name':'productId','type':'uint256'},{'name':'quantity','type':'uint256'},{'name':'description','type':'string'}],'name':'lineItem','type':'tuple[]'}],'name':'AddLineItems','outputs':[],'payable':false,'stateMutability':'nonpayable','type':'function'},{'constant':false,'inputs':[{'components':[{'name':'id','type':'uint256'},{'components':[{'name':'id','type':'uint256'},{'name':'productId','type':'uint256'},{'name':'quantity','type':'uint256'},{'name':'description','type':'string'}],'name':'lineItem','type':'tuple[]'},{'name':'customerId','type':'uint256'}],'name':'purchaseOrder','type':'tuple'}],'name':'SetPurchaseOrder','outputs':[],'payable':false,'stateMutability':'nonpayable','type':'function'},{'inputs':[],'payable':false,'stateMutability':'nonpayable','type':'constructor'},{'anonymous':false,'inputs':[{'indexed':false,'name':'sender','type':'address'},{'components':[{'name':'id','type':'uint256'},{'components':[{'name':'id','type':'uint256'},{'name':'productId','type':'uint256'},{'name':'quantity','type':'uint256'},{'name':'description','type':'string'}],'name':'lineItem','type':'tuple[]'},{'name':'customerId','type':'uint256'}],'indexed':false,'name':'purchaseOrder','type':'tuple'}],'name':'PurchaseOrderChanged','type':'event'},{'anonymous':false,'inputs':[{'components':[{'name':'id','type':'uint256'},{'components':[{'name':'id','type':'uint256'},{'name':'productId','type':'uint256'},{'name':'quantity','type':'uint256'},{'name':'description','type':'string'}],'name':'lineItem','type':'tuple[]'},{'name':'customerId','type':'uint256'}],'indexed':false,'name':'purchaseOrder','type':'tuple[]'}],'name':'PurchaseOrdersChanged','type':'event'},{'anonymous':false,'inputs':[{'indexed':false,'name':'sender','type':'address'},{'indexed':false,'name':'purchaseOrderId','type':'uint256'},{'components':[{'name':'id','type':'uint256'},{'name':'productId','type':'uint256'},{'name':'quantity','type':'uint256'},{'name':'description','type':'string'}],'indexed':false,'name':'lineItem','type':'tuple[]'}],'name':'LineItemsAdded','type':'event'}]", deploymentReceipt.ContractAddress);
+		//This is the json input including the complex struct
+		var json = @"{'purchaseOrder':{
+                                      'id': 1,
+                                      'lineItem': [
+                                        {
+                                          'id': 1,
+                                          'productId': 100,
+                                          'quantity': 2,
+                                          'description': 'hello1'
+                                        },
+                                        {
+                                          'id': 2,
+                                          'productId': 200,
+                                          'quantity': 3,
+                                          'description': 'hello2'
+                                        }],
+                                        'customerId': 1000
+                                    }}";
+
+		var functionPurchaseOrder = contract.GetFunction("SetPurchaseOrder");
+		var values = functionPurchaseOrder.ConvertJsonToObjectInputParameters(json);
+		var receiptSending = await functionPurchaseOrder.
+									   SendTransactionAndWaitForReceiptAsync(
+										   account.Address,
+										   new HexBigInteger(900000), null, null,
+											values.ToArray()).ConfigureAwait(false);
+
+
+		var eventPurchaseOrder = contract.GetEvent("PurchaseOrderChanged");
+		var eventOutputs = eventPurchaseOrder.DecodeAllEventsDefaultForEvent(receiptSending.Logs);
+		//The decoded default output (using the default types) event as json
+		var jObjectEvent = eventOutputs[0].Event.ConvertToJObject();
+
+		Console.WriteLine(jObjectEvent.ToString());
+	}
+
+	//CONTRACT Definitions//
+
+	//*** Deployment message**** //
+
+	public class StructsSamplePODeployment : ContractDeploymentMessage
+	{
+		public static string BYTECODE =
+			"608060405234801561001057600080fd5b50610e96806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c80631a9542af14610051578063815c844d14610066578063cc0b4b021461008f578063f79eb4a2146100a2575b600080fd5b61006461005f3660046107a7565b6100b5565b005b610079610074366004610819565b610120565b6040516100869190610d16565b60405180910390f35b61006461009d366004610837565b610273565b6100646100b03660046107e4565b610391565b60005b81518110156100e5576100dd8282815181106100d057fe5b6020026020010151610391565b6001016100b8565b507f63d0df058c364c605130a4550879b03d3814f0ba56c550569be936f3c2d7a2f5816040516101159190610d05565b60405180910390a150565b61012861046b565b6000828152602081815260408083208151606081018352815481526001820180548451818702810187019095528085529195929486810194939192919084015b8282101561025a5783829060005260206000209060040201604051806080016040529081600082015481526020016001820154815260200160028201548152602001600382018054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156102425780601f1061021757610100808354040283529160200191610242565b820191906000526020600020905b81548152906001019060200180831161022557829003601f168201915b50505050508152505081526020019060010190610168565b5050505081526020016002820154815250509050919050565b60005b8151811015610307576000808481526020019081526020016000206001018282815181106102a057fe5b60209081029190910181015182546001818101808655600095865294849020835160049093020191825582840151908201556040820151600282015560608201518051929391926102f7926003850192019061048c565b5050600190920191506102769050565b507f13fdaebbac9da33d495b4bd32c83e33786a010730713d20c5a8ef70ca576be6533838360405161033b93929190610cd8565b60405180910390a17f88ab28750130223a530a1325799e7ef636cd4c7a60d350c38c45316082fdbbf833600080858152602001908152602001600020604051610385929190610cb8565b60405180910390a15050565b805160009081526020819052604080822083518155908301516002820155905b8260200151518110156104395781600101836020015182815181106103d257fe5b6020908102919091018101518254600181810180865560009586529484902083516004909302019182558284015190820155604082015160028201556060820151805192939192610429926003850192019061048c565b5050600190920191506103b19050565b507f88ab28750130223a530a1325799e7ef636cd4c7a60d350c38c45316082fdbbf83383604051610385929190610c98565b60405180606001604052806000815260200160608152602001600081525090565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106104cd57805160ff19168380011785556104fa565b828001600101855582156104fa579182015b828111156104fa5782518255916020019190600101906104df565b5061050692915061050a565b5090565b61052491905b808211156105065760008155600101610510565b90565b600082601f83011261053857600080fd5b813561054b61054682610d4e565b610d27565b81815260209384019390925082018360005b838110156105895781358601610573888261069c565b845250602092830192919091019060010161055d565b5050505092915050565b600082601f8301126105a457600080fd5b81356105b261054682610d4e565b81815260209384019390925082018360005b8381101561058957813586016105da888261069c565b84525060209283019291909101906001016105c4565b600082601f83011261060157600080fd5b813561060f61054682610d4e565b81815260209384019390925082018360005b8381101561058957813586016106378882610723565b8452506020928301929190910190600101610621565b600082601f83011261065e57600080fd5b813561066c61054682610d6f565b9150808252602083016020830185838301111561068857600080fd5b610693838284610de3565b50505092915050565b6000608082840312156106ae57600080fd5b6106b86080610d27565b905060006106c68484610796565b82525060206106d784848301610796565b60208301525060406106eb84828501610796565b604083015250606082013567ffffffffffffffff81111561070b57600080fd5b6107178482850161064d565b60608301525092915050565b60006060828403121561073557600080fd5b61073f6060610d27565b9050600061074d8484610796565b825250602082013567ffffffffffffffff81111561076a57600080fd5b61077684828501610527565b602083015250604061078a84828501610796565b60408301525092915050565b80356107a181610e3c565b92915050565b6000602082840312156107b957600080fd5b813567ffffffffffffffff8111156107d057600080fd5b6107dc848285016105f0565b949350505050565b6000602082840312156107f657600080fd5b813567ffffffffffffffff81111561080d57600080fd5b6107dc84828501610723565b60006020828403121561082b57600080fd5b60006107dc8484610796565b6000806040838503121561084a57600080fd5b60006108568585610796565b925050602083013567ffffffffffffffff81111561087357600080fd5b61087f85828601610593565b9150509250929050565b60006108958383610b15565b9392505050565b60006108958383610b70565b60006108958383610be8565b6108bd81610dcc565b82525050565b60006108ce82610da9565b6108d88185610db7565b9350836020820285016108ea85610d97565b8060005b8581101561092457848403895281516109078582610889565b945061091283610d97565b60209a909a01999250506001016108ee565b5091979650505050505050565b600061093c82610da9565b6109468185610db7565b93508360208202850161095885610d97565b8060005b8581101561092457848403895281516109758582610889565b945061098083610d97565b60209a909a019992505060010161095c565b600061099d82610dad565b6109a78185610db7565b9350836020820285016109b985610d9d565b8060005b85811015610924578484038952816109d5858261089c565b94506109e083610db1565b60209a909a01999250506001016109bd565b60006109fd82610da9565b610a078185610db7565b935083602082028501610a1985610d97565b8060005b858110156109245784840389528151610a3685826108a8565b9450610a4183610d97565b60209a909a0199925050600101610a1d565b6000610a5e82610da9565b610a688185610db7565b9350610a78818560208601610def565b610a8181610e32565b9093019392505050565b600081546001811660008114610aa85760018114610ace57610b0d565b607f6002830416610ab98187610db7565b60ff1984168152955050602085019250610b0d565b60028204610adc8187610db7565b9550610ae785610d9d565b60005b82811015610b0657815488820152600190910190602001610aea565b8701945050505b505092915050565b80516000906080840190610b298582610c8f565b506020830151610b3c6020860182610c8f565b506040830151610b4f6040860182610c8f565b5060608301518482036060860152610b678282610a53565b95945050505050565b80546000906080840190610b8381610e1f565b610b8d8682610c8f565b50506001830154610b9d81610e1f565b610baa6020870182610c8f565b50506002830154610bba81610e1f565b610bc76040870182610c8f565b50600384018583036060870152610bde8382610a8b565b9695505050505050565b80516000906060840190610bfc8582610c8f565b5060208301518482036020860152610c148282610931565b9150506040830151610c296040860182610c8f565b509392505050565b80546000906060840190610c4481610e1f565b610c4e8682610c8f565b50600184018583036020870152610c658382610992565b92505060028401549050610c7881610e1f565b610c856040870182610c8f565b5090949350505050565b6108bd81610524565b60408101610ca682856108b4565b81810360208301526107dc8184610be8565b60408101610cc682856108b4565b81810360208301526107dc8184610c31565b60608101610ce682866108b4565b610cf36020830185610c8f565b8181036040830152610b6781846108c3565b6020808252810161089581846109f2565b602080825281016108958184610be8565b60405181810167ffffffffffffffff81118282101715610d4657600080fd5b604052919050565b600067ffffffffffffffff821115610d6557600080fd5b5060209081020190565b600067ffffffffffffffff821115610d8657600080fd5b506020601f91909101601f19160190565b60200190565b60009081526020902090565b5190565b5490565b60040190565b90815260200190565b6001600160a01b031690565b60006107a18260006107a18260006107a182610dc0565b82818337506000910152565b60005b83811015610e0a578181015183820152602001610df2565b83811115610e19576000848401525b50505050565b60006107a1610e2d83610524565b610524565b601f01601f191690565b610e4581610524565b8114610e5057600080fd5b5056fea365627a7a72305820233abbd537dd6f0267ec14bc152db4f17324d7dfe198b50abe244381df453eb46c6578706572696d656e74616cf564736f6c634300050a0040";
+
+		public StructsSamplePODeployment() : base(BYTECODE)
+		{
+		}
+
+		public StructsSamplePODeployment(string byteCode) : base(byteCode)
+		{
+		}
+	}
+
+}

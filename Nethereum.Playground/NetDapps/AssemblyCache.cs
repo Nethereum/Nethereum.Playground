@@ -57,7 +57,7 @@ namespace NetDapps.Assemblies
         public bool ContainsAssemblyRemotePath(string remotePath)
         {
             if (string.IsNullOrEmpty(remotePath)) return false;
-            return LoadedAssemblies.Exists(x => string.Equals(x.PublishedRemotePath, remotePath, StringComparison.InvariantCultureIgnoreCase));
+            return LoadedAssemblies.Exists(x => string.Equals(x.Url, remotePath, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public async Task LoadAssemblies(HttpClient client, params AssemblyLoadInfo[] assemblyInfos)
@@ -78,10 +78,10 @@ namespace NetDapps.Assemblies
             try
             {
 				Console.WriteLine("Loading: " + assemblyInfo.FullName);
-                if (!ContainsAssembly(assemblyInfo.FullName) && !ContainsAssemblyRemotePath(assemblyInfo.PublishedRemotePath))
+                if (!ContainsAssembly(assemblyInfo.FullName) && !ContainsAssemblyRemotePath(assemblyInfo.Url))
                 {
 
-                    var assemblyStream = await client.GetByteArrayAsync(GetAssemblyRemotePath(assemblyInfo.PublishedRemotePath));
+                    var assemblyStream = await client.GetByteArrayAsync(GetAssemblyRemotePath(assemblyInfo.Url));
                     var assembly = AppDomain.CurrentDomain.Load(assemblyStream);
                     //making sure we have the right name as we may not have passed it as a parameter.
                     assemblyInfo.FullName = assembly.FullName;
@@ -98,7 +98,7 @@ namespace NetDapps.Assemblies
             catch (Exception ex)
             {
                 Console.WriteLine(
-                    $"Error occurred loading assembly {assemblyInfo.FullName} from url:{assemblyInfo.PublishedRemotePath}, {ex.Message}");
+                    $"Error occurred loading assembly {assemblyInfo.FullName} from url:{assemblyInfo.Url}, {ex.Message}");
             }
         }
 
@@ -114,7 +114,7 @@ namespace NetDapps.Assemblies
             stringOuput.AppendLine("var assembliesLoadInfo = new AssemblyLoadInfo[]{");
             foreach (var assemblyLoadInfo in LoadedAssemblies)
             {
-                stringOuput.AppendLine($@"new AssemblyLoadInfo(""{assemblyLoadInfo.FullName}"",""{assemblyLoadInfo.PublishedRemotePath}""),");
+                stringOuput.AppendLine($@"new AssemblyLoadInfo(""{assemblyLoadInfo.FullName}"",""{assemblyLoadInfo.Url}""),");
             }
 
             stringOuput.AppendLine(("};"));

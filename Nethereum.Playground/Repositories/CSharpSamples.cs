@@ -75,7 +75,7 @@ public class Program
                 new CodeSample()
                 {
                     Name = "Transaction: How to send transactions using the transaction manager",
-                    Id = "1058"
+                    Id = "1059"
                 },
 
                 new CodeSample()
@@ -104,14 +104,38 @@ public class Program
 
                 new CodeSample()
                 {
+                    Name = "Smart Contracts: Query ERC20 Smart contract balance using Preset",
+                    Id = "1065",
+                },
+
+                new CodeSample()
+                {
+                    Name = "Smart Contracts: Query ERC20 Multiple Smart contract balances for owner, using multicall",
+                    Id = "1066"
+                },
+
+                new CodeSample()
+                {
                     Name = "Smart Contracts: Query ERC20 Smart contract balance",
                     Id = "1005",
                 },
 
                 new CodeSample()
                 {
+                    Name = "Smart Contracts: Query ERC721 Balance, token owner and all transfers using presets",
+                    Id = "1067"
+                },
+
+                new CodeSample()
+                {
                     Name = "Smart Contracts: Query ERC721 Smart contract balance and token owner",
                     Id = "1048"
+                },
+
+                new CodeSample()
+                {
+                    Name = "Smart Contracts: Query ERC721 Smart contract balance and token owner using human readable abi",
+                    Id = "1068"
                 },
 
                 new CodeSample()
@@ -136,10 +160,15 @@ public class Program
 
                 new CodeSample()
                 {
-                    Name = "Smart Contracts: (Untyped) Deployment, Calls(Querying), Transactions",
+                    Name = "Smart Contracts: (Non type safe) Deployment, Calls(Querying), Transactions",
                     Id = "1045",
                 },
 
+                new CodeSample()
+                {
+                    Name = "Smart Contracts: (Non type safe / human readable abi) Deployment, Calls(Querying), Transactions",
+                    Id = "1069",
+                },
                 new CodeSample()
                 {
                     Name = "Smart Contracts: Events (End to End Introduction)",
@@ -173,6 +202,12 @@ public class Program
                 {
                     Name = "Smart contracts: Working with Structs",
                     Id = "1012",
+                },
+
+                new CodeSample()
+                {
+                    Name = "Smart contracts: Json input and output using complex structs",
+                    Id = "1070",
                 },
 
                 new CodeSample()
@@ -392,11 +427,11 @@ public class Program
                     Id = "1051",
                 },
 
-                new CodeSample()
-                {
-                    Name = "Wonka Rule Engine Preview: Loading external rules and pre validation",
-                    Id = "1044",
-                },
+                //new CodeSample()
+                //{
+                //    Name = "Wonka Rule Engine Preview: Loading external rules and pre validation",
+                //    Id = "1044",
+                //},
 
                 new CodeSample()
                 {

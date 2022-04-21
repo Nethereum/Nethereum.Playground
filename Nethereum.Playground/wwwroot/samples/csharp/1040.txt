@@ -5,7 +5,7 @@ using Nethereum.BlockchainProcessing.Processor;
 using Nethereum.BlockchainProcessing.ProgressRepositories;
 using Nethereum.RPC.Eth.Blocks;
 using Nethereum.RPC.Eth.DTOs;
-using Nethereum.Utils;
+using Nethereum.Util;
 using Nethereum.Web3;
 using Common.Logging;
 using System;

@@ -14,21 +14,23 @@ public class PendingTransactionsUsingBlockAndFilters
 		var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
 
 		var block = await web3.Eth.Blocks.GetBlockWithTransactionsByNumber.SendRequestAsync(BlockParameter.CreatePending());
-		
-        foreach (var txn in block.Transactions)
+		Console.WriteLine("Pending transasactions using the rpc call BlockWithTransactions and BlockParameter.CreatePending()");
+		foreach (var txn in block.Transactions)
 		{
 			Console.WriteLine(
 				$@"Hash:{txn.TransactionHash}, From: {txn.From}, To: {txn.To}, Value: {txn.Value}, Nonce: {txn.Nonce}, Data: {txn.Input}");
 
 		}
+		//NOTE: This is not available in Infura as a public node, using nethereum testchain so expect no results
+		web3 = new Web3("http://testchain.nethereum.com:8545");
+		Console.WriteLine("Pending transasactions creating a pending transactions filter and getting filter changes");
+		var pendingFilter = await web3.Eth.Filters.NewPendingTransactionFilter.SendRequestAsync();
 
-        var pendingFilter = await web3.Eth.Filters.NewPendingTransactionFilter.SendRequestAsync();
-
-        var filterChanges = await web3.Eth.Filters.GetFilterChangesForBlockOrTransaction.SendRequestAsync(pendingFilter);
-        foreach (var value in filterChanges)
-        {
-            Console.WriteLine(value);
-        }
+		var filterChanges = await web3.Eth.Filters.GetFilterChangesForBlockOrTransaction.SendRequestAsync(pendingFilter);
+		foreach (var value in filterChanges)
+		{
+			Console.WriteLine(value);
+		}
 
 	}
 }

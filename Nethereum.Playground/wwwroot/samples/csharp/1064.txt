@@ -59,7 +59,7 @@ public class BlockProcessing_CustomOrchestrator
 
         }
 
-        protected override async Task CrawlTransactionReceipt(CrawlerStepCompleted<TransactionVO> completedStep)
+        protected override async Task CrawlTransactionReceiptAsync(CrawlerStepCompleted<TransactionVO> completedStep)
         {
             //Stopping processing on CrawlingTransactionReceipt and out putting the input
             Console.WriteLine(completedStep.StepData.Transaction.Input);
