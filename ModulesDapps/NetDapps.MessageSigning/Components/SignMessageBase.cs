@@ -35,7 +35,6 @@ namespace NetDapps.MessageSigning.Components
             var signature1 = signer1.EncodeUTF8AndSign(Message, key);
             SignedMessage = signature1;
             AccountAddress = key.GetPublicAddress();
-            var ensService = new Nethereum.ENS.ENSService(new Web3());
         }
 
     }
