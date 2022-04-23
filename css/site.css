@@ -149,13 +149,21 @@ html, body {
     }
 }
 
-/*textarea .terminal {
+.terminal-console {
     background-color: #000;
     border: 1px solid #000;
-    color: #00ff00;
+    color: #FDF4E0;
     padding: 8px;
     font-family: courier new;
-}*/
+}
+
+.terminal-console:focus {
+        background-color: #000;
+        border: 1px solid #000;
+        color: #FDF4E0;
+        padding: 8px;
+        font-family: courier new;
+    }
 .monaco-editor {
     position: absolute !important;
 }
