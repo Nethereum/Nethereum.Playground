@@ -2,78 +2,70 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import { Disposable } from '../../../base/common/lifecycle.js';
-var ElementSizeObserver = /** @class */ (function (_super) {
-    __extends(ElementSizeObserver, _super);
-    function ElementSizeObserver(referenceDomElement, changeCallback) {
-        var _this = _super.call(this) || this;
-        _this.referenceDomElement = referenceDomElement;
-        _this.changeCallback = changeCallback;
-        _this.measureReferenceDomElementToken = -1;
-        _this.width = -1;
-        _this.height = -1;
-        _this.measureReferenceDomElement(false);
-        return _this;
+import { Emitter } from '../../../base/common/event.js';
+export class ElementSizeObserver extends Disposable {
+    constructor(referenceDomElement, dimension) {
+        super();
+        this._onDidChange = this._register(new Emitter());
+        this.onDidChange = this._onDidChange.event;
+        this._referenceDomElement = referenceDomElement;
+        this._width = -1;
+        this._height = -1;
+        this._resizeObserver = null;
+        this.measureReferenceDomElement(false, dimension);
     }
-    ElementSizeObserver.prototype.dispose = function () {
+    dispose() {
         this.stopObserving();
-        _super.prototype.dispose.call(this);
-    };
-    ElementSizeObserver.prototype.getWidth = function () {
-        return this.width;
-    };
-    ElementSizeObserver.prototype.getHeight = function () {
-        return this.height;
-    };
-    ElementSizeObserver.prototype.startObserving = function () {
-        var _this = this;
-        if (this.measureReferenceDomElementToken === -1) {
-            this.measureReferenceDomElementToken = setInterval(function () { return _this.measureReferenceDomElement(true); }, 100);
+        super.dispose();
+    }
+    getWidth() {
+        return this._width;
+    }
+    getHeight() {
+        return this._height;
+    }
+    startObserving() {
+        if (!this._resizeObserver && this._referenceDomElement) {
+            this._resizeObserver = new ResizeObserver((entries) => {
+                if (entries && entries[0] && entries[0].contentRect) {
+                    this.observe({ width: entries[0].contentRect.width, height: entries[0].contentRect.height });
+                }
+                else {
+                    this.observe();
+                }
+            });
+            this._resizeObserver.observe(this._referenceDomElement);
         }
-    };
-    ElementSizeObserver.prototype.stopObserving = function () {
-        if (this.measureReferenceDomElementToken !== -1) {
-            clearInterval(this.measureReferenceDomElementToken);
-            this.measureReferenceDomElementToken = -1;
+    }
+    stopObserving() {
+        if (this._resizeObserver) {
+            this._resizeObserver.disconnect();
+            this._resizeObserver = null;
         }
-    };
-    ElementSizeObserver.prototype.observe = function (dimension) {
+    }
+    observe(dimension) {
         this.measureReferenceDomElement(true, dimension);
-    };
-    ElementSizeObserver.prototype.measureReferenceDomElement = function (callChangeCallback, dimension) {
-        var observedWidth = 0;
-        var observedHeight = 0;
+    }
+    measureReferenceDomElement(emitEvent, dimension) {
+        let observedWidth = 0;
+        let observedHeight = 0;
         if (dimension) {
             observedWidth = dimension.width;
             observedHeight = dimension.height;
         }
-        else if (this.referenceDomElement) {
-            observedWidth = this.referenceDomElement.clientWidth;
-            observedHeight = this.referenceDomElement.clientHeight;
+        else if (this._referenceDomElement) {
+            observedWidth = this._referenceDomElement.clientWidth;
+            observedHeight = this._referenceDomElement.clientHeight;
         }
         observedWidth = Math.max(5, observedWidth);
         observedHeight = Math.max(5, observedHeight);
-        if (this.width !== observedWidth || this.height !== observedHeight) {
-            this.width = observedWidth;
-            this.height = observedHeight;
-            if (callChangeCallback) {
-                this.changeCallback();
+        if (this._width !== observedWidth || this._height !== observedHeight) {
+            this._width = observedWidth;
+            this._height = observedHeight;
+            if (emitEvent) {
+                this._onDidChange.fire();
             }
         }
-    };
-    return ElementSizeObserver;
-}(Disposable));
-export { ElementSizeObserver };
+    }
+}

@@ -1,31 +1,37 @@
-import { ContextKeyAndExpr } from '../../contextkey/common/contextkey.js';
-var KeybindingResolver = /** @class */ (function () {
-    function KeybindingResolver(defaultKeybindings, overrides) {
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+import { implies, expressionsAreEqualWithConstantSubstitution } from '../../contextkey/common/contextkey.js';
+export class KeybindingResolver {
+    constructor(defaultKeybindings, overrides, log) {
+        this._log = log;
         this._defaultKeybindings = defaultKeybindings;
         this._defaultBoundCommands = new Map();
-        for (var i = 0, len = defaultKeybindings.length; i < len; i++) {
-            var command = defaultKeybindings[i].command;
-            if (command) {
+        for (const defaultKeybinding of defaultKeybindings) {
+            const command = defaultKeybinding.command;
+            if (command && command.charAt(0) !== '-') {
                 this._defaultBoundCommands.set(command, true);
             }
         }
         this._map = new Map();
         this._lookupMap = new Map();
-        this._keybindings = KeybindingResolver.combine(defaultKeybindings, overrides);
-        for (var i = 0, len = this._keybindings.length; i < len; i++) {
-            var k = this._keybindings[i];
+        this._keybindings = KeybindingResolver.handleRemovals([].concat(defaultKeybindings).concat(overrides));
+        for (let i = 0, len = this._keybindings.length; i < len; i++) {
+            let k = this._keybindings[i];
             if (k.keypressParts.length === 0) {
                 // unbound
+                continue;
+            }
+            if (k.when && k.when.type === 0 /* False */) {
+                // when condition is false
                 continue;
             }
             // TODO@chords
             this._addKeyPress(k.keypressParts[0], k);
         }
     }
-    KeybindingResolver._isTargetedForRemoval = function (defaultKb, keypressFirstPart, keypressChordPart, command, when) {
-        if (defaultKb.command !== command) {
-            return false;
-        }
+    static _isTargetedForRemoval(defaultKb, keypressFirstPart, keypressChordPart, when) {
         // TODO@chords
         if (keypressFirstPart && defaultKb.keypressParts[0] !== keypressFirstPart) {
             return false;
@@ -38,52 +44,83 @@ var KeybindingResolver = /** @class */ (function () {
             if (!defaultKb.when) {
                 return false;
             }
-            if (!when.equals(defaultKb.when)) {
+            if (!expressionsAreEqualWithConstantSubstitution(when, defaultKb.when)) {
                 return false;
             }
         }
         return true;
-    };
+    }
     /**
-     * Looks for rules containing -command in `overrides` and removes them directly from `defaults`.
+     * Looks for rules containing "-commandId" and removes them.
      */
-    KeybindingResolver.combine = function (defaults, rawOverrides) {
-        defaults = defaults.slice(0);
-        var overrides = [];
-        for (var _i = 0, rawOverrides_1 = rawOverrides; _i < rawOverrides_1.length; _i++) {
-            var override = rawOverrides_1[_i];
-            if (!override.command || override.command.length === 0 || override.command.charAt(0) !== '-') {
-                overrides.push(override);
-                continue;
-            }
-            var command = override.command.substr(1);
-            // TODO@chords
-            var keypressFirstPart = override.keypressParts[0];
-            var keypressChordPart = override.keypressParts[1];
-            var when = override.when;
-            for (var j = defaults.length - 1; j >= 0; j--) {
-                if (this._isTargetedForRemoval(defaults[j], keypressFirstPart, keypressChordPart, command, when)) {
-                    defaults.splice(j, 1);
+    static handleRemovals(rules) {
+        // Do a first pass and construct a hash-map for removals
+        const removals = new Map();
+        for (let i = 0, len = rules.length; i < len; i++) {
+            const rule = rules[i];
+            if (rule.command && rule.command.charAt(0) === '-') {
+                const command = rule.command.substring(1);
+                if (!removals.has(command)) {
+                    removals.set(command, [rule]);
+                }
+                else {
+                    removals.get(command).push(rule);
                 }
             }
         }
-        return defaults.concat(overrides);
-    };
-    KeybindingResolver.prototype._addKeyPress = function (keypress, item) {
-        var conflicts = this._map.get(keypress);
+        if (removals.size === 0) {
+            // There are no removals
+            return rules;
+        }
+        // Do a second pass and keep only non-removed keybindings
+        const result = [];
+        for (let i = 0, len = rules.length; i < len; i++) {
+            const rule = rules[i];
+            if (!rule.command || rule.command.length === 0) {
+                result.push(rule);
+                continue;
+            }
+            if (rule.command.charAt(0) === '-') {
+                continue;
+            }
+            const commandRemovals = removals.get(rule.command);
+            if (!commandRemovals || !rule.isDefault) {
+                result.push(rule);
+                continue;
+            }
+            let isRemoved = false;
+            for (const commandRemoval of commandRemovals) {
+                // TODO@chords
+                const keypressFirstPart = commandRemoval.keypressParts[0];
+                const keypressChordPart = commandRemoval.keypressParts[1];
+                const when = commandRemoval.when;
+                if (this._isTargetedForRemoval(rule, keypressFirstPart, keypressChordPart, when)) {
+                    isRemoved = true;
+                    break;
+                }
+            }
+            if (!isRemoved) {
+                result.push(rule);
+                continue;
+            }
+        }
+        return result;
+    }
+    _addKeyPress(keypress, item) {
+        const conflicts = this._map.get(keypress);
         if (typeof conflicts === 'undefined') {
             // There is no conflict so far
             this._map.set(keypress, [item]);
             this._addToLookupMap(item);
             return;
         }
-        for (var i = conflicts.length - 1; i >= 0; i--) {
-            var conflict = conflicts[i];
+        for (let i = conflicts.length - 1; i >= 0; i--) {
+            let conflict = conflicts[i];
             if (conflict.command === item.command) {
                 continue;
             }
-            var conflictIsChord = (conflict.keypressParts.length > 1);
-            var itemIsChord = (item.keypressParts.length > 1);
+            const conflictIsChord = (conflict.keypressParts.length > 1);
+            const itemIsChord = (item.keypressParts.length > 1);
             // TODO@chords
             if (conflictIsChord && itemIsChord && conflict.keypressParts[1] !== item.keypressParts[1]) {
                 // The conflict only shares the chord start with this command
@@ -97,12 +134,12 @@ var KeybindingResolver = /** @class */ (function () {
         }
         conflicts.push(item);
         this._addToLookupMap(item);
-    };
-    KeybindingResolver.prototype._addToLookupMap = function (item) {
+    }
+    _addToLookupMap(item) {
         if (!item.command) {
             return;
         }
-        var arr = this._lookupMap.get(item.command);
+        let arr = this._lookupMap.get(item.command);
         if (typeof arr === 'undefined') {
             arr = [item];
             this._lookupMap.set(item.command, arr);
@@ -110,71 +147,67 @@ var KeybindingResolver = /** @class */ (function () {
         else {
             arr.push(item);
         }
-    };
-    KeybindingResolver.prototype._removeFromLookupMap = function (item) {
+    }
+    _removeFromLookupMap(item) {
         if (!item.command) {
             return;
         }
-        var arr = this._lookupMap.get(item.command);
+        let arr = this._lookupMap.get(item.command);
         if (typeof arr === 'undefined') {
             return;
         }
-        for (var i = 0, len = arr.length; i < len; i++) {
+        for (let i = 0, len = arr.length; i < len; i++) {
             if (arr[i] === item) {
                 arr.splice(i, 1);
                 return;
             }
         }
-    };
+    }
     /**
      * Returns true if it is provable `a` implies `b`.
-     * **Precondition**: Assumes `a` and `b` are normalized!
      */
-    KeybindingResolver.whenIsEntirelyIncluded = function (a, b) {
-        if (!b) {
+    static whenIsEntirelyIncluded(a, b) {
+        if (!b || b.type === 1 /* True */) {
             return true;
         }
-        if (!a) {
+        if (!a || a.type === 1 /* True */) {
             return false;
         }
-        var aExpressions = ((a instanceof ContextKeyAndExpr) ? a.expr : [a]);
-        var bExpressions = ((b instanceof ContextKeyAndExpr) ? b.expr : [b]);
-        var aIndex = 0;
-        for (var _i = 0, bExpressions_1 = bExpressions; _i < bExpressions_1.length; _i++) {
-            var bExpr = bExpressions_1[_i];
-            var bExprMatched = false;
-            while (!bExprMatched && aIndex < aExpressions.length) {
-                var aExpr = aExpressions[aIndex];
-                if (aExpr.equals(bExpr)) {
-                    bExprMatched = true;
-                }
-                aIndex++;
-            }
-            if (!bExprMatched) {
-                return false;
-            }
-        }
-        return true;
-    };
-    KeybindingResolver.prototype.lookupPrimaryKeybinding = function (commandId) {
-        var items = this._lookupMap.get(commandId);
+        return implies(a, b);
+    }
+    getKeybindings() {
+        return this._keybindings;
+    }
+    lookupPrimaryKeybinding(commandId, context) {
+        const items = this._lookupMap.get(commandId);
         if (typeof items === 'undefined' || items.length === 0) {
             return null;
         }
+        if (items.length === 1) {
+            return items[0];
+        }
+        for (let i = items.length - 1; i >= 0; i--) {
+            const item = items[i];
+            if (context.contextMatchesRules(item.when)) {
+                return item;
+            }
+        }
         return items[items.length - 1];
-    };
-    KeybindingResolver.prototype.resolve = function (context, currentChord, keypress) {
-        var lookupMap = null;
+    }
+    resolve(context, currentChord, keypress) {
+        this._log(`| Resolving ${keypress}${currentChord ? ` chorded from ${currentChord}` : ``}`);
+        let lookupMap = null;
         if (currentChord !== null) {
             // Fetch all chord bindings for `currentChord`
-            var candidates = this._map.get(currentChord);
+            const candidates = this._map.get(currentChord);
             if (typeof candidates === 'undefined') {
                 // No chords starting with `currentChord`
+                this._log(`\\ No keybinding entries.`);
                 return null;
             }
             lookupMap = [];
-            for (var i = 0, len = candidates.length; i < len; i++) {
-                var candidate = candidates[i];
+            for (let i = 0, len = candidates.length; i < len; i++) {
+                let candidate = candidates[i];
                 // TODO@chords
                 if (candidate.keypressParts[1] === keypress) {
                     lookupMap.push(candidate);
@@ -182,49 +215,64 @@ var KeybindingResolver = /** @class */ (function () {
             }
         }
         else {
-            var candidates = this._map.get(keypress);
+            const candidates = this._map.get(keypress);
             if (typeof candidates === 'undefined') {
                 // No bindings with `keypress`
+                this._log(`\\ No keybinding entries.`);
                 return null;
             }
             lookupMap = candidates;
         }
-        var result = this._findCommand(context, lookupMap);
+        let result = this._findCommand(context, lookupMap);
         if (!result) {
+            this._log(`\\ From ${lookupMap.length} keybinding entries, no when clauses matched the context.`);
             return null;
         }
         // TODO@chords
         if (currentChord === null && result.keypressParts.length > 1 && result.keypressParts[1] !== null) {
+            this._log(`\\ From ${lookupMap.length} keybinding entries, matched chord, when: ${printWhenExplanation(result.when)}, source: ${printSourceExplanation(result)}.`);
             return {
                 enterChord: true,
+                leaveChord: false,
                 commandId: null,
                 commandArgs: null,
                 bubble: false
             };
         }
+        this._log(`\\ From ${lookupMap.length} keybinding entries, matched ${result.command}, when: ${printWhenExplanation(result.when)}, source: ${printSourceExplanation(result)}.`);
         return {
             enterChord: false,
+            leaveChord: result.keypressParts.length > 1,
             commandId: result.command,
             commandArgs: result.commandArgs,
             bubble: result.bubble
         };
-    };
-    KeybindingResolver.prototype._findCommand = function (context, matches) {
-        for (var i = matches.length - 1; i >= 0; i--) {
-            var k = matches[i];
-            if (!KeybindingResolver.contextMatchesRules(context, k.when)) {
+    }
+    _findCommand(context, matches) {
+        for (let i = matches.length - 1; i >= 0; i--) {
+            let k = matches[i];
+            if (!KeybindingResolver._contextMatchesRules(context, k.when)) {
                 continue;
             }
             return k;
         }
         return null;
-    };
-    KeybindingResolver.contextMatchesRules = function (context, rules) {
+    }
+    static _contextMatchesRules(context, rules) {
         if (!rules) {
             return true;
         }
         return rules.evaluate(context);
-    };
-    return KeybindingResolver;
-}());
-export { KeybindingResolver };
+    }
+}
+function printWhenExplanation(when) {
+    if (!when) {
+        return `no when condition`;
+    }
+    return `${when.serialize()}`;
+}
+function printSourceExplanation(kb) {
+    return (kb.extensionId
+        ? (kb.isBuiltinExtension ? `built-in extension ${kb.extensionId}` : `user extension ${kb.extensionId}`)
+        : (kb.isDefault ? `built-in` : `user`));
+}

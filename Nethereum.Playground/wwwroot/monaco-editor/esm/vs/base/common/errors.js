@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 // Avoid circular dependency on EventEmitter by implementing a subset of the interface.
-var ErrorHandler = /** @class */ (function () {
-    function ErrorHandler() {
+export class ErrorHandler {
+    constructor() {
         this.listeners = [];
         this.unexpectedErrorHandler = function (e) {
-            setTimeout(function () {
+            setTimeout(() => {
                 if (e.stack) {
                     throw new Error(e.message + '\n\n' + e.stack);
                 }
@@ -15,69 +15,78 @@ var ErrorHandler = /** @class */ (function () {
             }, 0);
         };
     }
-    ErrorHandler.prototype.emit = function (e) {
-        this.listeners.forEach(function (listener) {
+    emit(e) {
+        this.listeners.forEach((listener) => {
             listener(e);
         });
-    };
-    ErrorHandler.prototype.onUnexpectedError = function (e) {
+    }
+    onUnexpectedError(e) {
         this.unexpectedErrorHandler(e);
         this.emit(e);
-    };
+    }
     // For external errors, we don't want the listeners to be called
-    ErrorHandler.prototype.onUnexpectedExternalError = function (e) {
+    onUnexpectedExternalError(e) {
         this.unexpectedErrorHandler(e);
-    };
-    return ErrorHandler;
-}());
-export { ErrorHandler };
-export var errorHandler = new ErrorHandler();
+    }
+}
+export const errorHandler = new ErrorHandler();
 export function onUnexpectedError(e) {
     // ignore errors from cancelled promises
-    if (!isPromiseCanceledError(e)) {
+    if (!isCancellationError(e)) {
         errorHandler.onUnexpectedError(e);
     }
     return undefined;
 }
 export function onUnexpectedExternalError(e) {
     // ignore errors from cancelled promises
-    if (!isPromiseCanceledError(e)) {
+    if (!isCancellationError(e)) {
         errorHandler.onUnexpectedExternalError(e);
     }
     return undefined;
 }
 export function transformErrorForSerialization(error) {
     if (error instanceof Error) {
-        var name_1 = error.name, message = error.message;
-        var stack = error.stacktrace || error.stack;
+        let { name, message } = error;
+        const stack = error.stacktrace || error.stack;
         return {
             $isError: true,
-            name: name_1,
-            message: message,
-            stack: stack
+            name,
+            message,
+            stack
         };
     }
     // return as is
     return error;
 }
-var canceledName = 'Canceled';
+const canceledName = 'Canceled';
 /**
  * Checks if the given error is a promise in canceled state
  */
-export function isPromiseCanceledError(error) {
+export function isCancellationError(error) {
+    if (error instanceof CancellationError) {
+        return true;
+    }
     return error instanceof Error && error.name === canceledName && error.message === canceledName;
 }
+// !!!IMPORTANT!!!
+// Do NOT change this class because it is also used as an API-type.
+export class CancellationError extends Error {
+    constructor() {
+        super(canceledName);
+        this.name = this.message;
+    }
+}
 /**
- * Returns an error that signals cancellation.
+ * @deprecated use {@link CancellationError `new CancellationError()`} instead
  */
 export function canceled() {
-    var error = new Error(canceledName);
+    const error = new Error(canceledName);
     error.name = error.message;
     return error;
 }
 export function illegalArgument(name) {
     if (name) {
-        return new Error("Illegal argument: " + name);
+        return new Error(`Illegal argument: ${name}`);
     }
     else {
         return new Error('Illegal argument');
@@ -85,9 +94,17 @@ export function illegalArgument(name) {
 }
 export function illegalState(name) {
     if (name) {
-        return new Error("Illegal state: " + name);
+        return new Error(`Illegal state: ${name}`);
     }
     else {
         return new Error('Illegal state');
+    }
+}
+export class NotSupportedError extends Error {
+    constructor(message) {
+        super('NotSupported');
+        if (message) {
+            this.message = message;
+        }
     }
 }

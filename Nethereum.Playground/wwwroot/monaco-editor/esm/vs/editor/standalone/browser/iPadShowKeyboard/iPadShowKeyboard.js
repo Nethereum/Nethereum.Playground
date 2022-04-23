@@ -3,22 +3,22 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import './iPadShowKeyboard.css';
-import * as browser from '../../../../base/browser/browser.js';
 import * as dom from '../../../../base/browser/dom.js';
-import { dispose } from '../../../../base/common/lifecycle.js';
+import { Disposable } from '../../../../base/common/lifecycle.js';
 import { registerEditorContribution } from '../../../browser/editorExtensions.js';
-var IPadShowKeyboard = /** @class */ (function () {
-    function IPadShowKeyboard(editor) {
-        var _this = this;
+import { isIOS } from '../../../../base/common/platform.js';
+export class IPadShowKeyboard extends Disposable {
+    constructor(editor) {
+        super();
         this.editor = editor;
-        this.toDispose = [];
-        if (browser.isIPad) {
-            this.toDispose.push(editor.onDidChangeConfiguration(function () { return _this.update(); }));
+        this.widget = null;
+        if (isIOS) {
+            this._register(editor.onDidChangeConfiguration(() => this.update()));
             this.update();
         }
     }
-    IPadShowKeyboard.prototype.update = function () {
-        var shouldHaveWidget = (!this.editor.getConfiguration().readOnly);
+    update() {
+        const shouldHaveWidget = (!this.editor.getOption(81 /* readOnly */));
         if (!this.widget && shouldHaveWidget) {
             this.widget = new ShowKeyboardWidget(this.editor);
         }
@@ -26,53 +26,46 @@ var IPadShowKeyboard = /** @class */ (function () {
             this.widget.dispose();
             this.widget = null;
         }
-    };
-    IPadShowKeyboard.prototype.getId = function () {
-        return IPadShowKeyboard.ID;
-    };
-    IPadShowKeyboard.prototype.dispose = function () {
-        this.toDispose = dispose(this.toDispose);
+    }
+    dispose() {
+        super.dispose();
         if (this.widget) {
             this.widget.dispose();
             this.widget = null;
         }
-    };
-    IPadShowKeyboard.ID = 'editor.contrib.iPadShowKeyboard';
-    return IPadShowKeyboard;
-}());
-export { IPadShowKeyboard };
-var ShowKeyboardWidget = /** @class */ (function () {
-    function ShowKeyboardWidget(editor) {
-        var _this = this;
+    }
+}
+IPadShowKeyboard.ID = 'editor.contrib.iPadShowKeyboard';
+class ShowKeyboardWidget extends Disposable {
+    constructor(editor) {
+        super();
         this.editor = editor;
         this._domNode = document.createElement('textarea');
         this._domNode.className = 'iPadShowKeyboard';
-        this._toDispose = [];
-        this._toDispose.push(dom.addDisposableListener(this._domNode, 'touchstart', function (e) {
-            _this.editor.focus();
+        this._register(dom.addDisposableListener(this._domNode, 'touchstart', (e) => {
+            this.editor.focus();
         }));
-        this._toDispose.push(dom.addDisposableListener(this._domNode, 'focus', function (e) {
-            _this.editor.focus();
+        this._register(dom.addDisposableListener(this._domNode, 'focus', (e) => {
+            this.editor.focus();
         }));
         this.editor.addOverlayWidget(this);
     }
-    ShowKeyboardWidget.prototype.dispose = function () {
+    dispose() {
         this.editor.removeOverlayWidget(this);
-        this._toDispose = dispose(this._toDispose);
-    };
+        super.dispose();
+    }
     // ----- IOverlayWidget API
-    ShowKeyboardWidget.prototype.getId = function () {
+    getId() {
         return ShowKeyboardWidget.ID;
-    };
-    ShowKeyboardWidget.prototype.getDomNode = function () {
+    }
+    getDomNode() {
         return this._domNode;
-    };
-    ShowKeyboardWidget.prototype.getPosition = function () {
+    }
+    getPosition() {
         return {
             preference: 1 /* BOTTOM_RIGHT_CORNER */
         };
-    };
-    ShowKeyboardWidget.ID = 'editor.contrib.ShowKeyboardWidget';
-    return ShowKeyboardWidget;
-}());
-registerEditorContribution(IPadShowKeyboard);
+    }
+}
+ShowKeyboardWidget.ID = 'editor.contrib.ShowKeyboardWidget';
+registerEditorContribution(IPadShowKeyboard.ID, IPadShowKeyboard);

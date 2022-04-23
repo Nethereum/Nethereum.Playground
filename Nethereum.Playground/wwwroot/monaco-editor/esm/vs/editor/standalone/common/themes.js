@@ -2,11 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var _a, _b, _c;
-import { editorActiveIndentGuides, editorIndentGuides } from '../../common/view/editorColorRegistry.js';
+import { editorActiveIndentGuides, editorIndentGuides } from '../../common/core/editorColorRegistry.js';
 import { editorBackground, editorForeground, editorInactiveSelection, editorSelectionHighlight } from '../../../platform/theme/common/colorRegistry.js';
 /* -------------------------------- Begin vs theme -------------------------------- */
-export var vs = {
+export const vs = {
     base: 'vs',
     inherit: false,
     rules: [
@@ -18,7 +17,7 @@ export var vs = {
         { token: 'variable.predefined', foreground: '4864AA' },
         { token: 'constant', foreground: 'dd0000' },
         { token: 'comment', foreground: '008000' },
-        { token: 'number', foreground: '09885A' },
+        { token: 'number', foreground: '098658' },
         { token: 'number.hex', foreground: '3030c0' },
         { token: 'regexp', foreground: '800000' },
         { token: 'annotation', foreground: '808080' },
@@ -40,8 +39,8 @@ export var vs = {
         { token: 'string.value.json', foreground: '0451A5' },
         { token: 'attribute.name', foreground: 'FF0000' },
         { token: 'attribute.value', foreground: '0451A5' },
-        { token: 'attribute.value.number', foreground: '09885A' },
-        { token: 'attribute.value.unit', foreground: '09885A' },
+        { token: 'attribute.value.number', foreground: '098658' },
+        { token: 'attribute.value.unit', foreground: '098658' },
         { token: 'attribute.value.html', foreground: '0000FF' },
         { token: 'attribute.value.xml', foreground: '0000FF' },
         { token: 'string', foreground: 'A31515' },
@@ -55,20 +54,20 @@ export var vs = {
         { token: 'operator.scss', foreground: '666666' },
         { token: 'operator.sql', foreground: '778899' },
         { token: 'operator.swift', foreground: '666666' },
-        { token: 'predefined.sql', foreground: 'FF00FF' },
+        { token: 'predefined.sql', foreground: 'C700C7' },
     ],
-    colors: (_a = {},
-        _a[editorBackground] = '#FFFFFE',
-        _a[editorForeground] = '#000000',
-        _a[editorInactiveSelection] = '#E5EBF1',
-        _a[editorIndentGuides] = '#D3D3D3',
-        _a[editorActiveIndentGuides] = '#939393',
-        _a[editorSelectionHighlight] = '#ADD6FF4D',
-        _a)
+    colors: {
+        [editorBackground]: '#FFFFFE',
+        [editorForeground]: '#000000',
+        [editorInactiveSelection]: '#E5EBF1',
+        [editorIndentGuides]: '#D3D3D3',
+        [editorActiveIndentGuides]: '#939393',
+        [editorSelectionHighlight]: '#ADD6FF4D'
+    }
 };
 /* -------------------------------- End vs theme -------------------------------- */
 /* -------------------------------- Begin vs-dark theme -------------------------------- */
-export var vs_dark = {
+export const vs_dark = {
     base: 'vs-dark',
     inherit: false,
     rules: [
@@ -118,18 +117,18 @@ export var vs_dark = {
         { token: 'operator.swift', foreground: '909090' },
         { token: 'predefined.sql', foreground: 'FF00FF' },
     ],
-    colors: (_b = {},
-        _b[editorBackground] = '#1E1E1E',
-        _b[editorForeground] = '#D4D4D4',
-        _b[editorInactiveSelection] = '#3A3D41',
-        _b[editorIndentGuides] = '#404040',
-        _b[editorActiveIndentGuides] = '#707070',
-        _b[editorSelectionHighlight] = '#ADD6FF26',
-        _b)
+    colors: {
+        [editorBackground]: '#1E1E1E',
+        [editorForeground]: '#D4D4D4',
+        [editorInactiveSelection]: '#3A3D41',
+        [editorIndentGuides]: '#404040',
+        [editorActiveIndentGuides]: '#707070',
+        [editorSelectionHighlight]: '#ADD6FF26'
+    }
 };
 /* -------------------------------- End vs-dark theme -------------------------------- */
 /* -------------------------------- Begin hc-black theme -------------------------------- */
-export var hc_black = {
+export const hc_black = {
     base: 'hc-black',
     inherit: false,
     rules: [
@@ -170,11 +169,11 @@ export var hc_black = {
         { token: 'operator.swift', foreground: '909090' },
         { token: 'predefined.sql', foreground: 'FF00FF' },
     ],
-    colors: (_c = {},
-        _c[editorBackground] = '#000000',
-        _c[editorForeground] = '#FFFFFF',
-        _c[editorIndentGuides] = '#FFFFFF',
-        _c[editorActiveIndentGuides] = '#FFFFFF',
-        _c)
+    colors: {
+        [editorBackground]: '#000000',
+        [editorForeground]: '#FFFFFF',
+        [editorIndentGuides]: '#FFFFFF',
+        [editorActiveIndentGuides]: '#FFFFFF',
+    }
 };
 /* -------------------------------- End hc-black theme -------------------------------- */

@@ -2,21 +2,15 @@
 @using Microsoft.AspNetCore.Components
 
 @inject IJSRuntime JSRuntime
-<div class="row">
-    <div class="col">
-        <div id="@EditorModel.Id" style="width:@GetWidthInPx();height:@GetHeightInPx();border:1px solid grey"></div>
+
+    <div class="col" style="width:100%;  min-width:100%">
+        <div id="@EditorModel.Id" style="height: 540px; width: 100%; min-height: 100%; min-width:100%"></div>
     </div>
-</div>
 @functions {
 
     [Parameter]
     public EditorModel EditorModel { get; set; }
 
-    [Parameter]
-    public int Width { get; set; } = 800;
-
-    [Parameter]
-    public int Height { get; set; } = 600;
 
     bool _alreadyRendered = false;
 
@@ -27,16 +21,6 @@
             var result = await Interop.EditorInitializeAsync(JSRuntime, EditorModel);
             _alreadyRendered = true;
         }
-    }
-
-    private string GetHeightInPx()
-    {
-        return Height.ToString() + "px";
-    }
-
-    private string GetWidthInPx()
-    {
-        return Width.ToString() + "px";
     }
 
     public async Task EditorUpdateAsync()

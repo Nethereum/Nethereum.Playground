@@ -2,19 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -25,98 +12,83 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 import './inspectTokens.css';
+import { $, append, reset } from '../../../../base/browser/dom.js';
 import { Color } from '../../../../base/common/color.js';
 import { Disposable } from '../../../../base/common/lifecycle.js';
-import { escape } from '../../../../base/common/strings.js';
 import { EditorAction, registerEditorAction, registerEditorContribution } from '../../../browser/editorExtensions.js';
-import { TokenMetadata, TokenizationRegistry } from '../../../common/modes.js';
-import { NULL_STATE, nullTokenize, nullTokenize2 } from '../../../common/modes/nullMode.js';
-import { IModeService } from '../../../common/services/modeService.js';
-import { IStandaloneThemeService } from '../../common/standaloneThemeService.js';
-import { editorHoverBackground, editorHoverBorder } from '../../../../platform/theme/common/colorRegistry.js';
-import { HIGH_CONTRAST, registerThemingParticipant } from '../../../../platform/theme/common/themeService.js';
+import { TokenMetadata, TokenizationRegistry } from '../../../common/languages.js';
+import { NullState, nullTokenize, nullTokenizeEncoded } from '../../../common/languages/nullTokenize.js';
+import { ILanguageService } from '../../../common/languages/language.js';
+import { IStandaloneThemeService } from '../../common/standaloneTheme.js';
+import { editorHoverBackground, editorHoverBorder, editorHoverForeground } from '../../../../platform/theme/common/colorRegistry.js';
+import { registerThemingParticipant } from '../../../../platform/theme/common/themeService.js';
 import { InspectTokensNLS } from '../../../common/standaloneStrings.js';
-var InspectTokensController = /** @class */ (function (_super) {
-    __extends(InspectTokensController, _super);
-    function InspectTokensController(editor, standaloneColorService, modeService) {
-        var _this = _super.call(this) || this;
-        _this._editor = editor;
-        _this._modeService = modeService;
-        _this._widget = null;
-        _this._register(_this._editor.onDidChangeModel(function (e) { return _this.stop(); }));
-        _this._register(_this._editor.onDidChangeModelLanguage(function (e) { return _this.stop(); }));
-        _this._register(TokenizationRegistry.onDidChange(function (e) { return _this.stop(); }));
-        return _this;
+import { ColorScheme } from '../../../../platform/theme/common/theme.js';
+let InspectTokensController = class InspectTokensController extends Disposable {
+    constructor(editor, standaloneColorService, languageService) {
+        super();
+        this._editor = editor;
+        this._languageService = languageService;
+        this._widget = null;
+        this._register(this._editor.onDidChangeModel((e) => this.stop()));
+        this._register(this._editor.onDidChangeModelLanguage((e) => this.stop()));
+        this._register(TokenizationRegistry.onDidChange((e) => this.stop()));
+        this._register(this._editor.onKeyUp((e) => e.keyCode === 9 /* Escape */ && this.stop()));
     }
-    InspectTokensController.get = function (editor) {
+    static get(editor) {
         return editor.getContribution(InspectTokensController.ID);
-    };
-    InspectTokensController.prototype.getId = function () {
-        return InspectTokensController.ID;
-    };
-    InspectTokensController.prototype.dispose = function () {
+    }
+    dispose() {
         this.stop();
-        _super.prototype.dispose.call(this);
-    };
-    InspectTokensController.prototype.launch = function () {
+        super.dispose();
+    }
+    launch() {
         if (this._widget) {
             return;
         }
         if (!this._editor.hasModel()) {
             return;
         }
-        this._widget = new InspectTokensWidget(this._editor, this._modeService);
-    };
-    InspectTokensController.prototype.stop = function () {
+        this._widget = new InspectTokensWidget(this._editor, this._languageService);
+    }
+    stop() {
         if (this._widget) {
             this._widget.dispose();
             this._widget = null;
         }
-    };
-    InspectTokensController.ID = 'editor.contrib.inspectTokens';
-    InspectTokensController = __decorate([
-        __param(1, IStandaloneThemeService),
-        __param(2, IModeService)
-    ], InspectTokensController);
-    return InspectTokensController;
-}(Disposable));
-var InspectTokens = /** @class */ (function (_super) {
-    __extends(InspectTokens, _super);
-    function InspectTokens() {
-        return _super.call(this, {
+    }
+};
+InspectTokensController.ID = 'editor.contrib.inspectTokens';
+InspectTokensController = __decorate([
+    __param(1, IStandaloneThemeService),
+    __param(2, ILanguageService)
+], InspectTokensController);
+class InspectTokens extends EditorAction {
+    constructor() {
+        super({
             id: 'editor.action.inspectTokens',
             label: InspectTokensNLS.inspectTokensAction,
             alias: 'Developer: Inspect Tokens',
-            precondition: null
-        }) || this;
+            precondition: undefined
+        });
     }
-    InspectTokens.prototype.run = function (accessor, editor) {
-        var controller = InspectTokensController.get(editor);
+    run(accessor, editor) {
+        const controller = InspectTokensController.get(editor);
         if (controller) {
             controller.launch();
         }
-    };
-    return InspectTokens;
-}(EditorAction));
+    }
+}
 function renderTokenText(tokenText) {
-    var result = '';
-    for (var charIndex = 0, len = tokenText.length; charIndex < len; charIndex++) {
-        var charCode = tokenText.charCodeAt(charIndex);
+    let result = '';
+    for (let charIndex = 0, len = tokenText.length; charIndex < len; charIndex++) {
+        const charCode = tokenText.charCodeAt(charIndex);
         switch (charCode) {
             case 9 /* Tab */:
-                result += '&rarr;';
+                result += '\u2192'; // &rarr;
                 break;
             case 32 /* Space */:
-                result += '&middot;';
-                break;
-            case 60 /* LessThan */:
-                result += '&lt;';
-                break;
-            case 62 /* GreaterThan */:
-                result += '&gt;';
-                break;
-            case 38 /* Ampersand */:
-                result += '&amp;';
+                result += '\u00B7'; // &middot;
                 break;
             default:
                 result += String.fromCharCode(charCode);
@@ -124,109 +96,100 @@ function renderTokenText(tokenText) {
     }
     return result;
 }
-function getSafeTokenizationSupport(languageIdentifier) {
-    var tokenizationSupport = TokenizationRegistry.get(languageIdentifier.language);
+function getSafeTokenizationSupport(languageIdCodec, languageId) {
+    const tokenizationSupport = TokenizationRegistry.get(languageId);
     if (tokenizationSupport) {
         return tokenizationSupport;
     }
+    const encodedLanguageId = languageIdCodec.encodeLanguageId(languageId);
     return {
-        getInitialState: function () { return NULL_STATE; },
-        tokenize: function (line, state, deltaOffset) { return nullTokenize(languageIdentifier.language, line, state, deltaOffset); },
-        tokenize2: function (line, state, deltaOffset) { return nullTokenize2(languageIdentifier.id, line, state, deltaOffset); }
+        getInitialState: () => NullState,
+        tokenize: (line, hasEOL, state) => nullTokenize(languageId, state),
+        tokenizeEncoded: (line, hasEOL, state) => nullTokenizeEncoded(encodedLanguageId, state)
     };
 }
-var InspectTokensWidget = /** @class */ (function (_super) {
-    __extends(InspectTokensWidget, _super);
-    function InspectTokensWidget(editor, modeService) {
-        var _this = _super.call(this) || this;
+class InspectTokensWidget extends Disposable {
+    constructor(editor, languageService) {
+        super();
         // Editor.IContentWidget.allowEditorOverflow
-        _this.allowEditorOverflow = true;
-        _this._editor = editor;
-        _this._modeService = modeService;
-        _this._model = _this._editor.getModel();
-        _this._domNode = document.createElement('div');
-        _this._domNode.className = 'tokens-inspect-widget';
-        _this._tokenizationSupport = getSafeTokenizationSupport(_this._model.getLanguageIdentifier());
-        _this._compute(_this._editor.getPosition());
-        _this._register(_this._editor.onDidChangeCursorPosition(function (e) { return _this._compute(_this._editor.getPosition()); }));
-        _this._editor.addContentWidget(_this);
-        return _this;
+        this.allowEditorOverflow = true;
+        this._editor = editor;
+        this._languageService = languageService;
+        this._model = this._editor.getModel();
+        this._domNode = document.createElement('div');
+        this._domNode.className = 'tokens-inspect-widget';
+        this._tokenizationSupport = getSafeTokenizationSupport(this._languageService.languageIdCodec, this._model.getLanguageId());
+        this._compute(this._editor.getPosition());
+        this._register(this._editor.onDidChangeCursorPosition((e) => this._compute(this._editor.getPosition())));
+        this._editor.addContentWidget(this);
     }
-    InspectTokensWidget.prototype.dispose = function () {
+    dispose() {
         this._editor.removeContentWidget(this);
-        _super.prototype.dispose.call(this);
-    };
-    InspectTokensWidget.prototype.getId = function () {
+        super.dispose();
+    }
+    getId() {
         return InspectTokensWidget._ID;
-    };
-    InspectTokensWidget.prototype._compute = function (position) {
-        var data = this._getTokensAtLine(position.lineNumber);
-        var token1Index = 0;
-        for (var i = data.tokens1.length - 1; i >= 0; i--) {
-            var t = data.tokens1[i];
+    }
+    _compute(position) {
+        const data = this._getTokensAtLine(position.lineNumber);
+        let token1Index = 0;
+        for (let i = data.tokens1.length - 1; i >= 0; i--) {
+            const t = data.tokens1[i];
             if (position.column - 1 >= t.offset) {
                 token1Index = i;
                 break;
             }
         }
-        var token2Index = 0;
-        for (var i = (data.tokens2.length >>> 1); i >= 0; i--) {
+        let token2Index = 0;
+        for (let i = (data.tokens2.length >>> 1); i >= 0; i--) {
             if (position.column - 1 >= data.tokens2[(i << 1)]) {
                 token2Index = i;
                 break;
             }
         }
-        var result = '';
-        var lineContent = this._model.getLineContent(position.lineNumber);
-        var tokenText = '';
+        const lineContent = this._model.getLineContent(position.lineNumber);
+        let tokenText = '';
         if (token1Index < data.tokens1.length) {
-            var tokenStartIndex = data.tokens1[token1Index].offset;
-            var tokenEndIndex = token1Index + 1 < data.tokens1.length ? data.tokens1[token1Index + 1].offset : lineContent.length;
+            const tokenStartIndex = data.tokens1[token1Index].offset;
+            const tokenEndIndex = token1Index + 1 < data.tokens1.length ? data.tokens1[token1Index + 1].offset : lineContent.length;
             tokenText = lineContent.substring(tokenStartIndex, tokenEndIndex);
         }
-        result += "<h2 class=\"tm-token\">" + renderTokenText(tokenText) + "<span class=\"tm-token-length\">(" + tokenText.length + " " + (tokenText.length === 1 ? 'char' : 'chars') + ")</span></h2>";
-        result += "<hr class=\"tokens-inspect-separator\" style=\"clear:both\"/>";
-        var metadata = this._decodeMetadata(data.tokens2[(token2Index << 1) + 1]);
-        result += "<table class=\"tm-metadata-table\"><tbody>";
-        result += "<tr><td class=\"tm-metadata-key\">language</td><td class=\"tm-metadata-value\">" + escape(metadata.languageIdentifier.language) + "</td>";
-        result += "<tr><td class=\"tm-metadata-key\">token type</td><td class=\"tm-metadata-value\">" + this._tokenTypeToString(metadata.tokenType) + "</td>";
-        result += "<tr><td class=\"tm-metadata-key\">font style</td><td class=\"tm-metadata-value\">" + this._fontStyleToString(metadata.fontStyle) + "</td>";
-        result += "<tr><td class=\"tm-metadata-key\">foreground</td><td class=\"tm-metadata-value\">" + Color.Format.CSS.formatHex(metadata.foreground) + "</td>";
-        result += "<tr><td class=\"tm-metadata-key\">background</td><td class=\"tm-metadata-value\">" + Color.Format.CSS.formatHex(metadata.background) + "</td>";
-        result += "</tbody></table>";
-        result += "<hr class=\"tokens-inspect-separator\"/>";
+        reset(this._domNode, $('h2.tm-token', undefined, renderTokenText(tokenText), $('span.tm-token-length', undefined, `${tokenText.length} ${tokenText.length === 1 ? 'char' : 'chars'}`)));
+        append(this._domNode, $('hr.tokens-inspect-separator', { 'style': 'clear:both' }));
+        const metadata = (token2Index << 1) + 1 < data.tokens2.length ? this._decodeMetadata(data.tokens2[(token2Index << 1) + 1]) : null;
+        append(this._domNode, $('table.tm-metadata-table', undefined, $('tbody', undefined, $('tr', undefined, $('td.tm-metadata-key', undefined, 'language'), $('td.tm-metadata-value', undefined, `${metadata ? metadata.languageId : '-?-'}`)), $('tr', undefined, $('td.tm-metadata-key', undefined, 'token type'), $('td.tm-metadata-value', undefined, `${metadata ? this._tokenTypeToString(metadata.tokenType) : '-?-'}`)), $('tr', undefined, $('td.tm-metadata-key', undefined, 'font style'), $('td.tm-metadata-value', undefined, `${metadata ? this._fontStyleToString(metadata.fontStyle) : '-?-'}`)), $('tr', undefined, $('td.tm-metadata-key', undefined, 'foreground'), $('td.tm-metadata-value', undefined, `${metadata ? Color.Format.CSS.formatHex(metadata.foreground) : '-?-'}`)), $('tr', undefined, $('td.tm-metadata-key', undefined, 'background'), $('td.tm-metadata-value', undefined, `${metadata ? Color.Format.CSS.formatHex(metadata.background) : '-?-'}`)))));
+        append(this._domNode, $('hr.tokens-inspect-separator'));
         if (token1Index < data.tokens1.length) {
-            result += "<span class=\"tm-token-type\">" + escape(data.tokens1[token1Index].type) + "</span>";
+            append(this._domNode, $('span.tm-token-type', undefined, data.tokens1[token1Index].type));
         }
-        this._domNode.innerHTML = result;
         this._editor.layoutContentWidget(this);
-    };
-    InspectTokensWidget.prototype._decodeMetadata = function (metadata) {
-        var colorMap = TokenizationRegistry.getColorMap();
-        var languageId = TokenMetadata.getLanguageId(metadata);
-        var tokenType = TokenMetadata.getTokenType(metadata);
-        var fontStyle = TokenMetadata.getFontStyle(metadata);
-        var foreground = TokenMetadata.getForeground(metadata);
-        var background = TokenMetadata.getBackground(metadata);
+    }
+    _decodeMetadata(metadata) {
+        const colorMap = TokenizationRegistry.getColorMap();
+        const languageId = TokenMetadata.getLanguageId(metadata);
+        const tokenType = TokenMetadata.getTokenType(metadata);
+        const fontStyle = TokenMetadata.getFontStyle(metadata);
+        const foreground = TokenMetadata.getForeground(metadata);
+        const background = TokenMetadata.getBackground(metadata);
         return {
-            languageIdentifier: this._modeService.getLanguageIdentifier(languageId),
+            languageId: this._languageService.languageIdCodec.decodeLanguageId(languageId),
             tokenType: tokenType,
             fontStyle: fontStyle,
             foreground: colorMap[foreground],
             background: colorMap[background]
         };
-    };
-    InspectTokensWidget.prototype._tokenTypeToString = function (tokenType) {
+    }
+    _tokenTypeToString(tokenType) {
         switch (tokenType) {
             case 0 /* Other */: return 'Other';
             case 1 /* Comment */: return 'Comment';
             case 2 /* String */: return 'String';
-            case 4 /* RegEx */: return 'RegEx';
+            case 3 /* RegEx */: return 'RegEx';
+            default: return '??';
         }
-        return '??';
-    };
-    InspectTokensWidget.prototype._fontStyleToString = function (fontStyle) {
-        var r = '';
+    }
+    _fontStyleToString(fontStyle) {
+        let r = '';
         if (fontStyle & 1 /* Italic */) {
             r += 'italic ';
         }
@@ -236,53 +199,59 @@ var InspectTokensWidget = /** @class */ (function (_super) {
         if (fontStyle & 4 /* Underline */) {
             r += 'underline ';
         }
+        if (fontStyle & 8 /* Strikethrough */) {
+            r += 'strikethrough ';
+        }
         if (r.length === 0) {
             r = '---';
         }
         return r;
-    };
-    InspectTokensWidget.prototype._getTokensAtLine = function (lineNumber) {
-        var stateBeforeLine = this._getStateBeforeLine(lineNumber);
-        var tokenizationResult1 = this._tokenizationSupport.tokenize(this._model.getLineContent(lineNumber), stateBeforeLine, 0);
-        var tokenizationResult2 = this._tokenizationSupport.tokenize2(this._model.getLineContent(lineNumber), stateBeforeLine, 0);
+    }
+    _getTokensAtLine(lineNumber) {
+        const stateBeforeLine = this._getStateBeforeLine(lineNumber);
+        const tokenizationResult1 = this._tokenizationSupport.tokenize(this._model.getLineContent(lineNumber), true, stateBeforeLine);
+        const tokenizationResult2 = this._tokenizationSupport.tokenizeEncoded(this._model.getLineContent(lineNumber), true, stateBeforeLine);
         return {
             startState: stateBeforeLine,
             tokens1: tokenizationResult1.tokens,
             tokens2: tokenizationResult2.tokens,
             endState: tokenizationResult1.endState
         };
-    };
-    InspectTokensWidget.prototype._getStateBeforeLine = function (lineNumber) {
-        var state = this._tokenizationSupport.getInitialState();
-        for (var i = 1; i < lineNumber; i++) {
-            var tokenizationResult = this._tokenizationSupport.tokenize(this._model.getLineContent(i), state, 0);
+    }
+    _getStateBeforeLine(lineNumber) {
+        let state = this._tokenizationSupport.getInitialState();
+        for (let i = 1; i < lineNumber; i++) {
+            const tokenizationResult = this._tokenizationSupport.tokenize(this._model.getLineContent(i), true, state);
             state = tokenizationResult.endState;
         }
         return state;
-    };
-    InspectTokensWidget.prototype.getDomNode = function () {
+    }
+    getDomNode() {
         return this._domNode;
-    };
-    InspectTokensWidget.prototype.getPosition = function () {
+    }
+    getPosition() {
         return {
             position: this._editor.getPosition(),
             preference: [2 /* BELOW */, 1 /* ABOVE */]
         };
-    };
-    InspectTokensWidget._ID = 'editor.contrib.inspectTokensWidget';
-    return InspectTokensWidget;
-}(Disposable));
-registerEditorContribution(InspectTokensController);
-registerEditorAction(InspectTokens);
-registerThemingParticipant(function (theme, collector) {
-    var border = theme.getColor(editorHoverBorder);
-    if (border) {
-        var borderWidth = theme.type === HIGH_CONTRAST ? 2 : 1;
-        collector.addRule(".monaco-editor .tokens-inspect-widget { border: " + borderWidth + "px solid " + border + "; }");
-        collector.addRule(".monaco-editor .tokens-inspect-widget .tokens-inspect-separator { background-color: " + border + "; }");
     }
-    var background = theme.getColor(editorHoverBackground);
+}
+InspectTokensWidget._ID = 'editor.contrib.inspectTokensWidget';
+registerEditorContribution(InspectTokensController.ID, InspectTokensController);
+registerEditorAction(InspectTokens);
+registerThemingParticipant((theme, collector) => {
+    const border = theme.getColor(editorHoverBorder);
+    if (border) {
+        const borderWidth = theme.type === ColorScheme.HIGH_CONTRAST ? 2 : 1;
+        collector.addRule(`.monaco-editor .tokens-inspect-widget { border: ${borderWidth}px solid ${border}; }`);
+        collector.addRule(`.monaco-editor .tokens-inspect-widget .tokens-inspect-separator { background-color: ${border}; }`);
+    }
+    const background = theme.getColor(editorHoverBackground);
     if (background) {
-        collector.addRule(".monaco-editor .tokens-inspect-widget { background-color: " + background + "; }");
+        collector.addRule(`.monaco-editor .tokens-inspect-widget { background-color: ${background}; }`);
+    }
+    const foreground = theme.getColor(editorHoverForeground);
+    if (foreground) {
+        collector.addRule(`.monaco-editor .tokens-inspect-widget { color: ${foreground}; }`);
     }
 });
