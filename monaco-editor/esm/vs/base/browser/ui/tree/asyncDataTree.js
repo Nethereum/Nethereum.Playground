@@ -2,64 +2,29 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-import { ComposedTreeDelegate } from './abstractTree.js';
-import { ObjectTree } from './objectTree.js';
-import { dispose } from '../../../common/lifecycle.js';
-import { Emitter, Event } from '../../../common/event.js';
-import { timeout, createCancelablePromise } from '../../../common/async.js';
-import { Iterator } from '../../../common/iterator.js';
 import { ElementsDragAndDropData } from '../list/listView.js';
-import { isPromiseCanceledError, onUnexpectedError } from '../../../common/errors.js';
-import { toggleClass } from '../../dom.js';
-import { values } from '../../../common/map.js';
+import { ComposedTreeDelegate } from './abstractTree.js';
+import { getVisibleState, isFilterResult } from './indexTreeModel.js';
+import { CompressibleObjectTree, ObjectTree } from './objectTree.js';
+import { TreeError, WeakMapper } from './tree.js';
+import { createCancelablePromise, Promises, timeout } from '../../../common/async.js';
+import { Codicon } from '../../../common/codicons.js';
+import { isCancellationError, onUnexpectedError } from '../../../common/errors.js';
+import { Emitter, Event } from '../../../common/event.js';
+import { Iterable } from '../../../common/iterator.js';
+import { DisposableStore, dispose } from '../../../common/lifecycle.js';
+import { isIterable } from '../../../common/types.js';
 function createAsyncDataTreeNode(props) {
-    return __assign({}, props, { children: [], loading: false, stale: true, slow: false });
+    return Object.assign(Object.assign({}, props), { children: [], refreshPromise: undefined, stale: true, slow: false, collapsedByDefault: undefined });
 }
 function isAncestor(ancestor, descendant) {
     if (!descendant.parent) {
@@ -75,611 +40,501 @@ function isAncestor(ancestor, descendant) {
 function intersects(node, other) {
     return node === other || isAncestor(node, other) || isAncestor(other, node);
 }
-var AsyncDataTreeNodeWrapper = /** @class */ (function () {
-    function AsyncDataTreeNodeWrapper(node) {
+class AsyncDataTreeNodeWrapper {
+    constructor(node) {
         this.node = node;
     }
-    Object.defineProperty(AsyncDataTreeNodeWrapper.prototype, "element", {
-        get: function () { return this.node.element.element; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTreeNodeWrapper.prototype, "parent", {
-        get: function () { return this.node.parent && new AsyncDataTreeNodeWrapper(this.node.parent); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTreeNodeWrapper.prototype, "children", {
-        get: function () { return this.node.children.map(function (node) { return new AsyncDataTreeNodeWrapper(node); }); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTreeNodeWrapper.prototype, "depth", {
-        get: function () { return this.node.depth; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTreeNodeWrapper.prototype, "visibleChildrenCount", {
-        get: function () { return this.node.visibleChildrenCount; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTreeNodeWrapper.prototype, "visibleChildIndex", {
-        get: function () { return this.node.visibleChildIndex; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTreeNodeWrapper.prototype, "collapsible", {
-        get: function () { return this.node.collapsible; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTreeNodeWrapper.prototype, "collapsed", {
-        get: function () { return this.node.collapsed; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTreeNodeWrapper.prototype, "visible", {
-        get: function () { return this.node.visible; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTreeNodeWrapper.prototype, "filterData", {
-        get: function () { return this.node.filterData; },
-        enumerable: true,
-        configurable: true
-    });
-    return AsyncDataTreeNodeWrapper;
-}());
-var DataTreeRenderer = /** @class */ (function () {
-    function DataTreeRenderer(renderer, onDidChangeTwistieState) {
+    get element() { return this.node.element.element; }
+    get children() { return this.node.children.map(node => new AsyncDataTreeNodeWrapper(node)); }
+    get depth() { return this.node.depth; }
+    get visibleChildrenCount() { return this.node.visibleChildrenCount; }
+    get visibleChildIndex() { return this.node.visibleChildIndex; }
+    get collapsible() { return this.node.collapsible; }
+    get collapsed() { return this.node.collapsed; }
+    get visible() { return this.node.visible; }
+    get filterData() { return this.node.filterData; }
+}
+class AsyncDataTreeRenderer {
+    constructor(renderer, nodeMapper, onDidChangeTwistieState) {
         this.renderer = renderer;
+        this.nodeMapper = nodeMapper;
         this.onDidChangeTwistieState = onDidChangeTwistieState;
         this.renderedNodes = new Map();
-        this.disposables = [];
         this.templateId = renderer.templateId;
     }
-    DataTreeRenderer.prototype.renderTemplate = function (container) {
-        var templateData = this.renderer.renderTemplate(container);
-        return { templateData: templateData };
-    };
-    DataTreeRenderer.prototype.renderElement = function (node, index, templateData, dynamicHeightProbing) {
-        this.renderer.renderElement(new AsyncDataTreeNodeWrapper(node), index, templateData.templateData, dynamicHeightProbing);
-    };
-    DataTreeRenderer.prototype.renderTwistie = function (element, twistieElement) {
-        toggleClass(twistieElement, 'loading', element.slow);
-        return false;
-    };
-    DataTreeRenderer.prototype.disposeElement = function (node, index, templateData, dynamicHeightProbing) {
-        if (this.renderer.disposeElement) {
-            this.renderer.disposeElement(new AsyncDataTreeNodeWrapper(node), index, templateData.templateData, dynamicHeightProbing);
+    renderTemplate(container) {
+        const templateData = this.renderer.renderTemplate(container);
+        return { templateData };
+    }
+    renderElement(node, index, templateData, height) {
+        this.renderer.renderElement(this.nodeMapper.map(node), index, templateData.templateData, height);
+    }
+    renderTwistie(element, twistieElement) {
+        if (element.slow) {
+            twistieElement.classList.add(...Codicon.treeItemLoading.classNamesArray);
+            return true;
         }
-    };
-    DataTreeRenderer.prototype.disposeTemplate = function (templateData) {
+        else {
+            twistieElement.classList.remove(...Codicon.treeItemLoading.classNamesArray);
+            return false;
+        }
+    }
+    disposeElement(node, index, templateData, height) {
+        if (this.renderer.disposeElement) {
+            this.renderer.disposeElement(this.nodeMapper.map(node), index, templateData.templateData, height);
+        }
+    }
+    disposeTemplate(templateData) {
         this.renderer.disposeTemplate(templateData.templateData);
-    };
-    DataTreeRenderer.prototype.dispose = function () {
+    }
+    dispose() {
         this.renderedNodes.clear();
-        this.disposables = dispose(this.disposables);
-    };
-    return DataTreeRenderer;
-}());
+    }
+}
 function asTreeEvent(e) {
     return {
         browserEvent: e.browserEvent,
-        elements: e.elements.map(function (e) { return e.element; })
+        elements: e.elements.map(e => e.element)
     };
 }
-export var ChildrenResolutionReason;
-(function (ChildrenResolutionReason) {
-    ChildrenResolutionReason[ChildrenResolutionReason["Refresh"] = 0] = "Refresh";
-    ChildrenResolutionReason[ChildrenResolutionReason["Expand"] = 1] = "Expand";
-})(ChildrenResolutionReason || (ChildrenResolutionReason = {}));
+function asTreeMouseEvent(e) {
+    return {
+        browserEvent: e.browserEvent,
+        element: e.element && e.element.element,
+        target: e.target
+    };
+}
+class AsyncDataTreeElementsDragAndDropData extends ElementsDragAndDropData {
+    constructor(data) {
+        super(data.elements.map(node => node.element));
+        this.data = data;
+    }
+}
 function asAsyncDataTreeDragAndDropData(data) {
     if (data instanceof ElementsDragAndDropData) {
-        var nodes = data.elements;
-        return new ElementsDragAndDropData(nodes.map(function (node) { return node.element; }));
+        return new AsyncDataTreeElementsDragAndDropData(data);
     }
     return data;
 }
-var AsyncDataTreeNodeListDragAndDrop = /** @class */ (function () {
-    function AsyncDataTreeNodeListDragAndDrop(dnd) {
+class AsyncDataTreeNodeListDragAndDrop {
+    constructor(dnd) {
         this.dnd = dnd;
     }
-    AsyncDataTreeNodeListDragAndDrop.prototype.getDragURI = function (node) {
+    getDragURI(node) {
         return this.dnd.getDragURI(node.element);
-    };
-    AsyncDataTreeNodeListDragAndDrop.prototype.getDragLabel = function (nodes) {
+    }
+    getDragLabel(nodes, originalEvent) {
         if (this.dnd.getDragLabel) {
-            return this.dnd.getDragLabel(nodes.map(function (node) { return node.element; }));
+            return this.dnd.getDragLabel(nodes.map(node => node.element), originalEvent);
         }
         return undefined;
-    };
-    AsyncDataTreeNodeListDragAndDrop.prototype.onDragStart = function (data, originalEvent) {
+    }
+    onDragStart(data, originalEvent) {
         if (this.dnd.onDragStart) {
             this.dnd.onDragStart(asAsyncDataTreeDragAndDropData(data), originalEvent);
         }
-    };
-    AsyncDataTreeNodeListDragAndDrop.prototype.onDragOver = function (data, targetNode, targetIndex, originalEvent, raw) {
-        if (raw === void 0) { raw = true; }
+    }
+    onDragOver(data, targetNode, targetIndex, originalEvent, raw = true) {
         return this.dnd.onDragOver(asAsyncDataTreeDragAndDropData(data), targetNode && targetNode.element, targetIndex, originalEvent);
-    };
-    AsyncDataTreeNodeListDragAndDrop.prototype.drop = function (data, targetNode, targetIndex, originalEvent) {
+    }
+    drop(data, targetNode, targetIndex, originalEvent) {
         this.dnd.drop(asAsyncDataTreeDragAndDropData(data), targetNode && targetNode.element, targetIndex, originalEvent);
-    };
-    return AsyncDataTreeNodeListDragAndDrop;
-}());
+    }
+    onDragEnd(originalEvent) {
+        if (this.dnd.onDragEnd) {
+            this.dnd.onDragEnd(originalEvent);
+        }
+    }
+}
 function asObjectTreeOptions(options) {
-    return options && __assign({}, options, { collapseByDefault: true, identityProvider: options.identityProvider && {
-            getId: function (el) {
+    return options && Object.assign(Object.assign({}, options), { collapseByDefault: true, identityProvider: options.identityProvider && {
+            getId(el) {
                 return options.identityProvider.getId(el.element);
             }
         }, dnd: options.dnd && new AsyncDataTreeNodeListDragAndDrop(options.dnd), multipleSelectionController: options.multipleSelectionController && {
-            isSelectionSingleChangeEvent: function (e) {
-                return options.multipleSelectionController.isSelectionSingleChangeEvent(__assign({}, e, { element: e.element }));
+            isSelectionSingleChangeEvent(e) {
+                return options.multipleSelectionController.isSelectionSingleChangeEvent(Object.assign(Object.assign({}, e), { element: e.element }));
             },
-            isSelectionRangeChangeEvent: function (e) {
-                return options.multipleSelectionController.isSelectionRangeChangeEvent(__assign({}, e, { element: e.element }));
+            isSelectionRangeChangeEvent(e) {
+                return options.multipleSelectionController.isSelectionRangeChangeEvent(Object.assign(Object.assign({}, e), { element: e.element }));
             }
-        }, accessibilityProvider: options.accessibilityProvider && {
-            getAriaLabel: function (e) {
+        }, accessibilityProvider: options.accessibilityProvider && Object.assign(Object.assign({}, options.accessibilityProvider), { getPosInSet: undefined, getSetSize: undefined, getRole: options.accessibilityProvider.getRole ? (el) => {
+                return options.accessibilityProvider.getRole(el.element);
+            } : () => 'treeitem', isChecked: options.accessibilityProvider.isChecked ? (e) => {
+                var _a;
+                return !!((_a = options.accessibilityProvider) === null || _a === void 0 ? void 0 : _a.isChecked(e.element));
+            } : undefined, getAriaLabel(e) {
                 return options.accessibilityProvider.getAriaLabel(e.element);
-            }
-        }, filter: options.filter && {
-            filter: function (e, parentVisibility) {
+            },
+            getWidgetAriaLabel() {
+                return options.accessibilityProvider.getWidgetAriaLabel();
+            }, getWidgetRole: options.accessibilityProvider.getWidgetRole ? () => options.accessibilityProvider.getWidgetRole() : () => 'tree', getAriaLevel: options.accessibilityProvider.getAriaLevel && (node => {
+                return options.accessibilityProvider.getAriaLevel(node.element);
+            }), getActiveDescendantId: options.accessibilityProvider.getActiveDescendantId && (node => {
+                return options.accessibilityProvider.getActiveDescendantId(node.element);
+            }) }), filter: options.filter && {
+            filter(e, parentVisibility) {
                 return options.filter.filter(e.element, parentVisibility);
             }
-        }, keyboardNavigationLabelProvider: options.keyboardNavigationLabelProvider && {
-            getKeyboardNavigationLabel: function (e) {
+        }, keyboardNavigationLabelProvider: options.keyboardNavigationLabelProvider && Object.assign(Object.assign({}, options.keyboardNavigationLabelProvider), { getKeyboardNavigationLabel(e) {
                 return options.keyboardNavigationLabelProvider.getKeyboardNavigationLabel(e.element);
-            }
-        }, sorter: undefined, expandOnlyOnTwistieClick: typeof options.expandOnlyOnTwistieClick === 'undefined' ? undefined : (typeof options.expandOnlyOnTwistieClick !== 'function' ? options.expandOnlyOnTwistieClick : (function (e) { return options.expandOnlyOnTwistieClick(e.element); })), ariaSetProvider: undefined });
-}
-function asTreeElement(node, viewStateContext) {
-    var collapsed;
-    if (viewStateContext && viewStateContext.viewState.expanded && node.id) {
-        collapsed = viewStateContext.viewState.expanded.indexOf(node.id) === -1;
-    }
-    return {
-        element: node,
-        children: node.hasChildren ? Iterator.map(Iterator.fromArray(node.children), function (child) { return asTreeElement(child, viewStateContext); }) : [],
-        collapsible: node.hasChildren,
-        collapsed: collapsed
-    };
+            } }), sorter: undefined, expandOnlyOnTwistieClick: typeof options.expandOnlyOnTwistieClick === 'undefined' ? undefined : (typeof options.expandOnlyOnTwistieClick !== 'function' ? options.expandOnlyOnTwistieClick : (e => options.expandOnlyOnTwistieClick(e.element))), additionalScrollHeight: options.additionalScrollHeight });
 }
 function dfs(node, fn) {
     fn(node);
-    node.children.forEach(function (child) { return dfs(child, fn); });
+    node.children.forEach(child => dfs(child, fn));
 }
-var AsyncDataTree = /** @class */ (function () {
-    function AsyncDataTree(container, delegate, renderers, dataSource, options) {
-        var _this = this;
-        if (options === void 0) { options = {}; }
+export class AsyncDataTree {
+    constructor(user, container, delegate, renderers, dataSource, options = {}) {
+        this.user = user;
         this.dataSource = dataSource;
         this.nodes = new Map();
         this.subTreeRefreshPromises = new Map();
         this.refreshPromises = new Map();
         this._onDidRender = new Emitter();
         this._onDidChangeNodeSlowState = new Emitter();
-        this.disposables = [];
+        this.nodeMapper = new WeakMapper(node => new AsyncDataTreeNodeWrapper(node));
+        this.disposables = new DisposableStore();
         this.identityProvider = options.identityProvider;
         this.autoExpandSingleChildren = typeof options.autoExpandSingleChildren === 'undefined' ? false : options.autoExpandSingleChildren;
         this.sorter = options.sorter;
-        var objectTreeDelegate = new ComposedTreeDelegate(delegate);
-        var objectTreeRenderers = renderers.map(function (r) { return new DataTreeRenderer(r, _this._onDidChangeNodeSlowState.event); });
-        var objectTreeOptions = asObjectTreeOptions(options) || {};
-        this.tree = new ObjectTree(container, objectTreeDelegate, objectTreeRenderers, objectTreeOptions);
+        this.collapseByDefault = options.collapseByDefault;
+        this.tree = this.createTree(user, container, delegate, renderers, options);
         this.root = createAsyncDataTreeNode({
             element: undefined,
             parent: null,
             hasChildren: true
         });
         if (this.identityProvider) {
-            this.root = __assign({}, this.root, { id: null });
+            this.root = Object.assign(Object.assign({}, this.root), { id: null });
         }
         this.nodes.set(null, this.root);
         this.tree.onDidChangeCollapseState(this._onDidChangeCollapseState, this, this.disposables);
     }
-    Object.defineProperty(AsyncDataTree.prototype, "onDidChangeFocus", {
-        get: function () { return Event.map(this.tree.onDidChangeFocus, asTreeEvent); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTree.prototype, "onDidChangeSelection", {
-        get: function () { return Event.map(this.tree.onDidChangeSelection, asTreeEvent); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTree.prototype, "onDidOpen", {
-        get: function () { return Event.map(this.tree.onDidOpen, asTreeEvent); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTree.prototype, "onDidFocus", {
-        get: function () { return this.tree.onDidFocus; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AsyncDataTree.prototype, "onDidDispose", {
-        get: function () { return this.tree.onDidDispose; },
-        enumerable: true,
-        configurable: true
-    });
-    AsyncDataTree.prototype.updateOptions = function (options) {
-        if (options === void 0) { options = {}; }
+    get onDidChangeFocus() { return Event.map(this.tree.onDidChangeFocus, asTreeEvent); }
+    get onDidChangeSelection() { return Event.map(this.tree.onDidChangeSelection, asTreeEvent); }
+    get onMouseDblClick() { return Event.map(this.tree.onMouseDblClick, asTreeMouseEvent); }
+    get onPointer() { return Event.map(this.tree.onPointer, asTreeMouseEvent); }
+    get onDidFocus() { return this.tree.onDidFocus; }
+    get onDidChangeModel() { return this.tree.onDidChangeModel; }
+    get onDidChangeCollapseState() { return this.tree.onDidChangeCollapseState; }
+    get onDidDispose() { return this.tree.onDidDispose; }
+    createTree(user, container, delegate, renderers, options) {
+        const objectTreeDelegate = new ComposedTreeDelegate(delegate);
+        const objectTreeRenderers = renderers.map(r => new AsyncDataTreeRenderer(r, this.nodeMapper, this._onDidChangeNodeSlowState.event));
+        const objectTreeOptions = asObjectTreeOptions(options) || {};
+        return new ObjectTree(user, container, objectTreeDelegate, objectTreeRenderers, objectTreeOptions);
+    }
+    updateOptions(options = {}) {
         this.tree.updateOptions(options);
-    };
+    }
     // Widget
-    AsyncDataTree.prototype.getHTMLElement = function () {
+    getHTMLElement() {
         return this.tree.getHTMLElement();
-    };
-    Object.defineProperty(AsyncDataTree.prototype, "scrollTop", {
-        get: function () {
-            return this.tree.scrollTop;
-        },
-        set: function (scrollTop) {
-            this.tree.scrollTop = scrollTop;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AsyncDataTree.prototype.domFocus = function () {
+    }
+    get scrollTop() {
+        return this.tree.scrollTop;
+    }
+    set scrollTop(scrollTop) {
+        this.tree.scrollTop = scrollTop;
+    }
+    domFocus() {
         this.tree.domFocus();
-    };
-    AsyncDataTree.prototype.layout = function (height, width) {
+    }
+    layout(height, width) {
         this.tree.layout(height, width);
-    };
-    AsyncDataTree.prototype.style = function (styles) {
+    }
+    style(styles) {
         this.tree.style(styles);
-    };
+    }
     // Model
-    AsyncDataTree.prototype.getInput = function () {
+    getInput() {
         return this.root.element;
-    };
-    AsyncDataTree.prototype.setInput = function (input, viewState) {
-        return __awaiter(this, void 0, void 0, function () {
-            var viewStateContext;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.refreshPromises.forEach(function (promise) { return promise.cancel(); });
-                        this.refreshPromises.clear();
-                        this.root.element = input;
-                        viewStateContext = viewState && { viewState: viewState, focus: [], selection: [] };
-                        return [4 /*yield*/, this.updateChildren(input, true, viewStateContext)];
-                    case 1:
-                        _a.sent();
-                        if (viewStateContext) {
-                            this.tree.setFocus(viewStateContext.focus);
-                            this.tree.setSelection(viewStateContext.selection);
-                        }
-                        if (viewState && typeof viewState.scrollTop === 'number') {
-                            this.scrollTop = viewState.scrollTop;
-                        }
-                        return [2 /*return*/];
-                }
-            });
+    }
+    setInput(input, viewState) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.refreshPromises.forEach(promise => promise.cancel());
+            this.refreshPromises.clear();
+            this.root.element = input;
+            const viewStateContext = viewState && { viewState, focus: [], selection: [] };
+            yield this._updateChildren(input, true, false, viewStateContext);
+            if (viewStateContext) {
+                this.tree.setFocus(viewStateContext.focus);
+                this.tree.setSelection(viewStateContext.selection);
+            }
+            if (viewState && typeof viewState.scrollTop === 'number') {
+                this.scrollTop = viewState.scrollTop;
+            }
         });
-    };
-    AsyncDataTree.prototype.updateChildren = function (element, recursive, viewStateContext) {
-        if (element === void 0) { element = this.root.element; }
-        if (recursive === void 0) { recursive = true; }
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (typeof this.root.element === 'undefined') {
-                            throw new Error('Tree input not set');
-                        }
-                        if (!this.root.loading) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this.subTreeRefreshPromises.get(this.root)];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, Event.toPromise(this._onDidRender.event)];
-                    case 2:
-                        _a.sent();
-                        _a.label = 3;
-                    case 3: return [4 /*yield*/, this.refreshAndRenderNode(this.getDataNode(element), recursive, ChildrenResolutionReason.Refresh, viewStateContext)];
-                    case 4:
-                        _a.sent();
-                        return [2 /*return*/];
+    }
+    _updateChildren(element = this.root.element, recursive = true, rerender = false, viewStateContext, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (typeof this.root.element === 'undefined') {
+                throw new TreeError(this.user, 'Tree input not set');
+            }
+            if (this.root.refreshPromise) {
+                yield this.root.refreshPromise;
+                yield Event.toPromise(this._onDidRender.event);
+            }
+            const node = this.getDataNode(element);
+            yield this.refreshAndRenderNode(node, recursive, viewStateContext, options);
+            if (rerender) {
+                try {
+                    this.tree.rerender(node);
                 }
-            });
+                catch (_a) {
+                    // missing nodes are fine, this could've resulted from
+                    // parallel refresh calls, removing `node` altogether
+                }
+            }
         });
-    };
+    }
     // View
-    AsyncDataTree.prototype.rerender = function (element) {
-        if (element === undefined) {
+    rerender(element) {
+        if (element === undefined || element === this.root.element) {
             this.tree.rerender();
             return;
         }
-        var node = this.getDataNode(element);
+        const node = this.getDataNode(element);
         this.tree.rerender(node);
-    };
-    AsyncDataTree.prototype.collapse = function (element, recursive) {
-        if (recursive === void 0) { recursive = false; }
-        var node = this.getDataNode(element);
+    }
+    // Tree
+    getNode(element = this.root.element) {
+        const dataNode = this.getDataNode(element);
+        const node = this.tree.getNode(dataNode === this.root ? null : dataNode);
+        return this.nodeMapper.map(node);
+    }
+    collapse(element, recursive = false) {
+        const node = this.getDataNode(element);
         return this.tree.collapse(node === this.root ? null : node, recursive);
-    };
-    AsyncDataTree.prototype.expand = function (element, recursive) {
-        if (recursive === void 0) { recursive = false; }
-        return __awaiter(this, void 0, void 0, function () {
-            var node, result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (typeof this.root.element === 'undefined') {
-                            throw new Error('Tree input not set');
-                        }
-                        if (!this.root.loading) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this.subTreeRefreshPromises.get(this.root)];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, Event.toPromise(this._onDidRender.event)];
-                    case 2:
-                        _a.sent();
-                        _a.label = 3;
-                    case 3:
-                        node = this.getDataNode(element);
-                        if (node !== this.root && !node.loading && !this.tree.isCollapsed(node)) {
-                            return [2 /*return*/, false];
-                        }
-                        result = this.tree.expand(node === this.root ? null : node, recursive);
-                        if (!node.loading) return [3 /*break*/, 6];
-                        return [4 /*yield*/, this.subTreeRefreshPromises.get(node)];
-                    case 4:
-                        _a.sent();
-                        return [4 /*yield*/, Event.toPromise(this._onDidRender.event)];
-                    case 5:
-                        _a.sent();
-                        _a.label = 6;
-                    case 6: return [2 /*return*/, result];
-                }
-            });
+    }
+    expand(element, recursive = false) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (typeof this.root.element === 'undefined') {
+                throw new TreeError(this.user, 'Tree input not set');
+            }
+            if (this.root.refreshPromise) {
+                yield this.root.refreshPromise;
+                yield Event.toPromise(this._onDidRender.event);
+            }
+            const node = this.getDataNode(element);
+            if (this.tree.hasElement(node) && !this.tree.isCollapsible(node)) {
+                return false;
+            }
+            if (node.refreshPromise) {
+                yield this.root.refreshPromise;
+                yield Event.toPromise(this._onDidRender.event);
+            }
+            if (node !== this.root && !node.refreshPromise && !this.tree.isCollapsed(node)) {
+                return false;
+            }
+            const result = this.tree.expand(node === this.root ? null : node, recursive);
+            if (node.refreshPromise) {
+                yield this.root.refreshPromise;
+                yield Event.toPromise(this._onDidRender.event);
+            }
+            return result;
         });
-    };
-    AsyncDataTree.prototype.setSelection = function (elements, browserEvent) {
-        var _this = this;
-        var nodes = elements.map(function (e) { return _this.getDataNode(e); });
+    }
+    setSelection(elements, browserEvent) {
+        const nodes = elements.map(e => this.getDataNode(e));
         this.tree.setSelection(nodes, browserEvent);
-    };
-    AsyncDataTree.prototype.getSelection = function () {
-        var nodes = this.tree.getSelection();
-        return nodes.map(function (n) { return n.element; });
-    };
-    AsyncDataTree.prototype.setFocus = function (elements, browserEvent) {
-        var _this = this;
-        var nodes = elements.map(function (e) { return _this.getDataNode(e); });
+    }
+    getSelection() {
+        const nodes = this.tree.getSelection();
+        return nodes.map(n => n.element);
+    }
+    setFocus(elements, browserEvent) {
+        const nodes = elements.map(e => this.getDataNode(e));
         this.tree.setFocus(nodes, browserEvent);
-    };
-    AsyncDataTree.prototype.getFocus = function () {
-        var nodes = this.tree.getFocus();
-        return nodes.map(function (n) { return n.element; });
-    };
-    AsyncDataTree.prototype.reveal = function (element, relativeTop) {
+    }
+    getFocus() {
+        const nodes = this.tree.getFocus();
+        return nodes.map(n => n.element);
+    }
+    reveal(element, relativeTop) {
         this.tree.reveal(this.getDataNode(element), relativeTop);
-    };
+    }
+    // Tree navigation
+    getParentElement(element) {
+        const node = this.tree.getParentElement(this.getDataNode(element));
+        return (node && node.element);
+    }
+    getFirstElementChild(element = this.root.element) {
+        const dataNode = this.getDataNode(element);
+        const node = this.tree.getFirstElementChild(dataNode === this.root ? null : dataNode);
+        return (node && node.element);
+    }
     // Implementation
-    AsyncDataTree.prototype.getDataNode = function (element) {
-        var node = this.nodes.get((element === this.root.element ? null : element));
+    getDataNode(element) {
+        const node = this.nodes.get((element === this.root.element ? null : element));
         if (!node) {
-            throw new Error("Data tree node not found: " + element);
+            throw new TreeError(this.user, `Data tree node not found: ${element}`);
         }
         return node;
-    };
-    AsyncDataTree.prototype.refreshAndRenderNode = function (node, recursive, reason, viewStateContext) {
-        return __awaiter(this, void 0, void 0, function () {
-            var treeNode, visibleChildren;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.refreshNode(node, recursive, viewStateContext)];
-                    case 1:
-                        _a.sent();
-                        this.render(node, viewStateContext);
-                        if (!(node !== this.root && this.autoExpandSingleChildren && reason === ChildrenResolutionReason.Expand)) return [3 /*break*/, 3];
-                        treeNode = this.tree.getNode(node);
-                        visibleChildren = treeNode.children.filter(function (node) { return node.visible; });
-                        if (!(visibleChildren.length === 1)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this.tree.expand(visibleChildren[0].element, false)];
-                    case 2:
-                        _a.sent();
-                        _a.label = 3;
-                    case 3: return [2 /*return*/];
+    }
+    refreshAndRenderNode(node, recursive, viewStateContext, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.refreshNode(node, recursive, viewStateContext);
+            this.render(node, viewStateContext, options);
+        });
+    }
+    refreshNode(node, recursive, viewStateContext) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let result;
+            this.subTreeRefreshPromises.forEach((refreshPromise, refreshNode) => {
+                if (!result && intersects(refreshNode, node)) {
+                    result = refreshPromise.then(() => this.refreshNode(node, recursive, viewStateContext));
                 }
             });
+            if (result) {
+                return result;
+            }
+            return this.doRefreshSubTree(node, recursive, viewStateContext);
         });
-    };
-    AsyncDataTree.prototype.refreshNode = function (node, recursive, viewStateContext) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.subTreeRefreshPromises.forEach(function (refreshPromise, refreshNode) {
-                            if (!result && intersects(refreshNode, node)) {
-                                result = refreshPromise.then(function () { return _this.refreshNode(node, recursive, viewStateContext); });
-                            }
-                        });
-                        if (result) {
-                            return [2 /*return*/, result];
-                        }
-                        result = this.doRefreshSubTree(node, recursive, viewStateContext);
-                        this.subTreeRefreshPromises.set(node, result);
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, , 3, 4]);
-                        return [4 /*yield*/, result];
-                    case 2:
-                        _a.sent();
-                        return [3 /*break*/, 4];
-                    case 3:
-                        this.subTreeRefreshPromises.delete(node);
-                        return [7 /*endfinally*/];
-                    case 4: return [2 /*return*/];
-                }
+    }
+    doRefreshSubTree(node, recursive, viewStateContext) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let done;
+            node.refreshPromise = new Promise(c => done = c);
+            this.subTreeRefreshPromises.set(node, node.refreshPromise);
+            node.refreshPromise.finally(() => {
+                node.refreshPromise = undefined;
+                this.subTreeRefreshPromises.delete(node);
             });
+            try {
+                const childrenToRefresh = yield this.doRefreshNode(node, recursive, viewStateContext);
+                node.stale = false;
+                yield Promises.settled(childrenToRefresh.map(child => this.doRefreshSubTree(child, recursive, viewStateContext)));
+            }
+            finally {
+                done();
+            }
         });
-    };
-    AsyncDataTree.prototype.doRefreshSubTree = function (node, recursive, viewStateContext) {
-        return __awaiter(this, void 0, void 0, function () {
-            var childrenToRefresh;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        node.loading = true;
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, , 4, 5]);
-                        return [4 /*yield*/, this.doRefreshNode(node, recursive, viewStateContext)];
-                    case 2:
-                        childrenToRefresh = _a.sent();
-                        node.stale = false;
-                        return [4 /*yield*/, Promise.all(childrenToRefresh.map(function (child) { return _this.doRefreshSubTree(child, recursive, viewStateContext); }))];
-                    case 3:
-                        _a.sent();
-                        return [3 /*break*/, 5];
-                    case 4:
-                        node.loading = false;
-                        return [7 /*endfinally*/];
-                    case 5: return [2 /*return*/];
+    }
+    doRefreshNode(node, recursive, viewStateContext) {
+        return __awaiter(this, void 0, void 0, function* () {
+            node.hasChildren = !!this.dataSource.hasChildren(node.element);
+            let childrenPromise;
+            if (!node.hasChildren) {
+                childrenPromise = Promise.resolve(Iterable.empty());
+            }
+            else {
+                const children = this.doGetChildren(node);
+                if (isIterable(children)) {
+                    childrenPromise = Promise.resolve(children);
                 }
-            });
-        });
-    };
-    AsyncDataTree.prototype.doRefreshNode = function (node, recursive, viewStateContext) {
-        return __awaiter(this, void 0, void 0, function () {
-            var childrenPromise, slowTimeout_1, children, err_1;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        node.hasChildren = !!this.dataSource.hasChildren(node.element);
-                        if (!node.hasChildren) {
-                            childrenPromise = Promise.resolve([]);
-                        }
-                        else {
-                            slowTimeout_1 = timeout(800);
-                            slowTimeout_1.then(function () {
-                                node.slow = true;
-                                _this._onDidChangeNodeSlowState.fire(node);
-                            }, function (_) { return null; });
-                            childrenPromise = this.doGetChildren(node)
-                                .finally(function () { return slowTimeout_1.cancel(); });
-                        }
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 3, 4, 5]);
-                        return [4 /*yield*/, childrenPromise];
-                    case 2:
-                        children = _a.sent();
-                        return [2 /*return*/, this.setChildren(node, children, recursive, viewStateContext)];
-                    case 3:
-                        err_1 = _a.sent();
-                        if (node !== this.root) {
-                            this.tree.collapse(node === this.root ? null : node);
-                        }
-                        if (isPromiseCanceledError(err_1)) {
-                            return [2 /*return*/, []];
-                        }
-                        throw err_1;
-                    case 4:
-                        if (node.slow) {
-                            node.slow = false;
-                            this._onDidChangeNodeSlowState.fire(node);
-                        }
-                        return [7 /*endfinally*/];
-                    case 5: return [2 /*return*/];
+                else {
+                    const slowTimeout = timeout(800);
+                    slowTimeout.then(() => {
+                        node.slow = true;
+                        this._onDidChangeNodeSlowState.fire(node);
+                    }, _ => null);
+                    childrenPromise = children.finally(() => slowTimeout.cancel());
                 }
-            });
+            }
+            try {
+                const children = yield childrenPromise;
+                return this.setChildren(node, children, recursive, viewStateContext);
+            }
+            catch (err) {
+                if (node !== this.root && this.tree.hasElement(node)) {
+                    this.tree.collapse(node);
+                }
+                if (isCancellationError(err)) {
+                    return [];
+                }
+                throw err;
+            }
+            finally {
+                if (node.slow) {
+                    node.slow = false;
+                    this._onDidChangeNodeSlowState.fire(node);
+                }
+            }
         });
-    };
-    AsyncDataTree.prototype.doGetChildren = function (node) {
-        var _this = this;
-        var result = this.refreshPromises.get(node);
+    }
+    doGetChildren(node) {
+        let result = this.refreshPromises.get(node);
         if (result) {
             return result;
         }
-        result = createCancelablePromise(function () { return __awaiter(_this, void 0, void 0, function () {
-            var children;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.dataSource.getChildren(node.element)];
-                    case 1:
-                        children = _a.sent();
-                        if (this.sorter) {
-                            children.sort(this.sorter.compare.bind(this.sorter));
-                        }
-                        return [2 /*return*/, children];
-                }
-            });
-        }); });
-        this.refreshPromises.set(node, result);
-        return result.finally(function () { return _this.refreshPromises.delete(node); });
-    };
-    AsyncDataTree.prototype._onDidChangeCollapseState = function (_a) {
-        var node = _a.node, deep = _a.deep;
+        const children = this.dataSource.getChildren(node.element);
+        if (isIterable(children)) {
+            return this.processChildren(children);
+        }
+        else {
+            result = createCancelablePromise(() => __awaiter(this, void 0, void 0, function* () { return this.processChildren(yield children); }));
+            this.refreshPromises.set(node, result);
+            return result.finally(() => { this.refreshPromises.delete(node); });
+        }
+    }
+    _onDidChangeCollapseState({ node, deep }) {
+        if (node.element === null) {
+            return;
+        }
         if (!node.collapsed && node.element.stale) {
             if (deep) {
                 this.collapse(node.element.element);
             }
             else {
-                this.refreshAndRenderNode(node.element, false, ChildrenResolutionReason.Expand)
+                this.refreshAndRenderNode(node.element, false)
                     .catch(onUnexpectedError);
             }
         }
-    };
-    AsyncDataTree.prototype.setChildren = function (node, childrenElements, recursive, viewStateContext) {
-        var _this = this;
-        var _a;
+    }
+    setChildren(node, childrenElementsIterable, recursive, viewStateContext) {
+        const childrenElements = [...childrenElementsIterable];
         // perf: if the node was and still is a leaf, avoid all this hassle
         if (node.children.length === 0 && childrenElements.length === 0) {
             return [];
         }
-        var nodesToForget = new Map();
-        var childrenTreeNodesById = new Map();
-        for (var _i = 0, _b = node.children; _i < _b.length; _i++) {
-            var child = _b[_i];
+        const nodesToForget = new Map();
+        const childrenTreeNodesById = new Map();
+        for (const child of node.children) {
             nodesToForget.set(child.element, child);
             if (this.identityProvider) {
-                childrenTreeNodesById.set(child.id, this.tree.getNode(child));
+                const collapsed = this.tree.isCollapsed(child);
+                childrenTreeNodesById.set(child.id, { node: child, collapsed });
             }
         }
-        var childrenToRefresh = [];
-        var children = childrenElements.map(function (element) {
-            if (!_this.identityProvider) {
-                return createAsyncDataTreeNode({
-                    element: element,
-                    parent: node,
-                    hasChildren: !!_this.dataSource.hasChildren(element)
-                });
+        const childrenToRefresh = [];
+        const children = childrenElements.map(element => {
+            const hasChildren = !!this.dataSource.hasChildren(element);
+            if (!this.identityProvider) {
+                const asyncDataTreeNode = createAsyncDataTreeNode({ element, parent: node, hasChildren });
+                if (hasChildren && this.collapseByDefault && !this.collapseByDefault(element)) {
+                    asyncDataTreeNode.collapsedByDefault = false;
+                    childrenToRefresh.push(asyncDataTreeNode);
+                }
+                return asyncDataTreeNode;
             }
-            var id = _this.identityProvider.getId(element).toString();
-            var childNode = childrenTreeNodesById.get(id);
-            if (childNode) {
-                var asyncDataTreeNode = childNode.element;
+            const id = this.identityProvider.getId(element).toString();
+            const result = childrenTreeNodesById.get(id);
+            if (result) {
+                const asyncDataTreeNode = result.node;
                 nodesToForget.delete(asyncDataTreeNode.element);
-                _this.nodes.delete(asyncDataTreeNode.element);
-                _this.nodes.set(element, asyncDataTreeNode);
+                this.nodes.delete(asyncDataTreeNode.element);
+                this.nodes.set(element, asyncDataTreeNode);
                 asyncDataTreeNode.element = element;
-                asyncDataTreeNode.hasChildren = !!_this.dataSource.hasChildren(element);
+                asyncDataTreeNode.hasChildren = hasChildren;
                 if (recursive) {
-                    if (childNode.collapsed) {
-                        dfs(asyncDataTreeNode, function (node) { return node.stale = true; });
+                    if (result.collapsed) {
+                        asyncDataTreeNode.children.forEach(node => dfs(node, node => this.nodes.delete(node.element)));
+                        asyncDataTreeNode.children.splice(0, asyncDataTreeNode.children.length);
+                        asyncDataTreeNode.stale = true;
                     }
                     else {
                         childrenToRefresh.push(asyncDataTreeNode);
                     }
                 }
+                else if (hasChildren && this.collapseByDefault && !this.collapseByDefault(element)) {
+                    asyncDataTreeNode.collapsedByDefault = false;
+                    childrenToRefresh.push(asyncDataTreeNode);
+                }
                 return asyncDataTreeNode;
             }
-            var childAsyncDataTreeNode = createAsyncDataTreeNode({
-                element: element,
-                parent: node,
-                id: id,
-                hasChildren: !!_this.dataSource.hasChildren(element)
-            });
+            const childAsyncDataTreeNode = createAsyncDataTreeNode({ element, parent: node, id, hasChildren });
             if (viewStateContext && viewStateContext.viewState.focus && viewStateContext.viewState.focus.indexOf(id) > -1) {
                 viewStateContext.focus.push(childAsyncDataTreeNode);
             }
@@ -689,27 +544,244 @@ var AsyncDataTree = /** @class */ (function () {
             if (viewStateContext && viewStateContext.viewState.expanded && viewStateContext.viewState.expanded.indexOf(id) > -1) {
                 childrenToRefresh.push(childAsyncDataTreeNode);
             }
+            else if (hasChildren && this.collapseByDefault && !this.collapseByDefault(element)) {
+                childAsyncDataTreeNode.collapsedByDefault = false;
+                childrenToRefresh.push(childAsyncDataTreeNode);
+            }
             return childAsyncDataTreeNode;
         });
-        for (var _c = 0, _d = values(nodesToForget); _c < _d.length; _c++) {
-            var node_1 = _d[_c];
-            dfs(node_1, function (node) { return _this.nodes.delete(node.element); });
+        for (const node of nodesToForget.values()) {
+            dfs(node, node => this.nodes.delete(node.element));
         }
-        for (var _e = 0, children_1 = children; _e < children_1.length; _e++) {
-            var child = children_1[_e];
+        for (const child of children) {
             this.nodes.set(child.element, child);
         }
-        (_a = node.children).splice.apply(_a, [0, node.children.length].concat(children));
+        node.children.splice(0, node.children.length, ...children);
+        // TODO@joao this doesn't take filter into account
+        if (node !== this.root && this.autoExpandSingleChildren && children.length === 1 && childrenToRefresh.length === 0) {
+            children[0].collapsedByDefault = false;
+            childrenToRefresh.push(children[0]);
+        }
         return childrenToRefresh;
-    };
-    AsyncDataTree.prototype.render = function (node, viewStateContext) {
-        var children = node.children.map(function (c) { return asTreeElement(c, viewStateContext); });
-        this.tree.setChildren(node === this.root ? null : node, children);
+    }
+    render(node, viewStateContext, options) {
+        const children = node.children.map(node => this.asTreeElement(node, viewStateContext));
+        const objectTreeOptions = options && Object.assign(Object.assign({}, options), { diffIdentityProvider: options.diffIdentityProvider && {
+                getId(node) {
+                    return options.diffIdentityProvider.getId(node.element);
+                }
+            } });
+        this.tree.setChildren(node === this.root ? null : node, children, objectTreeOptions);
+        if (node !== this.root) {
+            this.tree.setCollapsible(node, node.hasChildren);
+        }
         this._onDidRender.fire();
-    };
-    AsyncDataTree.prototype.dispose = function () {
-        dispose(this.disposables);
-    };
-    return AsyncDataTree;
-}());
-export { AsyncDataTree };
+    }
+    asTreeElement(node, viewStateContext) {
+        if (node.stale) {
+            return {
+                element: node,
+                collapsible: node.hasChildren,
+                collapsed: true
+            };
+        }
+        let collapsed;
+        if (viewStateContext && viewStateContext.viewState.expanded && node.id && viewStateContext.viewState.expanded.indexOf(node.id) > -1) {
+            collapsed = false;
+        }
+        else {
+            collapsed = node.collapsedByDefault;
+        }
+        node.collapsedByDefault = undefined;
+        return {
+            element: node,
+            children: node.hasChildren ? Iterable.map(node.children, child => this.asTreeElement(child, viewStateContext)) : [],
+            collapsible: node.hasChildren,
+            collapsed
+        };
+    }
+    processChildren(children) {
+        if (this.sorter) {
+            children = [...children].sort(this.sorter.compare.bind(this.sorter));
+        }
+        return children;
+    }
+    dispose() {
+        this.disposables.dispose();
+    }
+}
+class CompressibleAsyncDataTreeNodeWrapper {
+    constructor(node) {
+        this.node = node;
+    }
+    get element() {
+        return {
+            elements: this.node.element.elements.map(e => e.element),
+            incompressible: this.node.element.incompressible
+        };
+    }
+    get children() { return this.node.children.map(node => new CompressibleAsyncDataTreeNodeWrapper(node)); }
+    get depth() { return this.node.depth; }
+    get visibleChildrenCount() { return this.node.visibleChildrenCount; }
+    get visibleChildIndex() { return this.node.visibleChildIndex; }
+    get collapsible() { return this.node.collapsible; }
+    get collapsed() { return this.node.collapsed; }
+    get visible() { return this.node.visible; }
+    get filterData() { return this.node.filterData; }
+}
+class CompressibleAsyncDataTreeRenderer {
+    constructor(renderer, nodeMapper, compressibleNodeMapperProvider, onDidChangeTwistieState) {
+        this.renderer = renderer;
+        this.nodeMapper = nodeMapper;
+        this.compressibleNodeMapperProvider = compressibleNodeMapperProvider;
+        this.onDidChangeTwistieState = onDidChangeTwistieState;
+        this.renderedNodes = new Map();
+        this.disposables = [];
+        this.templateId = renderer.templateId;
+    }
+    renderTemplate(container) {
+        const templateData = this.renderer.renderTemplate(container);
+        return { templateData };
+    }
+    renderElement(node, index, templateData, height) {
+        this.renderer.renderElement(this.nodeMapper.map(node), index, templateData.templateData, height);
+    }
+    renderCompressedElements(node, index, templateData, height) {
+        this.renderer.renderCompressedElements(this.compressibleNodeMapperProvider().map(node), index, templateData.templateData, height);
+    }
+    renderTwistie(element, twistieElement) {
+        if (element.slow) {
+            twistieElement.classList.add(...Codicon.treeItemLoading.classNamesArray);
+            return true;
+        }
+        else {
+            twistieElement.classList.remove(...Codicon.treeItemLoading.classNamesArray);
+            return false;
+        }
+    }
+    disposeElement(node, index, templateData, height) {
+        if (this.renderer.disposeElement) {
+            this.renderer.disposeElement(this.nodeMapper.map(node), index, templateData.templateData, height);
+        }
+    }
+    disposeCompressedElements(node, index, templateData, height) {
+        if (this.renderer.disposeCompressedElements) {
+            this.renderer.disposeCompressedElements(this.compressibleNodeMapperProvider().map(node), index, templateData.templateData, height);
+        }
+    }
+    disposeTemplate(templateData) {
+        this.renderer.disposeTemplate(templateData.templateData);
+    }
+    dispose() {
+        this.renderedNodes.clear();
+        this.disposables = dispose(this.disposables);
+    }
+}
+function asCompressibleObjectTreeOptions(options) {
+    const objectTreeOptions = options && asObjectTreeOptions(options);
+    return objectTreeOptions && Object.assign(Object.assign({}, objectTreeOptions), { keyboardNavigationLabelProvider: objectTreeOptions.keyboardNavigationLabelProvider && Object.assign(Object.assign({}, objectTreeOptions.keyboardNavigationLabelProvider), { getCompressedNodeKeyboardNavigationLabel(els) {
+                return options.keyboardNavigationLabelProvider.getCompressedNodeKeyboardNavigationLabel(els.map(e => e.element));
+            } }) });
+}
+export class CompressibleAsyncDataTree extends AsyncDataTree {
+    constructor(user, container, virtualDelegate, compressionDelegate, renderers, dataSource, options = {}) {
+        super(user, container, virtualDelegate, renderers, dataSource, options);
+        this.compressionDelegate = compressionDelegate;
+        this.compressibleNodeMapper = new WeakMapper(node => new CompressibleAsyncDataTreeNodeWrapper(node));
+        this.filter = options.filter;
+    }
+    createTree(user, container, delegate, renderers, options) {
+        const objectTreeDelegate = new ComposedTreeDelegate(delegate);
+        const objectTreeRenderers = renderers.map(r => new CompressibleAsyncDataTreeRenderer(r, this.nodeMapper, () => this.compressibleNodeMapper, this._onDidChangeNodeSlowState.event));
+        const objectTreeOptions = asCompressibleObjectTreeOptions(options) || {};
+        return new CompressibleObjectTree(user, container, objectTreeDelegate, objectTreeRenderers, objectTreeOptions);
+    }
+    asTreeElement(node, viewStateContext) {
+        return Object.assign({ incompressible: this.compressionDelegate.isIncompressible(node.element) }, super.asTreeElement(node, viewStateContext));
+    }
+    updateOptions(options = {}) {
+        this.tree.updateOptions(options);
+    }
+    render(node, viewStateContext) {
+        if (!this.identityProvider) {
+            return super.render(node, viewStateContext);
+        }
+        // Preserve traits across compressions. Hacky but does the trick.
+        // This is hard to fix properly since it requires rewriting the traits
+        // across trees and lists. Let's just keep it this way for now.
+        const getId = (element) => this.identityProvider.getId(element).toString();
+        const getUncompressedIds = (nodes) => {
+            const result = new Set();
+            for (const node of nodes) {
+                const compressedNode = this.tree.getCompressedTreeNode(node === this.root ? null : node);
+                if (!compressedNode.element) {
+                    continue;
+                }
+                for (const node of compressedNode.element.elements) {
+                    result.add(getId(node.element));
+                }
+            }
+            return result;
+        };
+        const oldSelection = getUncompressedIds(this.tree.getSelection());
+        const oldFocus = getUncompressedIds(this.tree.getFocus());
+        super.render(node, viewStateContext);
+        const selection = this.getSelection();
+        let didChangeSelection = false;
+        const focus = this.getFocus();
+        let didChangeFocus = false;
+        const visit = (node) => {
+            const compressedNode = node.element;
+            if (compressedNode) {
+                for (let i = 0; i < compressedNode.elements.length; i++) {
+                    const id = getId(compressedNode.elements[i].element);
+                    const element = compressedNode.elements[compressedNode.elements.length - 1].element;
+                    // github.com/microsoft/vscode/issues/85938
+                    if (oldSelection.has(id) && selection.indexOf(element) === -1) {
+                        selection.push(element);
+                        didChangeSelection = true;
+                    }
+                    if (oldFocus.has(id) && focus.indexOf(element) === -1) {
+                        focus.push(element);
+                        didChangeFocus = true;
+                    }
+                }
+            }
+            node.children.forEach(visit);
+        };
+        visit(this.tree.getCompressedTreeNode(node === this.root ? null : node));
+        if (didChangeSelection) {
+            this.setSelection(selection);
+        }
+        if (didChangeFocus) {
+            this.setFocus(focus);
+        }
+    }
+    // For compressed async data trees, `TreeVisibility.Recurse` doesn't currently work
+    // and we have to filter everything beforehand
+    // Related to #85193 and #85835
+    processChildren(children) {
+        if (this.filter) {
+            children = Iterable.filter(children, e => {
+                const result = this.filter.filter(e, 1 /* Visible */);
+                const visibility = getVisibility(result);
+                if (visibility === 2 /* Recurse */) {
+                    throw new Error('Recursive tree visibility not supported in async data compressed trees');
+                }
+                return visibility === 1 /* Visible */;
+            });
+        }
+        return super.processChildren(children);
+    }
+}
+function getVisibility(filterResult) {
+    if (typeof filterResult === 'boolean') {
+        return filterResult ? 1 /* Visible */ : 0 /* Hidden */;
+    }
+    else if (isFilterResult(filterResult)) {
+        return getVisibleState(filterResult.visibility);
+    }
+    else {
+        return getVisibleState(filterResult);
+    }
+}

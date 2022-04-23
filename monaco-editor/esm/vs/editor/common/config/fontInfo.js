@@ -2,180 +2,136 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import * as platform from '../../../base/common/platform.js';
-import { EDITOR_FONT_DEFAULTS } from './editorOptions.js';
 import { EditorZoom } from './editorZoom.js';
 /**
  * Determined from empirical observations.
  * @internal
  */
-var GOLDEN_LINE_HEIGHT_RATIO = platform.isMacintosh ? 1.5 : 1.35;
+const GOLDEN_LINE_HEIGHT_RATIO = platform.isMacintosh ? 1.5 : 1.35;
 /**
- * Font settings maximum and minimum limits
+ * @internal
  */
-var MINIMUM_FONT_SIZE = 8;
-var MAXIMUM_FONT_SIZE = 100;
-var MINIMUM_LINE_HEIGHT = 8;
-var MAXIMUM_LINE_HEIGHT = 150;
-var MINIMUM_LETTER_SPACING = -5;
-var MAXIMUM_LETTER_SPACING = 20;
-function safeParseFloat(n, defaultValue) {
-    if (typeof n === 'number') {
-        return n;
-    }
-    if (typeof n === 'undefined') {
-        return defaultValue;
-    }
-    var r = parseFloat(n);
-    if (isNaN(r)) {
-        return defaultValue;
-    }
-    return r;
-}
-function safeParseInt(n, defaultValue) {
-    if (typeof n === 'number') {
-        return Math.round(n);
-    }
-    if (typeof n === 'undefined') {
-        return defaultValue;
-    }
-    var r = parseInt(n);
-    if (isNaN(r)) {
-        return defaultValue;
-    }
-    return r;
-}
-function clamp(n, min, max) {
-    if (n < min) {
-        return min;
-    }
-    if (n > max) {
-        return max;
-    }
-    return n;
-}
-function _string(value, defaultValue) {
-    if (typeof value !== 'string') {
-        return defaultValue;
-    }
-    return value;
-}
-var BareFontInfo = /** @class */ (function () {
+const MINIMUM_LINE_HEIGHT = 8;
+export class BareFontInfo {
     /**
      * @internal
      */
-    function BareFontInfo(opts) {
-        this.zoomLevel = opts.zoomLevel;
+    constructor(opts) {
+        this._bareFontInfoBrand = undefined;
+        this.pixelRatio = opts.pixelRatio;
         this.fontFamily = String(opts.fontFamily);
         this.fontWeight = String(opts.fontWeight);
         this.fontSize = opts.fontSize;
+        this.fontFeatureSettings = opts.fontFeatureSettings;
         this.lineHeight = opts.lineHeight | 0;
         this.letterSpacing = opts.letterSpacing;
     }
     /**
      * @internal
      */
-    BareFontInfo.createFromRawSettings = function (opts, zoomLevel, ignoreEditorZoom) {
-        if (ignoreEditorZoom === void 0) { ignoreEditorZoom = false; }
-        var fontFamily = _string(opts.fontFamily, EDITOR_FONT_DEFAULTS.fontFamily);
-        var fontWeight = _string(opts.fontWeight, EDITOR_FONT_DEFAULTS.fontWeight);
-        var fontSize = safeParseFloat(opts.fontSize, EDITOR_FONT_DEFAULTS.fontSize);
-        fontSize = clamp(fontSize, 0, MAXIMUM_FONT_SIZE);
-        if (fontSize === 0) {
-            fontSize = EDITOR_FONT_DEFAULTS.fontSize;
-        }
-        else if (fontSize < MINIMUM_FONT_SIZE) {
-            fontSize = MINIMUM_FONT_SIZE;
-        }
-        var lineHeight = safeParseInt(opts.lineHeight, 0);
-        lineHeight = clamp(lineHeight, 0, MAXIMUM_LINE_HEIGHT);
-        if (lineHeight === 0) {
-            lineHeight = Math.round(GOLDEN_LINE_HEIGHT_RATIO * fontSize);
-        }
-        else if (lineHeight < MINIMUM_LINE_HEIGHT) {
-            lineHeight = MINIMUM_LINE_HEIGHT;
-        }
-        var letterSpacing = safeParseFloat(opts.letterSpacing, 0);
-        letterSpacing = clamp(letterSpacing, MINIMUM_LETTER_SPACING, MAXIMUM_LETTER_SPACING);
-        var editorZoomLevelMultiplier = 1 + (ignoreEditorZoom ? 0 : EditorZoom.getZoomLevel() * 0.1);
-        fontSize *= editorZoomLevelMultiplier;
-        lineHeight *= editorZoomLevelMultiplier;
-        return new BareFontInfo({
-            zoomLevel: zoomLevel,
-            fontFamily: fontFamily,
-            fontWeight: fontWeight,
-            fontSize: fontSize,
-            lineHeight: lineHeight,
-            letterSpacing: letterSpacing
-        });
-    };
-    /**
-     * @internal
-     */
-    BareFontInfo.prototype.getId = function () {
-        return this.zoomLevel + '-' + this.fontFamily + '-' + this.fontWeight + '-' + this.fontSize + '-' + this.lineHeight + '-' + this.letterSpacing;
-    };
-    /**
-     * @internal
-     */
-    BareFontInfo.prototype.getMassagedFontFamily = function () {
-        if (/[,"']/.test(this.fontFamily)) {
-            // Looks like the font family might be already escaped
-            return this.fontFamily;
-        }
-        if (/[+ ]/.test(this.fontFamily)) {
-            // Wrap a font family using + or <space> with quotes
-            return "\"" + this.fontFamily + "\"";
-        }
-        return this.fontFamily;
-    };
-    return BareFontInfo;
-}());
-export { BareFontInfo };
-var FontInfo = /** @class */ (function (_super) {
-    __extends(FontInfo, _super);
-    /**
-     * @internal
-     */
-    function FontInfo(opts, isTrusted) {
-        var _this = _super.call(this, opts) || this;
-        _this.isTrusted = isTrusted;
-        _this.isMonospace = opts.isMonospace;
-        _this.typicalHalfwidthCharacterWidth = opts.typicalHalfwidthCharacterWidth;
-        _this.typicalFullwidthCharacterWidth = opts.typicalFullwidthCharacterWidth;
-        _this.canUseHalfwidthRightwardsArrow = opts.canUseHalfwidthRightwardsArrow;
-        _this.spaceWidth = opts.spaceWidth;
-        _this.maxDigitWidth = opts.maxDigitWidth;
-        return _this;
+    static createFromValidatedSettings(options, pixelRatio, ignoreEditorZoom) {
+        const fontFamily = options.get(43 /* fontFamily */);
+        const fontWeight = options.get(47 /* fontWeight */);
+        const fontSize = options.get(46 /* fontSize */);
+        const fontFeatureSettings = options.get(45 /* fontLigatures */);
+        const lineHeight = options.get(59 /* lineHeight */);
+        const letterSpacing = options.get(56 /* letterSpacing */);
+        return BareFontInfo._create(fontFamily, fontWeight, fontSize, fontFeatureSettings, lineHeight, letterSpacing, pixelRatio, ignoreEditorZoom);
     }
     /**
      * @internal
      */
-    FontInfo.prototype.equals = function (other) {
+    static _create(fontFamily, fontWeight, fontSize, fontFeatureSettings, lineHeight, letterSpacing, pixelRatio, ignoreEditorZoom) {
+        if (lineHeight === 0) {
+            lineHeight = GOLDEN_LINE_HEIGHT_RATIO * fontSize;
+        }
+        else if (lineHeight < MINIMUM_LINE_HEIGHT) {
+            // Values too small to be line heights in pixels are in ems.
+            lineHeight = lineHeight * fontSize;
+        }
+        // Enforce integer, minimum constraints
+        lineHeight = Math.round(lineHeight);
+        if (lineHeight < MINIMUM_LINE_HEIGHT) {
+            lineHeight = MINIMUM_LINE_HEIGHT;
+        }
+        const editorZoomLevelMultiplier = 1 + (ignoreEditorZoom ? 0 : EditorZoom.getZoomLevel() * 0.1);
+        fontSize *= editorZoomLevelMultiplier;
+        lineHeight *= editorZoomLevelMultiplier;
+        return new BareFontInfo({
+            pixelRatio: pixelRatio,
+            fontFamily: fontFamily,
+            fontWeight: fontWeight,
+            fontSize: fontSize,
+            fontFeatureSettings: fontFeatureSettings,
+            lineHeight: lineHeight,
+            letterSpacing: letterSpacing
+        });
+    }
+    /**
+     * @internal
+     */
+    getId() {
+        return `${this.pixelRatio}-${this.fontFamily}-${this.fontWeight}-${this.fontSize}-${this.fontFeatureSettings}-${this.lineHeight}-${this.letterSpacing}`;
+    }
+    /**
+     * @internal
+     */
+    getMassagedFontFamily(fallbackFontFamily) {
+        const fontFamily = BareFontInfo._wrapInQuotes(this.fontFamily);
+        if (fallbackFontFamily && this.fontFamily !== fallbackFontFamily) {
+            return `${fontFamily}, ${fallbackFontFamily}`;
+        }
+        return fontFamily;
+    }
+    static _wrapInQuotes(fontFamily) {
+        if (/[,"']/.test(fontFamily)) {
+            // Looks like the font family might be already escaped
+            return fontFamily;
+        }
+        if (/[+ ]/.test(fontFamily)) {
+            // Wrap a font family using + or <space> with quotes
+            return `"${fontFamily}"`;
+        }
+        return fontFamily;
+    }
+}
+// change this whenever `FontInfo` members are changed
+export const SERIALIZED_FONT_INFO_VERSION = 1;
+export class FontInfo extends BareFontInfo {
+    /**
+     * @internal
+     */
+    constructor(opts, isTrusted) {
+        super(opts);
+        this._editorStylingBrand = undefined;
+        this.version = SERIALIZED_FONT_INFO_VERSION;
+        this.isTrusted = isTrusted;
+        this.isMonospace = opts.isMonospace;
+        this.typicalHalfwidthCharacterWidth = opts.typicalHalfwidthCharacterWidth;
+        this.typicalFullwidthCharacterWidth = opts.typicalFullwidthCharacterWidth;
+        this.canUseHalfwidthRightwardsArrow = opts.canUseHalfwidthRightwardsArrow;
+        this.spaceWidth = opts.spaceWidth;
+        this.middotWidth = opts.middotWidth;
+        this.wsmiddotWidth = opts.wsmiddotWidth;
+        this.maxDigitWidth = opts.maxDigitWidth;
+    }
+    /**
+     * @internal
+     */
+    equals(other) {
         return (this.fontFamily === other.fontFamily
             && this.fontWeight === other.fontWeight
             && this.fontSize === other.fontSize
+            && this.fontFeatureSettings === other.fontFeatureSettings
             && this.lineHeight === other.lineHeight
             && this.letterSpacing === other.letterSpacing
             && this.typicalHalfwidthCharacterWidth === other.typicalHalfwidthCharacterWidth
             && this.typicalFullwidthCharacterWidth === other.typicalFullwidthCharacterWidth
             && this.canUseHalfwidthRightwardsArrow === other.canUseHalfwidthRightwardsArrow
             && this.spaceWidth === other.spaceWidth
+            && this.middotWidth === other.middotWidth
+            && this.wsmiddotWidth === other.wsmiddotWidth
             && this.maxDigitWidth === other.maxDigitWidth);
-    };
-    return FontInfo;
-}(BareFontInfo));
-export { FontInfo };
+    }
+}

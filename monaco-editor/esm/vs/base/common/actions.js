@@ -2,175 +2,162 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-import { Disposable } from './lifecycle.js';
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import { Emitter } from './event.js';
-var Action = /** @class */ (function () {
-    function Action(id, label, cssClass, enabled, actionCallback) {
-        if (label === void 0) { label = ''; }
-        if (cssClass === void 0) { cssClass = ''; }
-        if (enabled === void 0) { enabled = true; }
-        this._onDidChange = new Emitter();
+import { Disposable } from './lifecycle.js';
+import * as nls from '../../nls.js';
+export class Action extends Disposable {
+    constructor(id, label = '', cssClass = '', enabled = true, actionCallback) {
+        super();
+        this._onDidChange = this._register(new Emitter());
         this.onDidChange = this._onDidChange.event;
+        this._enabled = true;
         this._id = id;
         this._label = label;
         this._cssClass = cssClass;
         this._enabled = enabled;
         this._actionCallback = actionCallback;
     }
-    Object.defineProperty(Action.prototype, "id", {
-        get: function () {
-            return this._id;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Action.prototype, "label", {
-        get: function () {
-            return this._label;
-        },
-        set: function (value) {
-            this._setLabel(value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Action.prototype._setLabel = function (value) {
+    get id() {
+        return this._id;
+    }
+    get label() {
+        return this._label;
+    }
+    set label(value) {
+        this._setLabel(value);
+    }
+    _setLabel(value) {
         if (this._label !== value) {
             this._label = value;
             this._onDidChange.fire({ label: value });
         }
-    };
-    Object.defineProperty(Action.prototype, "tooltip", {
-        get: function () {
-            return this._tooltip;
-        },
-        set: function (value) {
-            this._setTooltip(value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Action.prototype._setTooltip = function (value) {
+    }
+    get tooltip() {
+        return this._tooltip || '';
+    }
+    set tooltip(value) {
+        this._setTooltip(value);
+    }
+    _setTooltip(value) {
         if (this._tooltip !== value) {
             this._tooltip = value;
             this._onDidChange.fire({ tooltip: value });
         }
-    };
-    Object.defineProperty(Action.prototype, "class", {
-        get: function () {
-            return this._cssClass;
-        },
-        set: function (value) {
-            this._setClass(value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Action.prototype._setClass = function (value) {
+    }
+    get class() {
+        return this._cssClass;
+    }
+    set class(value) {
+        this._setClass(value);
+    }
+    _setClass(value) {
         if (this._cssClass !== value) {
             this._cssClass = value;
             this._onDidChange.fire({ class: value });
         }
-    };
-    Object.defineProperty(Action.prototype, "enabled", {
-        get: function () {
-            return this._enabled;
-        },
-        set: function (value) {
-            this._setEnabled(value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Action.prototype._setEnabled = function (value) {
+    }
+    get enabled() {
+        return this._enabled;
+    }
+    set enabled(value) {
+        this._setEnabled(value);
+    }
+    _setEnabled(value) {
         if (this._enabled !== value) {
             this._enabled = value;
             this._onDidChange.fire({ enabled: value });
         }
-    };
-    Object.defineProperty(Action.prototype, "checked", {
-        get: function () {
-            return this._checked;
-        },
-        set: function (value) {
-            this._setChecked(value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Action.prototype, "radio", {
-        get: function () {
-            return this._radio;
-        },
-        set: function (value) {
-            this._setRadio(value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Action.prototype._setChecked = function (value) {
+    }
+    get checked() {
+        return this._checked;
+    }
+    set checked(value) {
+        this._setChecked(value);
+    }
+    _setChecked(value) {
         if (this._checked !== value) {
             this._checked = value;
             this._onDidChange.fire({ checked: value });
         }
-    };
-    Action.prototype._setRadio = function (value) {
-        if (this._radio !== value) {
-            this._radio = value;
-            this._onDidChange.fire({ radio: value });
-        }
-    };
-    Action.prototype.run = function (event, _data) {
-        if (this._actionCallback) {
-            return this._actionCallback(event);
-        }
-        return Promise.resolve(true);
-    };
-    Action.prototype.dispose = function () {
-        this._onDidChange.dispose();
-    };
-    return Action;
-}());
-export { Action };
-var ActionRunner = /** @class */ (function (_super) {
-    __extends(ActionRunner, _super);
-    function ActionRunner() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this._onDidBeforeRun = _this._register(new Emitter());
-        _this.onDidBeforeRun = _this._onDidBeforeRun.event;
-        _this._onDidRun = _this._register(new Emitter());
-        _this.onDidRun = _this._onDidRun.event;
-        return _this;
     }
-    ActionRunner.prototype.run = function (action, context) {
-        var _this = this;
-        if (!action.enabled) {
-            return Promise.resolve(null);
-        }
-        this._onDidBeforeRun.fire({ action: action });
-        return this.runAction(action, context).then(function (result) {
-            _this._onDidRun.fire({ action: action, result: result });
-        }, function (error) {
-            _this._onDidRun.fire({ action: action, error: error });
+    run(event, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this._actionCallback) {
+                yield this._actionCallback(event);
+            }
         });
-    };
-    ActionRunner.prototype.runAction = function (action, context) {
-        var res = context ? action.run(context) : action.run();
-        return Promise.resolve(res);
-    };
-    return ActionRunner;
-}(Disposable));
-export { ActionRunner };
+    }
+}
+export class ActionRunner extends Disposable {
+    constructor() {
+        super(...arguments);
+        this._onBeforeRun = this._register(new Emitter());
+        this.onBeforeRun = this._onBeforeRun.event;
+        this._onDidRun = this._register(new Emitter());
+        this.onDidRun = this._onDidRun.event;
+    }
+    run(action, context) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!action.enabled) {
+                return;
+            }
+            this._onBeforeRun.fire({ action });
+            let error = undefined;
+            try {
+                yield this.runAction(action, context);
+            }
+            catch (e) {
+                error = e;
+            }
+            this._onDidRun.fire({ action, error });
+        });
+    }
+    runAction(action, context) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield action.run(context);
+        });
+    }
+}
+export class Separator extends Action {
+    constructor(label) {
+        super(Separator.ID, label, label ? 'separator text' : 'separator');
+        this.checked = false;
+        this.enabled = false;
+    }
+}
+Separator.ID = 'vs.actions.separator';
+export class SubmenuAction {
+    constructor(id, label, actions, cssClass) {
+        this.tooltip = '';
+        this.enabled = true;
+        this.checked = undefined;
+        this.id = id;
+        this.label = label;
+        this.class = cssClass;
+        this._actions = actions;
+    }
+    get actions() { return this._actions; }
+    dispose() {
+        // there is NOTHING to dispose and the SubmenuAction should
+        // never have anything to dispose as it is a convenience type
+        // to bridge into the rendering world.
+    }
+    run() {
+        return __awaiter(this, void 0, void 0, function* () { });
+    }
+}
+export class EmptySubmenuAction extends Action {
+    constructor() {
+        super(EmptySubmenuAction.ID, nls.localize('submenu.empty', '(empty)'), undefined, false);
+    }
+}
+EmptySubmenuAction.ID = 'vs.actions.empty';

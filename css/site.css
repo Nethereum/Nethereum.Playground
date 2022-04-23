@@ -98,13 +98,19 @@ html, body {
     color: red;
 }
 
-@media (max-width: 767.98px) {
+@media (max-width: 969.98px) {
     .main .top-row {
+        display: none;
+    }
+    .btnfileMenu {
+        display: none;
+    }
+    .compileInfo {
         display: none;
     }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 970px) {
     app {
         flex-direction: row;
     }
@@ -143,10 +149,13 @@ html, body {
     }
 }
 
-textarea .terminal {
+/*textarea .terminal {
     background-color: #000;
     border: 1px solid #000;
     color: #00ff00;
     padding: 8px;
     font-family: courier new;
+}*/
+.monaco-editor {
+    position: absolute !important;
 }

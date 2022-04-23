@@ -12,136 +12,232 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 import * as dom from '../../../base/browser/dom.js';
+import { CancellationToken } from '../../../base/common/cancellation.js';
+import { LinkedList } from '../../../base/common/linkedList.js';
+import { ResourceMap } from '../../../base/common/map.js';
 import { parse } from '../../../base/common/marshalling.js';
 import { Schemas } from '../../../base/common/network.js';
-import * as resources from '../../../base/common/resources.js';
+import { normalizePath } from '../../../base/common/resources.js';
+import { URI } from '../../../base/common/uri.js';
 import { ICodeEditorService } from './codeEditorService.js';
-import { CommandsRegistry, ICommandService } from '../../../platform/commands/common/commands.js';
-import { equalsIgnoreCase } from '../../../base/common/strings.js';
-import { LinkedList } from '../../../base/common/linkedList.js';
-var OpenerService = /** @class */ (function () {
-    function OpenerService(_editorService, _commandService) {
-        this._editorService = _editorService;
+import { ICommandService } from '../../../platform/commands/common/commands.js';
+import { EditorOpenSource } from '../../../platform/editor/common/editor.js';
+import { extractSelection, matchesScheme, matchesSomeScheme } from '../../../platform/opener/common/opener.js';
+let CommandOpener = class CommandOpener {
+    constructor(_commandService) {
         this._commandService = _commandService;
-        this._opener = new LinkedList();
-        //
     }
-    OpenerService.prototype.open = function (resource, options) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _i, _a, opener_1, handled;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        // no scheme ?!?
-                        if (!resource.scheme) {
-                            return [2 /*return*/, Promise.resolve(false)];
-                        }
-                        _i = 0, _a = this._opener.toArray();
-                        _b.label = 1;
-                    case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 4];
-                        opener_1 = _a[_i];
-                        return [4 /*yield*/, opener_1.open(resource, options)];
-                    case 2:
-                        handled = _b.sent();
-                        if (handled) {
-                            return [2 /*return*/, true];
-                        }
-                        _b.label = 3;
-                    case 3:
-                        _i++;
-                        return [3 /*break*/, 1];
-                    case 4: 
-                    // use default openers
-                    return [2 /*return*/, this._doOpen(resource, options)];
-                }
-            });
-        });
-    };
-    OpenerService.prototype._doOpen = function (resource, options) {
-        var _a;
-        var scheme = resource.scheme, path = resource.path, query = resource.query, fragment = resource.fragment;
-        if (equalsIgnoreCase(scheme, Schemas.http) || equalsIgnoreCase(scheme, Schemas.https) || equalsIgnoreCase(scheme, Schemas.mailto)) {
-            // open http or default mail application
-            dom.windowOpenNoOpener(encodeURI(resource.toString(true)));
-            return Promise.resolve(true);
-        }
-        else if (equalsIgnoreCase(scheme, Schemas.command)) {
+    open(target, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!matchesScheme(target, Schemas.command)) {
+                return false;
+            }
+            if (!(options === null || options === void 0 ? void 0 : options.allowCommands)) {
+                // silently ignore commands when command-links are disabled, also
+                // surpress other openers by returning TRUE
+                return true;
+            }
             // run command or bail out if command isn't known
-            if (!CommandsRegistry.getCommand(path)) {
-                return Promise.reject("command '" + path + "' NOT known");
+            if (typeof target === 'string') {
+                target = URI.parse(target);
             }
             // execute as command
-            var args = [];
+            let args = [];
             try {
-                args = parse(query);
-                if (!Array.isArray(args)) {
-                    args = [args];
+                args = parse(decodeURIComponent(target.query));
+            }
+            catch (_a) {
+                // ignore and retry
+                try {
+                    args = parse(target.query);
+                }
+                catch (_b) {
+                    // ignore error
                 }
             }
-            catch (e) {
-                //
+            if (!Array.isArray(args)) {
+                args = [args];
             }
-            return (_a = this._commandService).executeCommand.apply(_a, [path].concat(args)).then(function () { return true; });
-        }
-        else {
-            var selection = undefined;
-            var match = /^L?(\d+)(?:,(\d+))?/.exec(fragment);
-            if (match) {
-                // support file:///some/file.js#73,84
-                // support file:///some/file.js#L73
-                selection = {
-                    startLineNumber: parseInt(match[1]),
-                    startColumn: match[2] ? parseInt(match[2]) : 1
-                };
-                // remove fragment
-                resource = resource.with({ fragment: '' });
+            yield this._commandService.executeCommand(target.path, ...args);
+            return true;
+        });
+    }
+};
+CommandOpener = __decorate([
+    __param(0, ICommandService)
+], CommandOpener);
+let EditorOpener = class EditorOpener {
+    constructor(_editorService) {
+        this._editorService = _editorService;
+    }
+    open(target, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (typeof target === 'string') {
+                target = URI.parse(target);
             }
-            if (resource.scheme === Schemas.file) {
-                resource = resources.normalizePath(resource); // workaround for non-normalized paths (https://github.com/Microsoft/vscode/issues/12954)
+            const { selection, uri } = extractSelection(target);
+            target = uri;
+            if (target.scheme === Schemas.file) {
+                target = normalizePath(target); // workaround for non-normalized paths (https://github.com/microsoft/vscode/issues/12954)
             }
-            return this._editorService.openCodeEditor({ resource: resource, options: { selection: selection, } }, this._editorService.getFocusedCodeEditor(), options && options.openToSide).then(function () { return true; });
-        }
-    };
-    OpenerService = __decorate([
-        __param(0, ICodeEditorService),
-        __param(1, ICommandService)
-    ], OpenerService);
-    return OpenerService;
-}());
+            yield this._editorService.openCodeEditor({
+                resource: target,
+                options: Object.assign({ selection, source: (options === null || options === void 0 ? void 0 : options.fromUserGesture) ? EditorOpenSource.USER : EditorOpenSource.API }, options === null || options === void 0 ? void 0 : options.editorOptions)
+            }, this._editorService.getFocusedCodeEditor(), options === null || options === void 0 ? void 0 : options.openToSide);
+            return true;
+        });
+    }
+};
+EditorOpener = __decorate([
+    __param(0, ICodeEditorService)
+], EditorOpener);
+let OpenerService = class OpenerService {
+    constructor(editorService, commandService) {
+        this._openers = new LinkedList();
+        this._validators = new LinkedList();
+        this._resolvers = new LinkedList();
+        this._resolvedUriTargets = new ResourceMap(uri => uri.with({ path: null, fragment: null, query: null }).toString());
+        this._externalOpeners = new LinkedList();
+        // Default external opener is going through window.open()
+        this._defaultExternalOpener = {
+            openExternal: (href) => __awaiter(this, void 0, void 0, function* () {
+                // ensure to open HTTP/HTTPS links into new windows
+                // to not trigger a navigation. Any other link is
+                // safe to be set as HREF to prevent a blank window
+                // from opening.
+                if (matchesSomeScheme(href, Schemas.http, Schemas.https)) {
+                    dom.windowOpenNoOpener(href);
+                }
+                else {
+                    window.location.href = href;
+                }
+                return true;
+            })
+        };
+        // Default opener: any external, maito, http(s), command, and catch-all-editors
+        this._openers.push({
+            open: (target, options) => __awaiter(this, void 0, void 0, function* () {
+                if ((options === null || options === void 0 ? void 0 : options.openExternal) || matchesSomeScheme(target, Schemas.mailto, Schemas.http, Schemas.https, Schemas.vsls)) {
+                    // open externally
+                    yield this._doOpenExternal(target, options);
+                    return true;
+                }
+                return false;
+            })
+        });
+        this._openers.push(new CommandOpener(commandService));
+        this._openers.push(new EditorOpener(editorService));
+    }
+    registerOpener(opener) {
+        const remove = this._openers.unshift(opener);
+        return { dispose: remove };
+    }
+    registerValidator(validator) {
+        const remove = this._validators.push(validator);
+        return { dispose: remove };
+    }
+    registerExternalUriResolver(resolver) {
+        const remove = this._resolvers.push(resolver);
+        return { dispose: remove };
+    }
+    setDefaultExternalOpener(externalOpener) {
+        this._defaultExternalOpener = externalOpener;
+    }
+    registerExternalOpener(opener) {
+        const remove = this._externalOpeners.push(opener);
+        return { dispose: remove };
+    }
+    open(target, options) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            // check with contributed validators
+            const targetURI = typeof target === 'string' ? URI.parse(target) : target;
+            // validate against the original URI that this URI resolves to, if one exists
+            const validationTarget = (_a = this._resolvedUriTargets.get(targetURI)) !== null && _a !== void 0 ? _a : target;
+            for (const validator of this._validators) {
+                if (!(yield validator.shouldOpen(validationTarget))) {
+                    return false;
+                }
+            }
+            // check with contributed openers
+            for (const opener of this._openers) {
+                const handled = yield opener.open(target, options);
+                if (handled) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+    resolveExternalUri(resource, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            for (const resolver of this._resolvers) {
+                try {
+                    const result = yield resolver.resolveExternalUri(resource, options);
+                    if (result) {
+                        if (!this._resolvedUriTargets.has(result.resolved)) {
+                            this._resolvedUriTargets.set(result.resolved, resource);
+                        }
+                        return result;
+                    }
+                }
+                catch (_a) {
+                    // noop
+                }
+            }
+            throw new Error('Could not resolve external URI: ' + resource.toString());
+        });
+    }
+    _doOpenExternal(resource, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //todo@jrieken IExternalUriResolver should support `uri: URI | string`
+            const uri = typeof resource === 'string' ? URI.parse(resource) : resource;
+            let externalUri;
+            try {
+                externalUri = (yield this.resolveExternalUri(uri, options)).resolved;
+            }
+            catch (_a) {
+                externalUri = uri;
+            }
+            let href;
+            if (typeof resource === 'string' && uri.toString() === externalUri.toString()) {
+                // open the url-string AS IS
+                href = resource;
+            }
+            else {
+                // open URI using the toString(noEncode)+encodeURI-trick
+                href = encodeURI(externalUri.toString(true));
+            }
+            if (options === null || options === void 0 ? void 0 : options.allowContributedOpeners) {
+                const preferredOpenerId = typeof (options === null || options === void 0 ? void 0 : options.allowContributedOpeners) === 'string' ? options === null || options === void 0 ? void 0 : options.allowContributedOpeners : undefined;
+                for (const opener of this._externalOpeners) {
+                    const didOpen = yield opener.openExternal(href, {
+                        sourceUri: uri,
+                        preferredOpenerId,
+                    }, CancellationToken.None);
+                    if (didOpen) {
+                        return true;
+                    }
+                }
+            }
+            return this._defaultExternalOpener.openExternal(href, { sourceUri: uri }, CancellationToken.None);
+        });
+    }
+    dispose() {
+        this._validators.clear();
+    }
+};
+OpenerService = __decorate([
+    __param(0, ICodeEditorService),
+    __param(1, ICommandService)
+], OpenerService);
 export { OpenerService };
