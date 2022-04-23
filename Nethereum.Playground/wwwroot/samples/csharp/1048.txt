@@ -41,7 +41,6 @@ public class Program
         var erc721TokenContractAddress = "0xd24a7c412f2279b1901e591898c1e96c140be8c5";
 
         // Example 1. Get balance of an account. This is the count of tokens that an account 
-        // has from a specified contract (in this case "Gods Unchained").  
         var accountWithSomeTokens = "0xCbf94Fcb7CeaF7b61F20560eED8e0DBC4E407F5C";
         // You can check the token balance of the above account on etherscan:
         //https://etherscan.io/token/0xd24a7c412f2279b1901e591898c1e96c140be8c5?a=0xcbf94fcb7ceaf7b61f20560eed8e0dbc4e407f5c
@@ -64,6 +63,6 @@ public class Program
         var tokenOwner = await queryHandler2
             .QueryAsync<string>(erc721TokenContractAddress, ownerOfMessage)
             .ConfigureAwait(false);
-        Console.WriteLine($"Address: {tokenOwner} owns token id: {sampleTokenId}")
+        Console.WriteLine($"Address: {tokenOwner} owns token id: {sampleTokenId}");
     }
 }

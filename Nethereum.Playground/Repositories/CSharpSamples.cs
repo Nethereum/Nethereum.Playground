@@ -14,7 +14,7 @@ namespace Nethereum.Playground.Repositories
 
                 new CodeSample()
                 {
-                    Name = "Chain information: Query Ether account balance using Infura",
+                    Name = "Chain information: Query Ether account balance",
                     Id = "1001",
                     Code = @"
 using System;
@@ -29,7 +29,7 @@ public class Program
     static async Task Main(string[] args)
     {
 
-		// This sample shows how to connect to Ethereum mainnet using Infura
+		// This sample shows how to connect to Ethereum mainnet using a public node like Infura
 		// and check an account balance:
 
 		// We first need to generate an instance of web3, using INFURA's mainnet url and 
@@ -41,8 +41,9 @@ public class Program
 		// Check the balance of one of the accounts provisioned in our chain, to do that, 
 		// we can execute the GetBalance request asynchronously:
 		var balance = await web3.Eth.GetBalance.SendRequestAsync(""0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae"");
-		Console.WriteLine(""Balance of Ethereum Foundation's account: "" + balance.Value);
-
+		Console.WriteLine(""Balance of Ethereum Foundation's account in Wei: "" + balance.Value);
+		// Convert the balance into Ether from Wei (lowest unit)       
+		Console.WriteLine(""Balance of Ethereum Foundation's account in Ether: "" + Web3.Convert.FromWei(balance.Value));
     }
 
 }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nethereum.ABI.JsonDeserialisation;
 
-
 namespace Nethereum.Generators.Net
 {
     public class StructABIDeserialiser
@@ -26,7 +25,7 @@ namespace Nethereum.Generators.Net
         //Workaround when we don't have the internal type
         public void SetTupleTypeSameAsNameIfRequired(ContractABI contract)
         {
-            foreach(var function in contract.Functions)
+            foreach (var function in contract.Functions)
             {
                 SetTupleTypeSameAsNameIfRequired(function.InputParameters);
                 SetTupleTypeSameAsNameIfRequired(function.OutputParameters);
@@ -37,7 +36,8 @@ namespace Nethereum.Generators.Net
                 SetTupleTypeSameAsNameIfRequired(eventItem.InputParameters);
             }
 
-            if(contract.Constructor != null) {
+            if (contract.Constructor != null)
+            {
                 SetTupleTypeSameAsNameIfRequired(contract.Constructor.InputParameters);
             }
         }
@@ -63,7 +63,12 @@ namespace Nethereum.Generators.Net
                     var internalType = (string)parameter["internalType"];
                     if (internalType.StartsWith("struct"))
                     {
-                        var structName = internalType.Substring(internalType.LastIndexOf(".") + 1);
+                        internalType = internalType.Substring("struct ".Length);
+                        var structName = internalType;
+                        if (internalType.IndexOf(".") > -1)
+                        {
+                            structName = structName.Substring(internalType.LastIndexOf(".") + 1);
+                        }
                         if (structName.IndexOf("[") > 0)
                         {
                             structName = structName.Substring(0, structName.IndexOf("["));
@@ -108,10 +113,12 @@ namespace Nethereum.Generators.Net
         public StructABI[] BuildStructsFromParameters(List<object> items)
         {
             var structs = new List<StructABI>();
-            foreach(IDictionary<string, object> item in items) { 
-            
-                if (item["type"].ToString().StartsWith("tuple")) {
-                   structs.AddRange(BuildStructsFromTuple(item));
+            foreach (IDictionary<string, object> item in items)
+            {
+
+                if (item["type"].ToString().StartsWith("tuple"))
+                {
+                    structs.AddRange(BuildStructsFromTuple(item));
                 }
             }
             return structs.ToArray();
@@ -154,7 +161,7 @@ namespace Nethereum.Generators.Net
             var structType = TryGetStructInternalType(component);
             if (structType == null) //Workaround if we dont have the internal type
             {
-                structType = (string) component["name"];
+                structType = (string)component["name"];
             }
 
             return structType;
