@@ -29,20 +29,34 @@
                         }
                     }
         </select>
-        <button class="btn btn-secondary ml-1" @onclick="@LoadSelected">Load</button>
+       <!-- <button class="btn btn-secondary ml-1" @onclick="@LoadSelected">Load</button> -->
     </div>
     </div>
 
 @if (CurrentComponent != null)
 {
     <div class="card m-2">
-    <div class="card-header">
-        <h5>@LoadedTitle</h5>
-     </div>
-         <div class="card-body">
- 
-                @CurrentComponent
-         </div>
+        <div class="card-header">
+            <h5>@LoadedTitle</h5>
+        </div>
+        @foreach (var component in LoadedComponents)
+        {
+            <div class="card-body" @key="component.Key" style="@GetVisibility(component.Key)">
+                @component.Value
+            </div>
+        }
      </div>
 }
 </div>
+
+@code
+{
+    public string GetVisibility(int id)
+    {
+        if (id != SelectedUIComponentInfo)
+        {
+            return "display: none";
+        }
+        return "display:block";
+    }
+}

@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
 using NetDapps.Assemblies;
 
 namespace Nethereum.Playground.Pages
@@ -15,6 +16,7 @@ namespace Nethereum.Playground.Pages
 
         [Inject] public Compiler Compiler { get; set; }
         public RenderFragment CurrentComponent { get; set; } = null;
+        public Dictionary<int, RenderFragment> LoadedComponents { get; set; } = new Dictionary<int, RenderFragment>();
 
         public List<UIAssemblyLoadInfo> UIComponentsInfo { get; set; }
         public int SelectedUIComponentInfo { get; protected set; }
@@ -27,6 +29,7 @@ namespace Nethereum.Playground.Pages
             var loaded = await Client.GetJsonAsync<UIAssemblyLoadInfo[]>("uiAssemblies.json");
             UIComponentsInfo.AddRange(loaded);
             SelectedUIComponentInfo = 0;
+            LoadSelected();
         }
 
         public string GetDisplayTitle(UIAssemblyLoadInfo assembly)
@@ -37,6 +40,7 @@ namespace Nethereum.Playground.Pages
         public void UIComponentChanged(ChangeEventArgs evt)
         {
             SelectedUIComponentInfo = int.Parse(evt.Value.ToString());
+            LoadSelected();
         }
 
         public void LoadSelected()
@@ -49,15 +53,25 @@ namespace Nethereum.Playground.Pages
             var selected = UIComponentsInfo[SelectedUIComponentInfo];
             await AssemblyCache.Current.LoadAssembly(Client, selected);
 
-            CurrentComponent = builder =>
+            if (LoadedComponents.ContainsKey(SelectedUIComponentInfo))
             {
-                var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith(selected.FullName));
+                CurrentComponent = LoadedComponents[SelectedUIComponentInfo];
+            }
+            else
+            {
+                CurrentComponent = builder =>
+                {
+                    var assembly = AppDomain.CurrentDomain.GetAssemblies()
+                        .FirstOrDefault(x => x.FullName.StartsWith(selected.FullName));
 
-                Console.WriteLine("Component selected");
-                builder.OpenComponent(0, assembly.GetType(selected.UIComponents.First()));
-                Console.WriteLine("Component selected");
-                builder.CloseComponent();
-            };
+                    Console.WriteLine("Component selected");
+                    builder.OpenComponent(0, assembly.GetType(selected.UIComponents.First()));
+                    Console.WriteLine("Component selected");
+                    builder.CloseComponent();
+                };
+            }
+
+            LoadedComponents[SelectedUIComponentInfo] = CurrentComponent;
 
             LoadedTitle = selected.UIComponents.First();
             StateHasChanged();
