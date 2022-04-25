@@ -1,0 +1,74 @@
+﻿using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using Nethereum.GnosisSafe;
+using Nethereum.Signer;
+using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
+using Nethereum.Contracts.TransactionHandlers.MultiSend;
+using Nethereum.GnosisSafe.ContractDefinition;
+
+public class GnosisSafeMultipleTokenTransfersInASingleCallAuthorisationAndRelay
+{
+    ///This example demonstrates how to relay 2 transfers of an ERC20 token (authorisation of  many function calls in a single request from a gnosis safe) of a multi-sig gnosis safe by authorising a third party to make the call
+    ///in this scenario the gnosis safe is owned/managed by a single party so only one party needs to give authorisation
+    static async Task Main(string[] args)
+    {
+
+        //gnosis safe owner private key (only one in this scenario) / please use your own private key
+        var walletOwnerPrivateKey = "0xcf0d584dba3902252f3762d5161c4996f4b364e6e79a75c96b2e..........";
+
+        //relayer or account that is going to send the transaction (no relation to the gnosis safe)  / please use your own private key
+        //private key of the relayer that will send and pay the transaction
+        var accountRelayerReceiverPrivateKey = "0xa261c1c7f775c3423be58cdb8c24c6e29f898af56e86991..........";
+        var chainId = Chain.Rinkeby;
+
+        //the address of the gnosis safe contract
+        var gnosisSafeAddress = "0xa9C09412C1d93DAc6eE9254A51E97454588D3B88";
+        
+        //contract address of the ERC20 token DAI in rinkeby
+        var daiAddress = "0x6a9865ade2b6207daac49f8bcba9705deb0b0e6d";
+
+        var web3Url = "https://rinkeby.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02";
+        var accountRelayerReceiver = new Account(accountRelayerReceiverPrivateKey, chainId);
+
+
+        var web3 = new Web3(accountRelayerReceiver, web3Url);
+
+        
+        var service = new GnosisSafeService(web3, gnosisSafeAddress);
+
+        //the transfer function used to send 1 DAI that needs to be signed for authorisation
+        var transfer = new TransferFunction()
+        {
+            To = accountRelayerReceiver.Address,
+            Value = Web3.Convert.ToWei(1)
+        };
+
+
+
+        //creating a the Transaction to be sent to the gnosis safe including the multi-send smart contract (TO),
+        //the function messages (Transfer x 2), the chainId, and the walletOwner to sign the transaction
+        //We are sending 2x transfers authorising all the calls
+        //NOTE: The function messages do not need to be the same, they can be to any smart contract and to any function
+        var execTransactionFunction = await service.BuildMultiSendTransactionAsync(
+            new EncodeTransactionDataFunction() { To = multiSendAddress }, (int)chainId, walletOwnerPrivateKey, false,
+            new MultiSendFunctionInput<TransferFunction>(transfer, daiAddress),
+            new MultiSendFunctionInput<TransferFunction>(transfer, daiAddress)
+        );
+
+        //getting the previous balance to compare before and after
+        var tokenService = web3.Eth.ERC20.GetERC20ContractService(daiAddress);
+        var balanceBefore = await tokenService.BalanceOfQueryAsync(accountRelayerReceiver.Address);
+
+        //execute the transaction using the authorised account
+        var receipt = await service.ExecTransactionRequestAndWaitForReceiptAsync(execTransactionFunction);
+
+        var balanceAfter = await tokenService.BalanceOfQueryAsync(accountRelayerReceiver.Address);
+        Console.WriteLine("Balance before: " + Web3.Convert.FromWei(balanceBefore));
+        Console.WriteLine("Balance after: " + Web3.Convert.FromWei(balanceAfter));
+    }
+
+}
