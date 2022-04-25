@@ -249,6 +249,12 @@ public class Program
 
                 new CodeSample()
                 {
+                    Name = "Signing: EIP712 Sign and recover a typed message",
+                    Id = "1073",
+                },
+
+                new CodeSample()
+                {
                     Name = "ABI Encoding: Encoding using ABI Values, Parameters and Default values",
                     Id = "1015"
                 },
@@ -269,8 +275,17 @@ public class Program
                 {
                     Name = "ABI Encoding Packed: Encoding using default values",
                     Id = "1018",
-                 },
-
+                },
+                new CodeSample()
+                {
+                    Name = "Gnosis safe: Token transfer (Function call), authorisation and relay",
+                    Id = "1072",
+                },
+                new CodeSample()
+                {
+                    Name = "Gnosis safe: Multiple Token transfers (Multiple function calls) in a single request, authorisation and relay",
+                    Id = "1071",
+                },
                 new CodeSample()
                 {
                     Name = "Accounts: HD Wallets (Introduction)",
