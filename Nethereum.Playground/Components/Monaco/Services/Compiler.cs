@@ -36,6 +36,10 @@ namespace Nethereum.Playground
         public static Compiler Current { get; private set; }
         private static Task InitializationTask;
 
+        public bool IsInitialised()
+        {
+            return InitializationTask.Status == TaskStatus.RanToCompletion;
+        }
 
         public Compiler(HttpClient client)
         {

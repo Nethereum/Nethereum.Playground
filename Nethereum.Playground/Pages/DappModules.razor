@@ -37,23 +37,64 @@
 {
     <div class="card m-2">
         <div class="card-header">
-            <h5>@LoadedTitle</h5>
+            <div class="float-left">
+                <h5 >@LoadedTitle</h5>
+            </div>
+            <div class="float-right">
+                <button class="btn btn-secondary btn-sm ml-1" @onclick="@ShowHideComponentInfo">@GetShowComponentInfoText()</button>
+            </div>
         </div>
+        
+        <textarea @bind="@ComponentInfo" class="terminal-console form-control" id="txtOutput" rows="30" style="@GetVisibilityComponentInfo();"></textarea>
         @foreach (var component in LoadedComponents)
         {
             <div class="card-body" @key="component.Key" style="@GetVisibility(component.Key)">
+                @if (Loading)
+                {
+                    <div>Loading ...</div>
+                }
                 @component.Value
             </div>
         }
      </div>
 }
+else
+{
+    <div class="card m-2">
+        <div class="card-header">
+            <h5>Loading module and dependencies...</h5>
+        </div>
+    </div>
+}
 </div>
 
 @code
 {
+
+   
+    public string GetShowComponentInfoText()
+    {
+        if (ShowingComponentInfo)
+        {
+            return "Hide Info";
+        }
+        else
+        {
+            return "Show Info";
+        }
+    }
     public string GetVisibility(int id)
     {
         if (id != SelectedUIComponentInfo)
+        {
+            return "display: none";
+        }
+        return "display:block";
+    }
+
+    public string GetVisibilityComponentInfo()
+    {
+        if (!ShowingComponentInfo)
         {
             return "display: none";
         }
