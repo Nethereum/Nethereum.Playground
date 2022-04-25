@@ -1,34 +1,114 @@
 [
   {
-    "UIComponents": [
-      "NetDapps.ERC20Token.ERC20TokenBalance"
+    "uiComponents": [
+      {
+        "entryPoint": "NetDapps.ERC20Token.ERC20TokenBalance",
+        "name": "NetDapps: ERC20 Token Balances"
+      }
     ],
-    "Name": "NetDapps.ERC20Token",
-    "FullName": "NetDapps.ERC20Token, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-    "Url": "ipfs://bafkreighzofkm2uq5u3kw4sch2jxpzfqjxrnol5yvcdqjws5rexlml3vda"
+    "name": "NetDapps: ERC20 Token Balances",
+    "fullName": "NetDapps.ERC20Token, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "url": "ipfs://bafkreighzofkm2uq5u3kw4sch2jxpzfqjxrnol5yvcdqjws5rexlml3vda",
+    "smartContractComponentRegistry": {
+      "address": "0x0000000000000",
+      "chainId": 1,
+      "description": "Smart contract address that holds this metadata in a smart contract similar to (ERC721/NFT), and source code validation submissions"
+    },
+    "author": {
+      "description": "Author addresses that can be matched to the submission of SmartContractComponentRegistry together with Proof Of Humanity, reputation, Ens",
+      "address": "juanblanco.eth",
+      "github": "juanfranblanco",
+      "proofOfHumanity": true
+    },
+    "dependencies": [
+      {
+        "name": "Nethereum.Web3",
+        "fullName": "Nethereum.Web3, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
+        "url": "ipfs://bafkreifyhaadbwheno54lyq3klbtk6pkf6ovo4n4lzbixqf5udh4gapl2i",
+        "smartContractComponentRegistry": {
+          "address": "0x0000000000000",
+          "chainId": 1
+        }
+      }
+    ],
+    "drip": {
+      "address": "0x0000000000000",
+      "drippingTo": [
+        {
+          "address": "0x0000000000000",
+          "reason": "funding",
+          "description": "funding during dates x and y",
+          "percentage": 0
+        },
+        {
+          "address": "0x0000000000001",
+          "reason": "componentDependency",
+          "description": "component dependency i.e newtonsoft json.net",
+          "percentage": 0
+        },
+        {
+          "address": "0x0000000000002",
+          "reason": "smartContractDependency",
+          "description": "smart contract dependency, i.e multi-token",
+          "percentage": 0
+        },
+        {
+          "address": "0x0000000000003",
+          "reason": "externalDependency",
+          "description": "external dependency, i.e tokenlist.org",
+          "percentage": 0
+        },
+        {
+          "address": "0x0000000000004",
+          "reason": "sourceCodeAuditValidators",
+          "description": "source code validated by, i.e who adds trust to this code, staked etc",
+          "percentage": 0
+        },
+        {
+          "address": "0x0000000000005",
+          "reason": "generalFrameworkDependency",
+          "description": "source framework dependency, i.e .Net Foundation",
+          "percentage": 0
+        },
+        {
+          "address": "0x0000000000006",
+          "reason": "generalTooling",
+          "description": "tools used",
+          "percentage": 0
+        }
+      ]
+    }
   },
   {
-    "UIComponents": [
-      "NetDapps.MessageSigning.SignMessage"
+    "uiComponents": [
+      {
+        "entryPoint": "NetDapps.MessageSigning.SignMessage",
+        "name": "NetDapps: Message Signing"
+      }
     ],
-    "Name": "NetDapps.MessageSigning",
-    "FullName": "NetDapps.MessageSigning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-    "Url": "ipfs://bafkreibabzgq5lelocao2dal3o4ukssqegg26hluto2zh3h4n6gkbufdki"
+    
+    "fullName": "NetDapps.MessageSigning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "url": "ipfs://bafkreibabzgq5lelocao2dal3o4ukssqegg26hluto2zh3h4n6gkbufdki"
   },
   {
-    "UIComponents": [
-      "NetDapps.CommerceAdmin.CommerceAdmin"
+    "uiComponents": [
+      {
+        "entryPoint": "NetDapps.CommerceAdmin.CommerceAdmin",
+        "name": "Commerce Admin"
+      }
     ],
-    "Name": "NetDapps.CommerceAdmin",
-    "FullName": "NetDapps.CommerceAdmin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-    "Url": "ipfs://bafkreifpabuc2bqxvxd6txyr2yhqbbjjbrgudlqbdo2zfqkbmzrivlimmy"
+   
+    "fullName": "NetDapps.CommerceAdmin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "url": "ipfs://bafkreifpabuc2bqxvxd6txyr2yhqbbjjbrgudlqbdo2zfqkbmzrivlimmy"
   },
   {
-    "UIComponents": [
-      "NetDapps.Maker.Maker"
+    "uiComponents": [
+      {
+        "entryPoint": "NetDapps.Maker.Maker",
+        "name": "Maker"
+      }
     ],
-    "Name": "NetDapps.Maker",
-    "FullName": "NetDapps.Maker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-    "Url": "ipfs://bafkreif253tnt6gmogyfq2gq3vn66lrcpjfcdh6tj3iryzdwu2jchekgs4"
+    "fullName": "NetDapps.Maker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "url": "ipfs://bafkreif253tnt6gmogyfq2gq3vn66lrcpjfcdh6tj3iryzdwu2jchekgs4"
   }
 ]

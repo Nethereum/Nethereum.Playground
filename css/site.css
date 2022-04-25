@@ -155,15 +155,18 @@ html, body {
     color: #FDF4E0;
     padding: 8px;
     font-family: courier new;
+    font-size: small !important;
 }
 
-.terminal-console:focus {
+    .terminal-console:focus {
         background-color: #000;
         border: 1px solid #000;
         color: #FDF4E0;
         padding: 8px;
         font-family: courier new;
+        font-size: small !important;
     }
+
 .monaco-editor {
     position: absolute !important;
 }
