@@ -18,7 +18,7 @@ jobs:
         dotnet-version: 3.1
       # publishes Blazor project to the release-folder
     - name: Publish .NET Core Project
-      run: dotnet publish Nethereum.Playground/Nethereum.Playground.csproj -c Release -o release --nologo
+      run: export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0; dotnet publish Nethereum.Playground/Nethereum.Playground.csproj -c Release -o release --nologo
     - name: Commit wwwroot to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@3.7.1
       with:
