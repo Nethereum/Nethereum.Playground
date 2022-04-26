@@ -66,7 +66,11 @@ public class Program
                     Name = "Ether: Transfer Ether to an account",
                     Id = "1003"
                 },
-
+                new CodeSample()
+                {
+                    Name = "Transactions: 1559 Pricing and fees strategies",
+                    Id = "1076"
+                },
                 new CodeSample()
                 {
                     Name = "Transactions / Signing: Raw transaction recreation and recovery of accounts",
