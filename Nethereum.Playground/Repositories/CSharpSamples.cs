@@ -79,7 +79,7 @@ public class Program
 
                 new CodeSample()
                 {
-                    Name = "Transaction: How to send transactions using the transaction manager",
+                    Name = "Transactions: How to send transactions using the transaction manager",
                     Id = "1059"
                 },
 
