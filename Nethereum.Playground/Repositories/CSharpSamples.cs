@@ -100,7 +100,7 @@ public class Program
                 new CodeSample()
                 {
                     Name = "Transactions: Decode Function from existing transaction input",
-                    Id = "1063"
+                    Id = "1075"
                 },
 
                 new CodeSample()
@@ -191,6 +191,12 @@ public class Program
                 {
                     Name = "Smart Contracts: Estimating Gas",
                     Id = "1010",
+                },
+
+                new CodeSample()
+                {
+                    Name = "Smart Contracts: Calculate contract address",
+                    Id = "1074",
                 },
 
                 new CodeSample()

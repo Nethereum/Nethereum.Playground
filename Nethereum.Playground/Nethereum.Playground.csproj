@@ -41,6 +41,7 @@
     <PackageReference Include="System.CommandLine.Experimental" Version="0.3.0-alpha.19317.1" />
     <PackageReference Include="Tewr.Blazor.FileReader" Version="1.2.0.19363" />
   </ItemGroup>
+
   
   <Target Name="_RemoveSatelliteAssemblies" BeforeTargets="_ResolveBlazorRuntimeDependencies">
     <ItemGroup>

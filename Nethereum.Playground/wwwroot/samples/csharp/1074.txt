@@ -1,0 +1,29 @@
+﻿
+using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Util;
+using System.Numerics;
+
+
+public class CalculateContractAddresses
+{
+
+    static async Task Main(string[] args)
+    {
+		//Calculate a contract address using the sender address and the nonce for that account
+		var adresss = "0x12890d2cce102216644c59daE5baed380d84830c";
+        var nonce = 0;
+        var contractAddress = ContractUtils.CalculateContractAddress(adresss, new BigInteger(nonce));
+		Console.WriteLine(contractAddress);
+
+		//Calculate the contract address when using Create2
+		var addressCreate2 = "0x00000000000000000000000000000000deadbeef";
+		var salt = "0x00000000000000000000000000000000000000000000000000000000cafebabe";
+		var byteCode = "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef";
+		contractAddress = ContractUtils.CalculateCreate2Address(addressCreate2, salt, byteCode);
+		Console.WriteLine(contractAddress);
+    }
+
+}
