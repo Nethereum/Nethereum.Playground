@@ -1,0 +1,107 @@
+﻿using Nethereum.Web3;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts.CQS;
+using Nethereum.Util;
+using Nethereum.Web3.Accounts;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Contracts;
+using Nethereum.Contracts.Extensions;
+using System;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+
+
+/// Nethereum provides 3 built in strategies to suggest the 1559 fees
+/// TimePreferenceFeeSuggestionStrategy
+/// MedianPriorityFeeHistorySuggestionStrategy
+/// SimpleFeeSuggestionStrategy
+/// All of them use different methodologies to calculate the MaxFeePerGas and MaxFeePriority, depending on your needs on inclusion on the next block or overall price.
+/// the source code in Nethereum can be used as a basis to adjust them if necessary and create custom ones.
+/// To learn more about 1559 check https://notes.ethereum.org/@vbuterin/eip-1559-faq
+public class EIP1559FeesSuggestions
+{
+
+    public static async Task Main()
+    {
+		var web3 = new Web3("https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c");
+		
+////**** ASIGNING A STRATEGY TO THE TRANSACTION MANAGER **** ///		
+		/// The transaction manager can be assigned a strategy to automate the calculation, this can be built in or use a custom one.
+		//by default the TimePreferenceFeeStrategy will be assigned from 4.3.1
+		
+		//using the FeeSuggestion service we can select any of the prebuilt suggestion strategies
+		var timePreferenceFeeSuggesionStrategy = web3.FeeSuggestion.GeTimePreferenceFeeSuggestionStrategy();
+		web3.TransactionManager.Fee1559SuggestionStrategy = timePreferenceFeeSuggesionStrategy;
+		
+	
+////**** Time Preference Fee Suggestion Strategy **** ///	
+
+/// SuggestFees returns a series of maxFeePerGas / maxPriorityFeePerGas values suggested for different time preferences.
+/// The first element corresponds to the highest time preference(most urgent transaction).
+/// The basic idea behind the algorithm is similar to the old "gas price oracle" used in Geth; 
+/// it takes the prices of recent blocks and makes a suggestion based on a low percentile of those prices.
+/// With EIP-1559 though the base fee of each block provides a less noisy and more reliable price signal.
+/// This is a port of Felfodi Zsolt example https://github.com/zsfelfoldi/feehistory
+
+
+// When calling SuggestFeeAsync it will return a single fee whichs the first element that corresponds to the highest time preference(most urgent transaction).
+		var fee = await timePreferenceFeeSuggesionStrategy.SuggestFeeAsync();
+		Console.WriteLine("**** Time Preference Fee Suggestion Strategy Highest Priority Fee (Single) ****");
+		Console.WriteLine("Max Fee Per Gas: " + Web3.Convert.FromWei(fee.MaxFeePerGas.Value, Nethereum.Util.UnitConversion.EthUnit.Gwei));
+		Console.WriteLine("Max Priority Fee Per Gas: " + Web3.Convert.FromWei(fee.MaxPriorityFeePerGas.Value, Nethereum.Util.UnitConversion.EthUnit.Gwei));
+		
+// When calling SuggestFeesAsync it will return all the estimated fees starting with the highest priority
+
+		var fees = await timePreferenceFeeSuggesionStrategy.SuggestFeesAsync();
+		Console.WriteLine("**** Time Preference Fee Suggestion Strategy All priority fees ****");
+		Console.WriteLine("**** NOTE: Very low MaxFeePerGas values / matching MaxPriorityFeePerGas indicates that an estimate could not be made ****");
+		var counterPriority = 1;
+		foreach(var feeItem in fees){
+			fee = feeItem;
+			Console.WriteLine("Time preference Level: " + counterPriority);
+			Console.WriteLine("Max Fee Per Gas: " + Web3.Convert.FromWei(fee.MaxFeePerGas.Value, Nethereum.Util.UnitConversion.EthUnit.Gwei));
+			Console.WriteLine("Max Priority Fee Per Gas: " + Web3.Convert.FromWei(fee.MaxPriorityFeePerGas.Value, Nethereum.Util.UnitConversion.EthUnit.Gwei));
+			counterPriority++;
+		}
+
+////**** Assigning fees to a contract FunctionMessage  **** ///	
+/// In a similar way to setting the Gas Price we can set the MaxFeePerGas and MaxPriorityFeePerGas to Contract FunctionMessage
+/// NOTE: Setting the Gas price will convert this to a Legacy Transaction
+		var transferFunction = new TransferFunction();
+		transferFunction.MaxFeePerGas = fee.MaxFeePerGas;
+		transferFunction.MaxPriorityFeePerGas = fee.MaxPriorityFeePerGas;
+
+
+////**** MedianPriorityFeeHistorySuggestionStrategy **** ///	
+/// Suggest a priority fee based on the Fee history of previous blocks and the median of all its values
+/// Base fee is suggested based on the latest block number price and depending on its value increase it by a percentage. 
+/// This ensures inclusion on the next block but will be more expensive
+/// This is based on MyCrypto example here https://github.com/MyCryptoHQ/MyCrypto/blob/master/src/services/ApiService/Gas/eip1559.ts
+		var medianPriorityFeeSuggestion = web3.FeeSuggestion.GetMedianPriorityFeeHistorySuggestionStrategy();
+		fee = await medianPriorityFeeSuggestion.SuggestFeeAsync();
+		Console.WriteLine("**** MedianPriorityFeeHistorySuggestionStrategy ****");
+		Console.WriteLine("Max Fee Per Gas: " + Web3.Convert.FromWei(fee.MaxFeePerGas.Value, Nethereum.Util.UnitConversion.EthUnit.Gwei));
+		Console.WriteLine("Max Priority Fee Per Gas: " + Web3.Convert.FromWei(fee.MaxPriorityFeePerGas.Value, Nethereum.Util.UnitConversion.EthUnit.Gwei));
+
+
+////**** SimpleFeeSuggestionStrategy **** ///	
+/// The simple fee suggestion strategy, gets the basefee * 2 and adds a Default Max Priority Gas of 2 gwei
+		var simpleFeeSuggestion = web3.FeeSuggestion.GetSimpleFeeSuggestionStrategy();
+		fee = await simpleFeeSuggestion.SuggestFeeAsync();
+		Console.WriteLine("**** SimpleFeeSuggestionStrategy ****");
+		Console.WriteLine("Max Fee Per Gas: " + Web3.Convert.FromWei(fee.MaxFeePerGas.Value, Nethereum.Util.UnitConversion.EthUnit.Gwei));
+		Console.WriteLine("Max Priority Fee Per Gas: " + Web3.Convert.FromWei(fee.MaxPriorityFeePerGas.Value, Nethereum.Util.UnitConversion.EthUnit.Gwei));
+		
+    }
+
+    [Function("transfer", "bool")]
+	public class TransferFunction : FunctionMessage
+	{
+		[Parameter("address", "_to", 1)]
+		public string To { get; set; }
+
+		[Parameter("uint256", "_value", 2)]
+		public BigInteger TokenAmount { get; set; }
+	}
+}
