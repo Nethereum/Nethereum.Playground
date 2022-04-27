@@ -229,6 +229,12 @@ public class Program
 
                 new CodeSample()
                 {
+                    Name = "L2 - Optimism: Ether transfer from L1 to L2 and viceversa",
+                    Id = "1077",
+                },
+
+                new CodeSample()
+                {
                     Name = "ENS: Resolve address",
                     Id = "1055",
                 },

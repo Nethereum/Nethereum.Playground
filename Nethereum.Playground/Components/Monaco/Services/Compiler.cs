@@ -114,6 +114,7 @@ namespace Nethereum.Playground
         public (bool success, Assembly asm, Byte[] rawAssembly) LoadSource(string source, string language)
         {
             dynamic compilation = new object();
+           
             if (language == "csharp")
             {
                 compilation = CSharpCompilation.Create("DynamicCode")

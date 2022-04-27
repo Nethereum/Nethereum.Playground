@@ -153,128 +153,133 @@
     "url": "ipfs://QmZNdF5CURgxio6H3bqAyqU4skQJEHqtgTaVR3q5BX2ZzE"
   },
   {
+    "fullName": "Nethereum.ABI, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.ABI",
-    "fullName": "Nethereum.ABI, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreidx4tdjn72ovz2jw3dwtvlaqmgol6xn5ruemai6u5fk5au6674fhe"
+    "url": "ipfs://bafkreibnh6pdtinqte6bec6jgxal6izcpllolxkbtmqao35t2yssim6o6e"
   },
   {
+    "fullName": "Nethereum.Accounts, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Accounts",
-    "fullName": "Nethereum.Accounts, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreib2x52auhmhu5dtihspte6j3i4dw7vmjh6qbgpicisb2lwkde62f4"
+    "url": "ipfs://bafkreibbinklbp6clz66kima52o6vi7zgxm75l3oniu2e5yycejrcinpey"
   },
   {
+    "fullName": "Nethereum.Besu, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Besu",
-    "fullName": "Nethereum.Besu, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreicmahu73kb7haaezotp5pmqcrljyydt43kyguincwfzqzp3kbfvme"
+    "url": "ipfs://bafkreibueaeoerc4mus3e6stznauyymyg5u42ogtiw2ne7mg2uaijlfnk4"
   },
   {
+    "fullName": "Nethereum.BlockchainProcessing, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.BlockchainProcessing",
-    "fullName": "Nethereum.BlockchainProcessing, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreihcds6w2qxnrolfiifhasnpttw2lmadwinkq2gl73qcvyugn6q32e"
+    "url": "ipfs://bafkreiay4o6fqiysowk67vvnpkchrzb4gjq6ftenfaduozruktacelx72i"
   },
   {
+    "fullName": "Nethereum.Contracts, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Contracts",
-    "fullName": "Nethereum.Contracts, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafybeib655y5j34gjjgcolimxasuyhdbqjdb3oinrgvj4cjvochdxq2onm"
+    "url": "ipfs://bafybeido7g6e2fs72oljxfaa74jvjiwdhjlcjemczuqk57m3beprrzcugq"
   },
   {
+    "fullName": "Nethereum.Geth, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Geth",
-    "fullName": "Nethereum.Geth, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreigcpcz3azxoscvfm4hfcunhqf4d3fxgrngdotjosioau7hcdhv3te"
+    "url": "ipfs://bafkreib2awinhy6gwcarl5sqfw7o45vga2eqrtomhe6tvsmqntkislcasi"
   },
   {
+    "fullName": "Nethereum.GnosisSafe, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.GnosisSafe",
-    "fullName": "Nethereum.GnosisSafe, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreif63fchhawgjzrdytjqnv6dagvpatcwok6hij6z7ubdfkpntq7pzm"
+    "url": "ipfs://bafkreifrxxd3vc345clr2lnipflbwaht3o7dqe7ezlk7cdvkqjbkqqybp4"
   },
   {
+    "fullName": "Nethereum.HdWallet, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.HdWallet",
-    "fullName": "Nethereum.HdWallet, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreifykgcaa75hgoxtzmr6pz65izhch6lblnh72zomsyxa5e2tysmqni"
+    "url": "ipfs://bafkreifqjedevzld5wiqx42vavmslrlny6tyjbysqxni5dtcfroc5snhy4"
   },
   {
+    "fullName": "Nethereum.Hex, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Hex",
-    "fullName": "Nethereum.Hex, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreifr5cg5jrvkasbz3b5oqs3i6xhxipzubfnqpvvnldk47rxwqpej3e"
+    "url": "ipfs://bafkreidu5to4sr77jv2aoyzym74vtkfcxj64fvnnphtij4uxqohtihcjgi"
   },
   {
+    "fullName": "Nethereum.JsonRpc.Client, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.JsonRpc.Client",
-    "fullName": "Nethereum.JsonRpc.Client, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreiaztecnziprwfcqry3at3svw6jrbu5fpstqvjjypfxrrewxp2x4jy"
+    "url": "ipfs://bafkreidileitl4wfrnu6jovwy45stigqm2lbspitlmz2aqoxw33q5y7haq"
   },
   {
+    "fullName": "Nethereum.JsonRpc.IpcClient, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.JsonRpc.IpcClient",
-    "fullName": "Nethereum.JsonRpc.IpcClient, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreia44pqr2ttru66fljiani4x5gd6of23yl6k2fhc2xwmhujgouvfl4"
+    "url": "ipfs://bafkreihc5pw4huczfnmcsg3cqmnenjbvcu3s6yp6kwupetrb62s2dorz5e"
   },
   {
+    "fullName": "Nethereum.JsonRpc.RpcClient, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.JsonRpc.RpcClient",
-    "fullName": "Nethereum.JsonRpc.RpcClient, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreidv56gtnfv4pup7nuv5wgea53r6zdjzxmui3tal3cr3txhmmzeofi"
+    "url": "ipfs://bafkreicjw2mtnzd2yuivqh3syk7rt3hlv6rrfu2ihfcpjw2ww4dlqmogea"
   },
   {
+    "fullName": "Nethereum.JsonRpc.WebSocketClient, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.JsonRpc.WebSocketClient",
-    "fullName": "Nethereum.JsonRpc.WebSocketClient, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreigg6idl6fq4vjpjzwjvztbka3kcxtmrxeplfez56oeygdvexw7m7u"
+    "url": "ipfs://bafkreiecbgw42ximk6x46nhskjeyblaftvbtmyj45sisykkz6iq3bbclty"
   },
   {
+    "fullName": "Nethereum.KeyStore, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.KeyStore",
-    "fullName": "Nethereum.KeyStore, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreidqgdjsvd5itlwuweww2az6xkgogdofqrrkemjxrsxtx7vok3a73a"
+    "url": "ipfs://bafkreia5dz3x54uoqh32bf4t3q6z7tj7poyfa3kfsxknvsbwnxe3yf2tki"
   },
   {
+    "fullName": "Nethereum.Model, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Model",
-    "fullName": "Nethereum.Model, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreiabtt3zqalakajrmwfuaydc6bikusxellkn32kqm2ukyr4uz4bxui"
+    "url": "ipfs://bafkreibdyy3e6bm7k3asbjar2o4qgjqbxjxmxhbfcx5dqwi3crjb3sbjry"
   },
   {
+    "fullName": "Nethereum.Optimism, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
+    "name": "Nethereum.Optimism",
+    "url": "ipfs://bafkreiax72ws4kkixgbphf6pi5dekw44i6bsnydf7anqqbeiafoupijtce"
+  },
+  {
+    "fullName": "Nethereum.Parity, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Parity",
-    "fullName": "Nethereum.Parity, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreib45qpogishcmqjjlhcctpyzbnveky7fzjji4beowg6twfkwztd3u"
+    "url": "ipfs://bafkreigf2q2lhwp63jwan5m7silwncx4aody6yscnexc4svns72sju43oe"
   },
   {
+    "fullName": "Nethereum.Quorum, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Quorum",
-    "fullName": "Nethereum.Quorum, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreigtgomz5fclj3nezpymfyytvtfvn6fctpudia6ssw5e3ndgxyjxsm"
+    "url": "ipfs://bafkreidi6lwt4t3u4dc7kqggydf2c4mbcig757xbu6rhw2lz4y6fulrg5a"
   },
   {
+    "fullName": "Nethereum.RLP, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.RLP",
-    "fullName": "Nethereum.RLP, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreibuxeir6wle7fiypfeocfdi4kvqt52k3umvldsid2zbqivrvnle6i"
+    "url": "ipfs://bafkreigikvuydybz3e2xf7a5riqqilpri2zc7ehynf34m5kmw7cv3gh4le"
   },
   {
+    "fullName": "Nethereum.RPC, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.RPC",
-    "fullName": "Nethereum.RPC, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreidt4od3hjavyrzfpkfwqct75nylspr3chsy5z3okvu4ssjoesoeti"
+    "url": "ipfs://bafkreigjgq5phqualx55qro5tywzt55ftnyhbanw7yvxl52aiuftqh5puy"
   },
   {
+    "fullName": "Nethereum.Signer, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Signer",
-    "fullName": "Nethereum.Signer, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreih5m4qmhsgrxpxtqs4ulqlkrikehal3ns764hhbyusl42imf7obqa"
+    "url": "ipfs://bafkreiarqckyinw75kr75uw7eariazzzbfvsilxri3ahfmlxucccqwibuq"
   },
   {
+    "fullName": "Nethereum.Signer.EIP712, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Signer.EIP712",
-    "fullName": "Nethereum.Signer.EIP712, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreid27qykl2ygf5qcrup376a4xoo5c5kahrz4wayqt4zix3xtinzenq"
+    "url": "ipfs://bafkreifkhbeged4b3kfqhj4wxzbmdipichp2xbh4qyuowblehpo2matfbe"
   },
   {
+    "fullName": "Nethereum.Siwe.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Siwe.Core",
-    "fullName": "Nethereum.Siwe.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreihdyqvwlhvytnh225iipyrvtp5fu7jl4wlx5hf5goza763bhjqqhq"
+    "url": "ipfs://bafkreicus24tlmfp4d6z5hznaa7lez677hyzj6ovgiqyzyichrdrfdr3xm"
   },
   {
+    "fullName": "Nethereum.Siwe, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Siwe",
-    "fullName": "Nethereum.Siwe, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreigrkmirtygrvsq2qv5lsbalmiuhthslc5ovorlhgxkmnlovrckksu"
+    "url": "ipfs://bafkreiefh2wbarqpsaw3qgzrxoyxtevxbmwvvz3v3abwxjeoe2gg7gbvfq"
   },
   {
+    "fullName": "Nethereum.Util, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Util",
-    "fullName": "Nethereum.Util, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreihjkmyyjtcg3f6swsrfg5mtuz6esl3uobc6qh7tvjbuylg2zrnjpe"
+    "url": "ipfs://bafkreicndjuc27vxxlmhym25ygukpwc3jt35jfbpzcmjltevabp7oquxce"
   },
   {
+    "fullName": "Nethereum.Web3, Version=4.4.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
     "name": "Nethereum.Web3",
-    "fullName": "Nethereum.Web3, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-    "url": "ipfs://bafkreifyhaadbwheno54lyq3klbtk6pkf6ovo4n4lzbixqf5udh4gapl2i"
+    "url": "ipfs://bafkreifar4mjddmmkhpc3hhigc7c5553ayjkn73dv2n4somz4jwpsujgze"
   }
 ]

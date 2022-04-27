@@ -1,0 +1,107 @@
+﻿
+using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Web3;
+using Nethereum.Optimism;
+using Nethereum.Optimism.L1StandardBridge;
+using Nethereum.Optimism.L1StandardBridge.ContractDefinition;
+using Nethereum.Optimism.L2StandardBridge;
+using Nethereum.Optimism.L2StandardBridge.ContractDefinition;
+using Nethereum.Optimism.Lib_AddressManager;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using System.Linq;
+using Nethereum.JsonRpc.Client;
+
+public class Program
+{
+
+	///This example demonstrates how to transfer Ether using the Optimism Gateway from Ethereum L1 to L2 and viceversa. 
+	///Note: This example will take a around 30 seconds to complete 
+	static async Task Main(string[] args)
+	{
+
+		string KOVAN_ADDRESS_MANAGER = "0x100Dd3b414Df5BbA2B542864fF94aF8024aFdf3a";
+
+		//Web3 L1 (Mainnet or in this scenario the kovan testnet)
+		var web3l1 = new Web3(new Account("Please input your private Key", 42), "https://kovan.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+		//Web3 L2 Optimism
+		var web3l2 = new Web3(new Account("Please input your private Key", 69), "https://kovan.optimism.io");
+		//optimism we set the transaction manager to work in Legacy mode.
+		web3l2.TransactionManager.UseLegacyAsDefault = true;
+
+		var ourAdddress = web3l1.TransactionManager.Account.Address;
+		//the cross messaging watcher service allows us to monitor messages send from L1 to L2 and viceversa
+		var watcher = new CrossMessagingWatcherService();
+
+		//the address manager service is a contract that stores all the optimism contract addresses
+		var addressManagerService = new Lib_AddressManagerService(web3l1, KOVAN_ADDRESS_MANAGER);
+
+		var L2CrossDomainMessengerAddress = await addressManagerService.GetAddressQueryAsync("L2CrossDomainMessenger");
+		Console.WriteLine("L2CrossDomainMessengerAddress: " + L2CrossDomainMessengerAddress);
+		var L1StandardBridgeAddress = await addressManagerService.GetAddressQueryAsync(StandardAddressManagerKeys.L1StandardBridge);
+		Console.WriteLine("L1StandardBridgeAddress: " + L1StandardBridgeAddress);
+		var L1CrossDomainMessengerAddress = await addressManagerService.GetAddressQueryAsync(StandardAddressManagerKeys.L1CrossDomainMessenger);
+		Console.WriteLine("L1CrossDomainMessengerAddress: " + L1CrossDomainMessengerAddress);
+		var L2StandardBridgeAddress = PredeployedAddresses.L2StandardBridge;
+
+		//we initialise our services:
+		var l2StandardBridgeService = new L2StandardBridgeService(web3l2, L2StandardBridgeAddress);
+		var l1StandardBridgeAddress = await l2StandardBridgeService.L1TokenBridgeQueryAsync();
+		var l1StandardBridgeService = new L1StandardBridgeService(web3l1, l1StandardBridgeAddress);
+
+
+		var amount = Web3.Convert.ToWei(0.05);
+		Console.WriteLine("The amount we are sending: " + Web3.Convert.FromWei(amount));
+
+		var currentBalanceInL2 = await web3l2.Eth.GetBalance.SendRequestAsync(ourAdddress);
+		Console.WriteLine("Our Current balance in L2: " + Web3.Convert.FromWei(currentBalanceInL2.Value));
+		//create the deposit Ether including the L2 Gas
+		var depositEther = new DepositETHFunction()
+		{
+			AmountToSend = amount,
+			L2Gas = 700000,
+			Data = "0x".HexToByteArray()
+		};
+
+
+		var receiptDeposit = await l1StandardBridgeService.DepositETHRequestAndWaitForReceiptAsync(depositEther);
+
+
+		var messageHashes = watcher.GetMessageHashes(receiptDeposit);
+
+		//using the deposit receipt we can watch the messages and get the transaction receipt from 	L2 when is received (action upon it)
+		var txnReceipt = await watcher.GetCrossMessageMessageTransactionReceipt(web3l2, L2CrossDomainMessengerAddress, messageHashes.First());
+
+
+		if (txnReceipt.HasErrors() == true)
+		{
+			var error =
+					await web3l2.Eth.GetContractTransactionErrorReason.SendRequestAsync(txnReceipt.TransactionHash);
+			Console.WriteLine("Error: " + error);
+		}
+
+		//now our balance will have increase
+		var balancesInL2 = await web3l2.Eth.GetBalance.SendRequestAsync(ourAdddress); ;
+
+		Console.WriteLine("Balance after the transfer: " + Web3.Convert.FromWei(balancesInL2.Value));
+
+
+
+		var withdrawEther = new WithdrawFunction()
+		{
+			L2Token = TokenAddresses.ETH,
+			Amount = amount,
+			L1Gas = 700000,
+			Data = "0x".HexToByteArray()
+		};
+		var receiptWidthdraw = await l2StandardBridgeService.WithdrawRequestAndWaitForReceiptAsync(withdrawEther);
+
+		messageHashes = watcher.GetMessageHashes(receiptWidthdraw);
+	}
+
+
+}
