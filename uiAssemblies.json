@@ -8,7 +8,7 @@
     ],
     "name": "NetDapps: ERC20 Token Balances",
     "fullName": "NetDapps.ERC20Token, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-    "url": "ipfs://bafkreighzofkm2uq5u3kw4sch2jxpzfqjxrnol5yvcdqjws5rexlml3vda",
+    "url": "ipfs://bafkreifeedvcnm7axfevj3ue5gswjvq77dffqp5p2u4yyzpqpmuorja7ce",
     "smartContractComponentRegistry": {
       "address": "0x0000000000000",
       "chainId": 1,
@@ -24,7 +24,7 @@
       {
         "name": "Nethereum.Web3",
         "fullName": "Nethereum.Web3, Version=4.3.0.0, Culture=neutral, PublicKeyToken=8768a594786aba4e",
-        "url": "ipfs://bafkreifyhaadbwheno54lyq3klbtk6pkf6ovo4n4lzbixqf5udh4gapl2i",
+        "url": "ipfs://bafkreid4lzxgnb5hvp7uih5jlxx3gr2jl5k6e35dgp46epa7bzn26rpy5m",
         "smartContractComponentRegistry": {
           "address": "0x0000000000000",
           "chainId": 1
@@ -86,9 +86,9 @@
         "name": "NetDapps: Message Signing"
       }
     ],
-    
+
     "fullName": "NetDapps.MessageSigning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-    "url": "ipfs://bafkreibabzgq5lelocao2dal3o4ukssqegg26hluto2zh3h4n6gkbufdki"
+    "url": "ipfs://bafkreia3xvzwfrgp6357w4drt3p2jcchlkxtinivt3aecgs5kcrwkjlxta"
   },
   {
     "uiComponents": [
@@ -97,9 +97,9 @@
         "name": "Commerce Admin"
       }
     ],
-   
+
     "fullName": "NetDapps.CommerceAdmin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-    "url": "ipfs://bafkreifpabuc2bqxvxd6txyr2yhqbbjjbrgudlqbdo2zfqkbmzrivlimmy"
+    "url": "ipfs://bafkreihoe6k3r5ezdyyp47xjj3iovsfdvhikohnboszjss7mokerbxcvze"
   },
   {
     "uiComponents": [
@@ -109,6 +109,6 @@
       }
     ],
     "fullName": "NetDapps.Maker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-    "url": "ipfs://bafkreif253tnt6gmogyfq2gq3vn66lrcpjfcdh6tj3iryzdwu2jchekgs4"
+    "url": "ipfs://bafkreihz5v4ypva7z4ui4wsjeoudy6f6qyyfbrwnmz7cj5kzrom4sf6yge"
   }
 ]

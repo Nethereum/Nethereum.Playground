@@ -28,7 +28,7 @@ public class DecodeTransactionIntoFunctionMessageIfItMatchesSignature
 
 	public static async Task Main()
 	{
-		var web3 = new Web3("https://mainnet.infura.io/v3/7238211010344719ad14a89db874158c");
+		var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
 		var txn = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync("0x0404a0517a7443db1787b5461b9d5fc18546809419c0cc6a736599b60677ed71");
 		//check if the transfer belongs to the Transfer Function if not ignore it
 		if (txn.IsTransactionForFunctionMessage<TransferFunction>())

@@ -32,7 +32,8 @@ public class Program
         // All the created accounts can be loaded in a Web3 instance and used as any other account, 
         // we can for instance check the balance of one of them:
 
-        var account = new Wallet(words, password).GetAccount(0);
+        var chainId = 444444444500;
+        var account = new Wallet(words, password).GetAccount(0, chainId);
         Console.WriteLine("The account address is: " + account.Address);
 
         var web3 = new Web3(account, "http://testchain.nethereum.com:8545");
