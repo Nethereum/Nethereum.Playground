@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Blazor.FileReader;
@@ -29,10 +31,24 @@ namespace Nethereum.Playground.Components
         {
             //var fileReaderService = new Blazor.FileReader.FileReaderService(JSRuntime);
             var files = await FileReaderService.CreateReference(FileUpload).EnumerateFilesAsync();
-            var stream = await files.First().CreateMemoryStreamAsync(); //assuming it's only one file (?)
-            var streamReader = new System.IO.StreamReader(stream);
-            var fileContent = streamReader.ReadToEnd();
-            await Model.SetFileContentAsync(fileContent);
+            if (Model.StreamsOutput)
+            {
+                var streams = new List<MemoryStream>();
+                foreach (var file in files)
+                {
+                    var stream = await file.CreateMemoryStreamAsync();
+                    streams.Add(stream);
+                }
+                await Model.SetFileContentAsync(streams);
+            }
+            else
+            {
+                var stream = await files.First().CreateMemoryStreamAsync(); //assuming it's only one file (?)
+                var streamReader = new System.IO.StreamReader(stream);
+                var fileContent = streamReader.ReadToEnd();
+                await Model.SetFileContentAsync(fileContent);
+                
+            }
 
         }
     }

@@ -1,6 +1,8 @@
 ﻿@page "/remoteassembliesinfo"
 @using Microsoft.AspNetCore.Components
 @using NetDapps.Assemblies
+@using Nethereum.Playground.Components.Modal;
+@using System.IO;
 
 <div class="card">
 <div class="card-header">
@@ -9,6 +11,11 @@
     </h5>
     <div class="sub-content">These are the remote assemblies loaded to enable compilation or NetDapp modules</div>
 </div>
+ <div class="btn-toolbar m-1 mb-3" role="toolbar">
+    <div class="btn-group m-1 mr-3 btnfileMenu" role="group">
+        <button class="btn btn-secondary" @onclick="@LoadFromFileAsync">Load Assembly</button>
+    </div>
+ </div>
 <div class="card-body">
    @if (AssemblyCache.Current.LoadedAssemblies != null && AssemblyCache.Current.LoadedAssemblies.Count != 0)
    {
@@ -33,4 +40,29 @@
    }
   
 </div>
-   </div>
+</div>
+
+@code{
+    [Inject] ModalService ModalServices { get; set; }
+    private LoadFileModel loadFileModel;
+    protected override void OnInitialized()
+    {
+        loadFileModel = new LoadFileModel();
+        loadFileModel.AllowedExtension = ".dll";
+        loadFileModel.StreamsOutput = true;
+        loadFileModel.ContentStreamsLoaded += FileLoaded;
+        base.OnInitialized();
+    }
+
+      public async Task LoadFromFileAsync()
+      {
+            ModalServices.ShowModal<LoadFile, LoadFileModel>("Load Assembly", loadFileModel, "Model");
+            StateHasChanged();
+      }
+
+       public async Task FileLoaded(IEnumerable<MemoryStream> content, string fileName)
+        {
+            ModalServices.Close();
+            AssemblyCache.Current.LoadAssembly(content);
+        }
+}

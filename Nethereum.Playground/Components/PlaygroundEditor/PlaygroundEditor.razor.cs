@@ -1,4 +1,16 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using NetDapps.Assemblies;
+using Nethereum.Generators;
+using Nethereum.Generators.Console;
+using Nethereum.Generators.Core;
+using Nethereum.Generators.Service;
+using Nethereum.Playground.Components.FileUtils;
+using Nethereum.Playground.Components.Modal;
+using Nethereum.Playground.Components.Monaco;
+using Nethereum.Playground.Components.Monaco.Services;
+using Nethereum.Playground.Repositories;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,21 +19,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Blazor.Services;
-using Microsoft.AspNetCore.Components;
-using Microsoft.CodeAnalysis.Completion;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.JSInterop;
-using Nethereum.Generators;
-using Nethereum.Generators.Console;
-using Nethereum.Generators.Core;
-using Nethereum.Generators.Service;
-using Nethereum.Playground.Components.FileUtils;
-using Nethereum.Playground.Components.Modal;
-using Nethereum.Playground.Components.Monaco;
-using Nethereum.Playground.Components.Monaco.MonacoDTOs;
-using Nethereum.Playground.Components.Monaco.Services;
-using Nethereum.Playground.Repositories;
 //using Ipfs;
 //using Ipfs.Api;
 //using Ipfs.CoreApi;
@@ -44,6 +41,8 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
         [Inject] public CodeSampleRepository CodeSampleRepository { get; set; }
 
         [Inject] public Compiler Compiler { get;set;}
+
+        [Inject] public IAssemblyCacheInitialiser AssemblyCacheInitialiser { get; set; }
 
         [Inject] public NavigationManager NavigationManager { get; set; }
 
@@ -235,7 +234,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
         public void Run()
         {
-            Compiler.WhenReady(RunInternal);
+            AssemblyCacheInitialiser.WhenReady(RunInternal);
         }
 
         public async Task GenerateFromABIAsync()
