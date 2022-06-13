@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NetDapps.Assemblies;
 using Nethereum.Playground.Components.Modal;
 using Nethereum.Playground.Pages;
 using Nethereum.Playground.Repositories;
@@ -14,12 +15,17 @@ namespace Nethereum.Playground.ServiceCollectionExtensions
 
         public static IServiceCollection AddCodeRepository(this IServiceCollection services)
         { 
-            return services.AddSingleton<CodeSampleRepository>();
+            return services.AddScoped<CodeSampleRepository>();
         }
 
         public static IServiceCollection AddCompiler(this IServiceCollection services)
         {
-            return services.AddSingleton<Compiler>();
+            return services.AddScoped<Compiler>();
+        }
+
+        public static IServiceCollection AddAssemblyLoadingInitialiser(this IServiceCollection services)
+        {
+            return services.AddScoped<IAssemblyCacheInitialiser, PlaygroundAssemblyCacheInitialiser>();
         }
     }
 }
