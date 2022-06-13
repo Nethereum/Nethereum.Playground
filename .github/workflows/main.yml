@@ -15,7 +15,7 @@ jobs:
     - name: Setup .NET 6
       uses: actions/setup-dotnet@v2.1.0
       with:
-        dotnet-version: '6.0.2'
+        dotnet-version: '6.0.*'
       # publishes Blazor project to the release-folder
     - name: Publish .NET Core Project
       run: export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0; dotnet publish Nethereum.Playground/Nethereum.Playground.csproj -c Release -o release --nologo
