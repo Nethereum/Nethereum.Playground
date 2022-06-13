@@ -5,6 +5,7 @@
     <LangVersion>preview</LangVersion>
 	<BlazorWebAssemblyEnableLinking>false</BlazorWebAssemblyEnableLinking>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<PublishTrimmed>false</PublishTrimmed>
     <BlazorLinkOnBuild>false</BlazorLinkOnBuild>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
