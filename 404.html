@@ -1,17 +1,22 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+    <script>
+        document.write('<base href="' + window.location.pathname + '"/>');
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Nethereum Playground</title>
-    <base href="/" />
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="monaco-editor/min/vs/editor/editor.main.css" />
     <link href="css/site.css" rel="stylesheet" />
     <link href="css/modalform.css" rel="stylesheet" />
-    <link rel="stylesheet" data-name="vs/editor/editor.main" href="monaco-editor/min/vs/editor/editor.main.css" />
+    <link href="_content/Nethereum.Metamask.Blazor/Nethereum.Metamask.Blazor.bundle.scp.css" rel="stylesheet" />
+
 </head>
 <body>
-    <app>
+    <div id="app">
+
         <div class="container">
             <div class="content row justify-content-md-center">
                 <div class="card" style="width: 30rem;">
@@ -36,14 +41,17 @@
                 </div>
             </div>
         </div>
-    </app>
+
+    </div>
     <script>var require = { paths: { 'vs': 'monaco-editor/min/vs' } };</script>
     <script src="monaco-editor/min/vs/loader.js"></script>
     <script src="monaco-editor/min/vs/editor/editor.main.nls.js"></script>
     <script src="monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script type="blazor-boot"></script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="js/Blazor.Extensions.Storage.js"></script>
     <script src="js/BlazorComponents.js"></script>
     <script src="js/saveAsFile.js"></script>
+    <script src="_content/Nethereum.Metamask.Blazor/NethereumMetamask.js"></script>
 </body>
 </html>

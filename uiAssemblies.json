@@ -82,6 +82,18 @@
   {
     "uiComponents": [
       {
+        "entryPoint": "Nethereum.Erc20.Blazor.Erc20Transfer",
+        "name": "NetDapps: ERC20 Transfer"
+      }
+    ],
+    "fullName": "Nethereum.Erc20.Blazor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "name": "Nethereum.Erc20.Blazor",
+    "url": "ipfs://bafkreibatxhsoyzlq3xorm5ptho4xlu5h4djhrdzj6yjzl5qpkuag6t5eq"
+
+  },
+  {
+    "uiComponents": [
+      {
         "entryPoint": "NetDapps.MessageSigning.SignMessage",
         "name": "NetDapps: Message Signing"
       }
@@ -94,7 +106,7 @@
     "uiComponents": [
       {
         "entryPoint": "NetDapps.CommerceAdmin.CommerceAdmin",
-        "name": "Commerce Admin"
+        "name": "Example: Commerce Admin"
       }
     ],
 
@@ -105,10 +117,12 @@
     "uiComponents": [
       {
         "entryPoint": "NetDapps.Maker.Maker",
-        "name": "Maker"
+        "name": "Example: Maker"
       }
     ],
     "fullName": "NetDapps.Maker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
     "url": "ipfs://bafkreihz5v4ypva7z4ui4wsjeoudy6f6qyyfbrwnmz7cj5kzrom4sf6yge"
   }
+
+
 ]
