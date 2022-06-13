@@ -18,7 +18,7 @@ jobs:
         dotnet-version: '6.0.*'
       # publishes Blazor project to the release-folder
     - name: Publish .NET Core Project
-      run: export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0; dotnet publish Nethereum.Playground/Nethereum.Playground.csproj -c Release -o release --nologo
+      run: export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0; dotnet publish Nethereum.Playground/Nethereum.Playground.csproj -c Debug -o release --nologo
     - name: copy index.html to 404.html
       run: cp release/wwwroot/index.html release/wwwroot/404.html
     - name: Add .nojekyll file
