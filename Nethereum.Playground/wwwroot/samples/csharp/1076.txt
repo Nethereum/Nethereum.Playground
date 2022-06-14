@@ -31,7 +31,7 @@ public class EIP1559FeesSuggestions
 		//by default the TimePreferenceFeeStrategy will be assigned from 4.3.1
 		
 		//using the FeeSuggestion service we can select any of the prebuilt suggestion strategies
-		var timePreferenceFeeSuggesionStrategy = web3.FeeSuggestion.GeTimePreferenceFeeSuggestionStrategy();
+		var timePreferenceFeeSuggesionStrategy = web3.FeeSuggestion.GetTimePreferenceFeeSuggestionStrategy();
 		web3.TransactionManager.Fee1559SuggestionStrategy = timePreferenceFeeSuggesionStrategy;
 		
 	
