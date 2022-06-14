@@ -1,8 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Nethereum.Blazor
 @using Nethereum.UI
 @implements IDisposable;
 @inject MetamaskHostProvider _metamaskHostProvider;
 @inject SelectedEthereumHostProviderService _selectedHostProvider;
+@inject AuthenticationStateProvider _authenticationStateProvider;
 
 <div>
     @if (MetamaskAvailable)
@@ -59,7 +61,13 @@
     {
         SelectedAccount = await _metamaskHostProvider.EnableProviderAsync();
         await _selectedHostProvider.SetSelectedEthereumHostProvider(_metamaskHostProvider);
-         StateHasChanged();
+        
+        if(_authenticationStateProvider is EthereumAuthenticationStateProvider)
+        {
+            ((EthereumAuthenticationStateProvider)_authenticationStateProvider)?.NotifyStateHasChanged();
+        }
+       
+        StateHasChanged();
     }
 
     public static string Truncate(string? value, int maxLength, string truncationSuffix = "…")

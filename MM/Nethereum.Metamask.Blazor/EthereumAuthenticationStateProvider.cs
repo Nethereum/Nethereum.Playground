@@ -18,6 +18,11 @@ namespace Nethereum.Blazor
             InitSelectedHostProvider();
         }
 
+        public void NotifyStateHasChanged()
+        { 
+             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        }
+
         private Task SelectedHostProviderChanged(IEthereumHostProvider newEthereumHostProvider)
         {
             if(EthereumHostProvider != newEthereumHostProvider)
@@ -63,6 +68,7 @@ namespace Nethereum.Blazor
                 {
                     var claimsPrincipal = GetClaimsPrincipal(currentAddress);
                     return new AuthenticationState(claimsPrincipal);
+
                 }
             }
            
