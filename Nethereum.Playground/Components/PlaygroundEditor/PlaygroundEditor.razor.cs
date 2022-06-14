@@ -96,6 +96,7 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             loadFileModel = new LoadFileModel();
             loadFileModel.AllowedExtension = GetAllowedExtension();
             loadFileModel.ContentLoaded += FileLoaded;
+            loadFileModel.SubText = "*Note that loaded files are saved on the browser local storage";
 
             savesAsFileModel = new SaveAsFileModel();
             savesAsFileModel.SaveFileAs += SaveAsAsyncCallBack;
@@ -294,7 +295,6 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
 
         public async Task CodeSampleChanged(ChangeEventArgs evt)
         {
-
             //Console.WriteLine(selectedId);
             //we may not have an id, so we only "navigate" if we have one to allow users copy and paste
             var selectedCodeSample = int.Parse(evt.Value.ToString());

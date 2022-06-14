@@ -133,10 +133,10 @@ namespace Nethereum.Playground
                 switch (diagnostic.Severity)
                 {
                     case DiagnosticSeverity.Info:
-                        Console.WriteLine(diagnostic.ToString());
+                        //Console.WriteLine(diagnostic.ToString());
                         break;
                     case DiagnosticSeverity.Warning:
-                        Console.WriteLine(diagnostic.ToString());
+                       // Console.WriteLine(diagnostic.ToString());
                         break;
                     case DiagnosticSeverity.Error:
                         error = true;

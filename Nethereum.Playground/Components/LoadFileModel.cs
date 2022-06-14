@@ -14,6 +14,8 @@ namespace Nethereum.Playground.Components
         public string AllowedExtension { get; set; }
         public bool StreamsOutput { get; set; } = false;
 
+        public string SubText { get; set; }
+
         public string FileContent
         {
             get => _fileContent;

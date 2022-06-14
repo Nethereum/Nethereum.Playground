@@ -64,5 +64,6 @@
         {
             ModalServices.Close();
             AssemblyCache.Current.LoadAssembly(content);
+            StateHasChanged();
         }
 }
