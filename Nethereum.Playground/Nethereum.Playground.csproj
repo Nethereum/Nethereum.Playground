@@ -34,25 +34,24 @@
     <PackageReference Include="Newtonsoft.Json" Version="[11.0.2,14)" />
     <PackageReference Include="SQLitePCLRaw.core" Version="1.1.14" />
     <PackageReference Include="Tewr.Blazor.FileReader" Version="1.2.0.19363" />
-
-
-	  <BlazorWebAssemblyLazyLoad Include="Common.Logging.Core.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.ABI.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.Accounts.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.BlockchainProcessing.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.Contracts.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.Hex.dll" />
-
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.JsonRpc.RpcClient.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.KeyStore.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.Model.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.RLP.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.RPC.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.Signer.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.Siwe.Core.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.Siwe.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.Util.dll" />
-	  <BlazorWebAssemblyLazyLoad Include="Nethereum.Web3.dll" />
+	  
+	<BlazorWebAssemblyLazyLoad Include="BouncyCastle.Crypto.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Common.Logging.Core.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.ABI.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.Accounts.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.BlockchainProcessing.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.Contracts.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.Hex.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.JsonRpc.RpcClient.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.KeyStore.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.Model.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.RLP.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.RPC.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.Signer.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.Siwe.Core.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.Siwe.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.Util.dll" />
+	<BlazorWebAssemblyLazyLoad Include="Nethereum.Web3.dll" />
   </ItemGroup>
 
 
