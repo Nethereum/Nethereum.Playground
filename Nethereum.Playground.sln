@@ -17,15 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetDapps.Maker", "ModulesDa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetDapps.CommerceAdmin", "ModulesDapps\NetDapps.CommerceAdmin\NetDapps.CommerceAdmin.csproj", "{2F62FDEE-C5F0-4FD2-B2DD-6E483A9F4339}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDapps", "NetDapps\NetDapps.csproj", "{93D7DD7E-3BA8-491A-94B8-F2A82EAAD1BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetDapps", "NetDapps\NetDapps.csproj", "{93D7DD7E-3BA8-491A-94B8-F2A82EAAD1BB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetDapps.Host", "ModulesDapps\NetDapps.Host\NetDapps.Host.csproj", "{BBC187E9-0ACF-414D-ADDE-6ECE0822B1C4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nethereum.Metamask.Blazor", "MM\Nethereum.Metamask.Blazor\Nethereum.Metamask.Blazor.csproj", "{3764BFB7-D50C-477B-84A2-728FFC3AD197}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nethereum.Metamask", "MM\Nethereum.Metamask\Nethereum.Metamask.csproj", "{8F5EECFF-9C12-4B16-9ECE-A9E49B68E068}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nethereum.UI", "MM\Nethereum.UI\Nethereum.UI.csproj", "{0349D388-E267-42DA-89A4-379FB25E92D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,18 +59,6 @@ Global
 		{BBC187E9-0ACF-414D-ADDE-6ECE0822B1C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBC187E9-0ACF-414D-ADDE-6ECE0822B1C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBC187E9-0ACF-414D-ADDE-6ECE0822B1C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3764BFB7-D50C-477B-84A2-728FFC3AD197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3764BFB7-D50C-477B-84A2-728FFC3AD197}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3764BFB7-D50C-477B-84A2-728FFC3AD197}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3764BFB7-D50C-477B-84A2-728FFC3AD197}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F5EECFF-9C12-4B16-9ECE-A9E49B68E068}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F5EECFF-9C12-4B16-9ECE-A9E49B68E068}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F5EECFF-9C12-4B16-9ECE-A9E49B68E068}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F5EECFF-9C12-4B16-9ECE-A9E49B68E068}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0349D388-E267-42DA-89A4-379FB25E92D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0349D388-E267-42DA-89A4-379FB25E92D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0349D388-E267-42DA-89A4-379FB25E92D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0349D388-E267-42DA-89A4-379FB25E92D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
