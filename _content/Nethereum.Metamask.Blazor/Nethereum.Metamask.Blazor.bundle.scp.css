@@ -3,9 +3,14 @@
     border: none;
     padding: 8px 8px;
     font-size: 0.9rem;
-    cursor: pointer;
     border-radius: 8px;
 }
+
+.btnMetamask btnMetamaskSelected[b-5mztjfvre6]{
+   cursor:pointer
+}
+
+
 .btnMetamask[b-5mztjfvre6]:before {
     content: url("/_content/Nethereum.Metamask.Blazor/img/metamask-fox.svg"); 
     width: 30px;

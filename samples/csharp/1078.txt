@@ -1,0 +1,49 @@
+﻿using System;
+using System.Text;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Threading.Tasks;
+using Nethereum.Web3;
+
+public class Program
+{
+
+	static async Task Main(string[] args)
+	{
+		//This example demonstrates how to interact with the built in Proof Of Humanity smart contracts
+		var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+		
+		//How to check if an address is registered
+		//Using Vitalik registration
+		var isRegistered = await web3.Eth.ProofOfHumanity.GetContractService().IsRegisteredQueryAsync("0x1db3439a222c519ab44bb1144fc28167b4fa6ee6");
+		Console.WriteLine("0x1db3439a222c519ab44bb1144fc28167b4fa6ee6 is registered");
+
+		//Using the proxy smart contract address instead of the deployed one, note you need the deployment address to retrieve logs
+
+		isRegistered = await web3.Eth.ProofOfHumanity.GetContractService(Nethereum.Contracts.Constants.CommonAddresses.PROOF_OF_HUMANITY_PROXY_ADDRESS).IsRegisteredQueryAsync("0x1db3439a222c519ab44bb1144fc28167b4fa6ee6");
+		Console.WriteLine("0x1db3439a222c519ab44bb1144fc28167b4fa6ee6 is registered using Proxy");
+
+		//checking multiple registrations using multicall, we don't expect the "0x0000000000000000000000000000000000000000" to be registered
+
+		var registrations = await web3.Eth.ProofOfHumanity.GetContractService().AreRegisteredQueryUsingMulticallAsync(new[] { "0x1db3439a222c519ab44bb1144fc28167b4fa6ee6", "0x2ad91063e489cc4009df7fee45c25c8be684cf6a", "0x2A52309eDF998799C4A8b89324CCAd91848c8676", "0x0000000000000000000000000000000000000000" });
+		foreach(var registration in registrations)
+		{
+			Console.WriteLine(registration.Address + " is registered:" + registration.IsRegistered);
+		}
+
+		// retrieving the registration evidence from the logs and ifps
+		var service = web3.Eth.ProofOfHumanity.GetContractService();
+		// Proof of Humanity does not store the data in the smart contract, this is just pushed as an event
+		// for this we get all the evidence logs for a party (i.e Vitalik) and select the latest (there won't be many as registration is once a year)
+		var log = await service.GetLatestEvidenceLogAsync("0x1db3439a222c519ab44bb1144fc28167b4fa6ee6");
+		//The evidence has the url of ipfs registration with information linking to the Registration evidence
+		Console.WriteLine("Evidence: " + log.Event.Evidence);
+		Console.WriteLine("Address: " + log.Event.Party);
+		// we can this information in a single call in Nethereum
+		var registrationEvidence = await service.GetRegistrationEvidenceFromIpfs(log.Event, "https://ipfs.infura.io/");
+		Console.WriteLine(registrationEvidence.Name);
+		Console.WriteLine(registrationEvidence.FirstName);
+		Console.WriteLine(registrationEvidence.LastName);
+		Console.WriteLine("https://ipfs.infura.io" + registrationEvidence.Photo);
+	}
+
+}
