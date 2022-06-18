@@ -257,6 +257,12 @@ public class Program
                     Id = "1057",
                 },
 
+                 new CodeSample()
+                {
+                    Name = "Proof of Humanity: Checking registration and retrieving Registration Evidence (details)",
+                    Id = "1078",
+                },
+
                 new CodeSample()
                 {
                     Name = "Signing: Sign a message and recover the signing address",
