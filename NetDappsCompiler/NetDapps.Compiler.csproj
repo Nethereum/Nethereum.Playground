@@ -12,6 +12,6 @@
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.2.0" />
 		<PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		</ItemGroup>
 </Project>
