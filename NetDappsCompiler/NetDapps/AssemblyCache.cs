@@ -122,7 +122,7 @@ namespace NetDapps.Compiler.NetDapps
 
         public string GetAssemblyRemotePath(string remotePath)
         {
-            if (remotePath.StartsWith("ipfs://")) return remotePath.Replace("ipfs://", "https://gateway.pinata.cloud/ipfs/");
+            if (remotePath.StartsWith("ipfs://")) return remotePath.Replace("ipfs://", "https://cloudflare-ipfs.com/ipfs/");
             return remotePath;
         }
 
