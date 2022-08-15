@@ -192,7 +192,7 @@ namespace NetDapps.Assemblies
 
         public string GetAssemblyRemotePath(string remotePath)
         {
-            if (remotePath.StartsWith("ipfs://")) return remotePath.Replace("ipfs://", "https://ipfs.infura.io/ipfs/");
+            if (remotePath.StartsWith("ipfs://")) return remotePath.Replace("ipfs://", "https://gateway.pinata.cloud/ipfs/");
             return remotePath;
         }
 
