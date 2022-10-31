@@ -1,0 +1,102 @@
+﻿using System;
+using System.Text;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.EVM;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Hex.HexTypes;
+using Nethereum.RPC.Eth.DTOs;
+using System.Threading.Tasks;
+using System.Numerics;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using Nethereum.Contracts;
+using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
+
+public class EVMExample
+{
+    private static async Task Main(string[] args)
+    {
+
+        var contractAddress = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
+        var senderAddress = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
+        var receiverAddress = "0x12890d2cce102216644c59daE5baed380d84830c";
+        var web3 = new Web3("https://mainnet.infura.io/v3/ddd5ed15e8d443e295b696c0d07c8b02");
+
+
+        //current block number
+        var blockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+        var code = await web3.Eth.GetCode.SendRequestAsync(contractAddress); // runtime code;
+
+
+        //Creating a balance function to simulate in the evm using the state of mainnet
+        var balanceOfFunction = new BalanceOfFunction();
+        balanceOfFunction.Owner = senderAddress;
+        var callInput = balanceOfFunction.CreateCallInput(contractAddress);
+        callInput.From = senderAddress;
+
+        //setting up the nodeDataService to communicate with mainnet to get storage, code, etc
+        var nodeDataService = new RpcNodeDataService(web3.Eth, new BlockParameter(blockNumber));
+        //setting up our local execution state service (this stores our execution and loads data from the node if required)
+        var executionStateService = new ExecutionStateService(nodeDataService);
+        //context with the call input and the state
+        var programContext = new ProgramContext(callInput, executionStateService);
+        //program with the code
+        var program = new Program(code.HexToByteArray(), programContext);
+        var evmSimulator = new EVMSimulator();
+
+        //execute the program
+        var traceResult = await evmSimulator.ExecuteAsync(program);
+        var intTypeDecoder = new Nethereum.ABI.Decoders.IntTypeDecoder();
+        //get the result from the program
+        var resultEncoded = program.ProgramResult.Result;
+        //decoding the result
+        var result = new BalanceOfOutputDTO().DecodeOutput(resultEncoded.ToHex());
+
+
+        Console.WriteLine("Balance of sender: " + senderAddress);
+        Console.WriteLine(Web3.Convert.FromWei(result.Balance));
+        Console.WriteLine("State of contract after first simulated request, including now balance of sender");
+        var contractStorage = executionStateService.CreateOrGetAccountExecutionState(contractAddress).GetContractStorageAsHex();
+        foreach (var storageItem in contractStorage)
+        {
+            //we know the only storage is a number
+            var valueAsBigInteger = intTypeDecoder.DecodeBigInteger(storageItem.Value);
+            Console.WriteLine(storageItem.Key.ToString() + ":" + Web3.Convert.FromWei(valueAsBigInteger));
+        }
+
+        //Now we are going to make a transfer to the receiver
+        var transferFunction = new TransferFunction();
+        transferFunction.FromAddress = senderAddress; ;
+        transferFunction.To = receiverAddress;
+        transferFunction.Value = Web3.Convert.ToWei(9000);
+
+        callInput = transferFunction.CreateCallInput(contractAddress);
+        programContext = new ProgramContext(callInput, executionStateService);
+        program = new Program(code.HexToByteArray(), programContext);
+        traceResult = await evmSimulator.ExecuteAsync(program);
+
+        Console.WriteLine("State of contract after first simulated request, including now balance of sender");
+        contractStorage = executionStateService.CreateOrGetAccountExecutionState(contractAddress).GetContractStorageAsHex();
+        foreach (var storageItem in contractStorage)
+        {
+            //we know the only storage is a number
+            var valueAsBigInteger = intTypeDecoder.DecodeBigInteger(storageItem.Value);
+            Console.WriteLine(storageItem.Key.ToString() + ":" + Web3.Convert.FromWei(valueAsBigInteger));
+        }
+
+        var transferEvent = program.ProgramResult.Logs.DecodeAllEvents<TransferEventDTO>()[0];
+        Console.WriteLine("Transfer Event:");
+        Console.WriteLine(transferEvent.Event.From);
+        Console.WriteLine(transferEvent.Event.To);
+        Console.WriteLine(transferEvent.Event.Value);
+
+
+        Console.WriteLine("-----------------------------------------");
+        Console.WriteLine("-------TRACE TRANSFER -------------------");
+        foreach (var traceItem in traceResult)
+        {
+            Console.WriteLine(traceItem.ToString());
+        }
+    }
+
+}
