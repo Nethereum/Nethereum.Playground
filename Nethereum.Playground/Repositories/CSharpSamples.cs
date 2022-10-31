@@ -483,11 +483,16 @@ public class Program
                     Id = "1047"
                 },
 
-               
+                 new CodeSample()
+                {
+                    Name = "EVM Simulator: Simulate ERC20 Transfer using current Mainnet state",
+                    Id = "1079"
+                },
 
-               
 
-               
+
+
+
             };
 
             foreach (var sample in samples)

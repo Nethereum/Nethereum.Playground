@@ -38,6 +38,7 @@ namespace Nethereum.Playground
         public PlaygroundAssemblyCacheInitialiser(HttpClient client) 
         {
             this.client = client;
+            client.Timeout = TimeSpan.FromMilliseconds(1000);
             InitializationTask = InitialiseCache();
         }
 

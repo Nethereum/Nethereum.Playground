@@ -36,7 +36,6 @@
     <PackageReference Include="Tewr.Blazor.FileReader" Version="1.2.0.19363" />
 	  
 	<BlazorWebAssemblyLazyLoad Include="BouncyCastle.Crypto.dll" />
-	<BlazorWebAssemblyLazyLoad Include="Common.Logging.Core.dll" />
 	<BlazorWebAssemblyLazyLoad Include="Nethereum.ABI.dll" />
 	<BlazorWebAssemblyLazyLoad Include="Nethereum.Accounts.dll" />
 	<BlazorWebAssemblyLazyLoad Include="Nethereum.BlockchainProcessing.dll" />

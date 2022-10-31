@@ -157,6 +157,40 @@ namespace NetDapps.Assemblies
 
         }
 
+        public async Task LoadAssemblyFallback(HttpClient client, AssemblyLoadInfo assemblyInfo)
+        {
+            try
+            {
+
+                if (!ContainsAssembly(assemblyInfo.FullName) && !ContainsAssemblyRemotePath(assemblyInfo.Url))
+                {
+
+                    var assemblyStreamByte = await client.GetByteArrayAsync(GetAssemblyFallbackPath(assemblyInfo)) ;
+
+                    // var assemblyStream = await client.GetStreamAsync(GetAssemblyRemotePath(assemblyInfo.PublishedRemotePath));
+                    var assembly = AssemblyLoadContext.Default.LoadFromStream(new MemoryStream(assemblyStreamByte));
+                    // assembly = AppDomain.CurrentDomain.Load(assemblyStreamByte);
+                    //making sure we have the right name as we may not have passed it as a parameter.
+                    assemblyInfo.FullName = assembly.FullName;
+                    assemblyInfo.MetadataReference = MetadataReference.CreateFromImage(assemblyStreamByte);
+                    assemblyInfo.Assembly = assembly;
+                    LoadedAssemblies.Add(assemblyInfo);
+                    Console.WriteLine("Loaded: " + assemblyInfo.FullName);
+
+                }
+                else
+                {
+                    Console.WriteLine("Already loaded:" + assemblyInfo.FullName);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(
+                    $"Error occurred loading assembly {assemblyInfo.FullName} from remote path:{assemblyInfo.Url}, {ex.Message}");
+            }
+        }
+
         public async Task LoadAssembly(HttpClient client, AssemblyLoadInfo assemblyInfo)
         {
             try
@@ -165,7 +199,8 @@ namespace NetDapps.Assemblies
                 if (!ContainsAssembly(assemblyInfo.FullName) && !ContainsAssemblyRemotePath(assemblyInfo.Url))
                 {
 
-                    var assemblyStreamByte = await client.GetByteArrayAsync(GetAssemblyRemotePath(assemblyInfo.Url));
+                   
+                    var assemblyStreamByte = await client.GetByteArrayAsync(GetAssemblyRemotePath(assemblyInfo.Url) );
 
                     // var assemblyStream = await client.GetStreamAsync(GetAssemblyRemotePath(assemblyInfo.PublishedRemotePath));
                     var assembly = AssemblyLoadContext.Default.LoadFromStream(new MemoryStream(assemblyStreamByte));
@@ -186,7 +221,9 @@ namespace NetDapps.Assemblies
             catch (Exception ex)
             {
                 Console.WriteLine(
-                    $"Error occurred loading assembly {assemblyInfo.FullName} from url:{assemblyInfo.Url}, {ex.Message}");
+                    $"Error occurred loading assembly {assemblyInfo.FullName} from url:{assemblyInfo.Url}, {ex.Message}, trying fallback path");
+                await LoadAssemblyFallback(client, assemblyInfo);
+                
             }
         }
 
@@ -194,6 +231,12 @@ namespace NetDapps.Assemblies
         {
             if (remotePath.StartsWith("ipfs://")) return remotePath.Replace("ipfs://", "https://cloudflare-ipfs.com/ipfs/");
             return remotePath;
+        }
+
+        public string GetAssemblyFallbackPath(AssemblyLoadInfo info)
+        {
+            
+            return "fallbacklib/" + info.Name + ".dll";
         }
 
         public string GetAllLoadedAssemblies()
