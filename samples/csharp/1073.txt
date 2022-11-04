@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Nethereum.Signer.EIP712;
 using Nethereum.Util;
 using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.ABI.EIP712;
 using Nethereum.Signer;
 
 ///EIP-712: Ethereum typed structured data hashing and signing

@@ -20,6 +20,7 @@ public class Program
 		Console.WriteLine("Our account: " + account.Address);
 		//Now let's create an instance of Web3 using our account pointing to our nethereum testchain
 		var web3 = new Web3(account, "http://testchain.nethereum.com:8545");
+		web3.TransactionReceiptPolling.SetPollingRetryIntervalInMilliseconds(200);
 		web3.TransactionManager.UseLegacyAsDefault = true;
 
 		var txnInput = new TransactionInput();
@@ -27,7 +28,7 @@ public class Program
 		txnInput.To = "0x12890d2cce102216644c59daE5baed380d84830c";
 		txnInput.Data = "Hello".ToHexUTF8();
 		txnInput.Gas = new HexBigInteger(900000);
-		var txnReceipt = await web3.Eth.TransactionManager.SendTransactionAndWaitForReceiptAsync(txnInput, null);
+		var txnReceipt = await web3.Eth.TransactionManager.SendTransactionAndWaitForReceiptAsync(txnInput);
 		Console.WriteLine(txnReceipt.HasErrors().Value);
 
 	}
