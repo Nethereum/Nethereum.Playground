@@ -3,11 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>preview</LangVersion>
-	<BlazorWebAssemblyEnableLinking>false</BlazorWebAssemblyEnableLinking>
+	<BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<PublishTrimmed>false</PublishTrimmed>
-    <BlazorLinkOnBuild>false</BlazorLinkOnBuild>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BlazorLinkOnBuild>true</BlazorLinkOnBuild>
   </PropertyGroup>
 
 

@@ -10,6 +10,7 @@ using Nethereum.Playground.Components.Modal;
 using Nethereum.Playground.Components.Monaco;
 using Nethereum.Playground.Components.Monaco.Services;
 using Nethereum.Playground.Repositories;
+using Nethereum.Playground.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -97,7 +98,12 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             loadFileModel.AllowedExtension = GetAllowedExtension();
             loadFileModel.ContentLoaded += FileLoaded;
             loadFileModel.SubText = "*Note that loaded files are saved on the browser local storage";
-
+            AssemblyCacheInitialiser.AssemblyCacheInitialisionComplete += AssemblyCacheInitialiser_AssemblyCacheInitialisionComplete;
+            AssemblyCacheInitialiser.AssemblyLoadComplete += AssemblyCacheInitialiser_AssemblyLoadComplete;
+            if (!AssemblyCacheInitialiser.IsInitialised())
+            {
+                Output = "Loading libraries...";
+            }
             savesAsFileModel = new SaveAsFileModel();
             savesAsFileModel.SaveFileAs += SaveAsAsyncCallBack;
             SelectedCodeSample = 0;
@@ -106,6 +112,26 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             abiCodeGenerateModel.CodeGenerate += AbiCodeGenerateCallBack;
 
             Task.Run(() => ProjectEditorInitialiser.InitialiseProject(GetEditorLanguage()));
+        }
+
+        private void AssemblyCacheInitialiser_AssemblyLoadComplete(AssemblyLoadInfo assemblyLoadInfo)
+        {
+            Output = Output + Environment.NewLine + "Loaded: " + assemblyLoadInfo.FullName;
+        }
+
+     
+
+        private void AssemblyCacheInitialiser_AssemblyCacheInitialisionComplete(bool success)
+        {
+            if (success)
+            {
+                Output = "Loading libraries completed...";
+            }
+            else
+            {
+                Output = "Loading libraries failed...";
+            }
+            this.StateHasChanged();
         }
 
         private async Task AbiCodeGenerateCallBack(string contractName, string abi, string contractByteCode)
@@ -226,6 +252,10 @@ namespace Nethereum.Playground.Components.PlaygroundEditor
             }
         }
 
+        public bool IsAssemblyCacheInitialised()
+        {
+            return AssemblyCacheInitialiser.IsInitialised();
+        }
 
         public async Task SaveAsAsyncCallBack(string content, string name)
         {

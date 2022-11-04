@@ -11,34 +11,6 @@ using System.Runtime.Loader;
 
 namespace NetDapps.Assemblies
 {
-    public abstract class AssemblyCacheInitialiser : IAssemblyCacheInitialiser
-    {
-        protected static Task InitializationTask { get; set; }
-
-        public bool IsInitialised()
-        {
-            return InitializationTask != null && InitializationTask.Status == TaskStatus.RanToCompletion;
-        }
-
-        public void WhenReady(Func<Task> action)
-        {
-            if (InitializationTask.Status != TaskStatus.RanToCompletion)
-            {
-                InitializationTask.ContinueWith(x => action());
-            }
-            else
-            {
-                action();
-            }
-        }
-
-        /// <summary>
-        /// Override this to initialise the cache
-        /// </summary>
-        /// <returns></returns>
-        public abstract Task InitialiseCache();
-        
-    }
 
     public class AssemblyCache
     { 
@@ -152,12 +124,13 @@ namespace NetDapps.Assemblies
                     assemblyInfo.MetadataReference = MetadataReference.CreateFromImage(streamBytes);
                     assemblyInfo.Assembly = assembly;
                     LoadedAssemblies.Add(assemblyInfo);
+                    
                 }
             }
 
         }
 
-        public async Task LoadAssemblyFallback(HttpClient client, AssemblyLoadInfo assemblyInfo)
+        public async Task LoadAssemblyFallback(HttpClient client, AssemblyLoadInfo assemblyInfo, IAssemblyCacheInitialiser? assemblyCacheInitialiser = null, int retryCount = 0)
         {
             try
             {
@@ -176,6 +149,10 @@ namespace NetDapps.Assemblies
                     assemblyInfo.Assembly = assembly;
                     LoadedAssemblies.Add(assemblyInfo);
                     Console.WriteLine("Loaded: " + assemblyInfo.FullName);
+                    if (assemblyCacheInitialiser != null)
+                    {
+                        assemblyCacheInitialiser.NotifyAssemblyLoadComplete(assemblyInfo);
+                    }
 
                 }
                 else
@@ -185,13 +162,16 @@ namespace NetDapps.Assemblies
             }
             catch (Exception ex)
             {
-
                 Console.WriteLine(
                     $"Error occurred loading assembly {assemblyInfo.FullName} from remote path:{assemblyInfo.Url}, {ex.Message}");
+                if (retryCount < 5)
+                {
+                    await LoadAssemblyFallback(client, assemblyInfo, assemblyCacheInitialiser, retryCount + 1);
+                }
             }
         }
 
-        public async Task LoadAssembly(HttpClient client, AssemblyLoadInfo assemblyInfo)
+        public async Task LoadAssembly(HttpClient client, AssemblyLoadInfo assemblyInfo, IAssemblyCacheInitialiser? assemblyCacheInitialiser = null)
         {
             try
             {
@@ -212,6 +192,11 @@ namespace NetDapps.Assemblies
                     LoadedAssemblies.Add(assemblyInfo);
                     Console.WriteLine("Loaded: " + assemblyInfo.FullName);
 
+                    if(assemblyCacheInitialiser != null)
+                    {
+                        assemblyCacheInitialiser.NotifyAssemblyLoadComplete(assemblyInfo);
+                    }
+
                 }
                 else
                 {
@@ -222,7 +207,7 @@ namespace NetDapps.Assemblies
             {
                 Console.WriteLine(
                     $"Error occurred loading assembly {assemblyInfo.FullName} from url:{assemblyInfo.Url}, {ex.Message}, trying fallback path");
-                await LoadAssemblyFallback(client, assemblyInfo);
+                await LoadAssemblyFallback(client, assemblyInfo, assemblyCacheInitialiser);
                 
             }
         }

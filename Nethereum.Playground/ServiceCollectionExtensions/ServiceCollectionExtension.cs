@@ -3,6 +3,7 @@ using NetDapps.Assemblies;
 using Nethereum.Playground.Components.Modal;
 using Nethereum.Playground.Pages;
 using Nethereum.Playground.Repositories;
+using Nethereum.Playground.Services;
 
 namespace Nethereum.Playground.ServiceCollectionExtensions
 {
